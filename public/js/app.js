@@ -84,9 +84,16 @@ const App = (() => {
   function updateResult(result) {
     const codesEl = document.getElementById('result-codes');
     const totalEl = document.getElementById('result-total');
+    const amoAmcEl = document.getElementById('result-amo-amc');
 
     codesEl.textContent = result.codes.join(' + ');
     totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
+
+    if (amoAmcEl && result.amo !== undefined) {
+      const amoStr = result.amo.toFixed(2).replace('.', ',');
+      const amcStr = result.amc.toFixed(2).replace('.', ',');
+      amoAmcEl.textContent = `AMO ${amoStr}€ | AMC ${amcStr}€`;
+    }
   }
 
   // === Paramètres ===
@@ -179,6 +186,27 @@ const App = (() => {
 
   return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab };
 })();
+
+/**
+ * Affiche une modale d'info pour un acte (GL1, GL2, GL3)
+ */
+function showActeInfo(code) {
+  const tarifs = Engine.getTarifs();
+  if (!tarifs) return;
+
+  const acte = tarifs.consultations[code];
+  if (!acte || !acte.description) return;
+
+  const zone = Engine.getZone();
+  const prix = acte.tarifs[zone] || acte.tarifs.metro || 0;
+
+  document.getElementById('modal-title').textContent = `${code} — ${acte.label}`;
+  document.getElementById('modal-body').innerHTML = `
+    <p class="majo-detail-tarif">${prix.toFixed(2).replace('.', ',')}€</p>
+    <p>${acte.description}</p>
+  `;
+  document.getElementById('modal-overlay').classList.add('active');
+}
 
 /**
  * Affiche une modale d'info pour une majoration

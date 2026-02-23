@@ -29,14 +29,32 @@
         <h3>Type d'acte</h3>
         <div class="acte-grid" id="consult-acte-grid">
           <button class="acte-btn active" data-acte="G">G<span class="acte-price">30€</span></button>
-          <button class="acte-btn" data-acte="TCG">TCG<span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="TCG">TCG<span class="acte-price">25€</span></button>
           <button class="acte-btn" data-acte="APC">APC<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL1">GL1<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL2">GL2<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL3">GL3<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="COE">COE<span class="acte-price">46€</span></button>
-          <button class="acte-btn" data-acte="COD">COD<span class="acte-price">30€</span></button>
-          <button class="acte-btn" data-acte="COB">COB<span class="acte-price">46€</span></button>
+          <button class="acte-btn" data-acte="GL1">GL1<span class="info-icon" data-info="GL1">i</span><span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="GL2">GL2<span class="info-icon" data-info="GL2">i</span><span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="GL3">GL3<span class="info-icon" data-info="GL3">i</span><span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="COE">COE<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="COD">COD<span class="acte-price">35€</span></button>
+          <button class="acte-btn" data-acte="COB">COB<span class="acte-price">30€</span></button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Période horaire</h3>
+        <div class="toggle-group" data-field="periode">
+          <button class="toggle-btn active" data-value="jour">Jour</button>
+          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
+          <button class="toggle-btn" data-value="nuit">Nuit</button>
+          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
+        </div>
+      </div>
+
+      <div class="section-card" id="consult-mode-section" style="display:none">
+        <h3>Mode de garde</h3>
+        <div class="toggle-group" data-field="mode">
+          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
         </div>
       </div>
 
@@ -60,7 +78,7 @@
             <span class="majo-label">Insuf. cardiaque</span>
           </button>
           <button class="majo-btn" data-majo="MIS">
-            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIS">i</span></span>
+            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
             <span class="majo-label">Insuf. rénale</span>
           </button>
           <button class="majo-btn" data-majo="MUT">
@@ -72,27 +90,9 @@
             <span class="majo-label">Non programmé</span>
           </button>
           <button class="majo-btn" data-majo="MHP">
-            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5,60€</span><span class="info-icon" data-info="MHP">i</span></span>
-            <span class="majo-label">Handicap/précarité</span>
+            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MHP">i</span></span>
+            <span class="majo-label">Hors PDSA</span>
           </button>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <h3>Période horaire</h3>
-        <div class="toggle-group" data-field="periode">
-          <button class="toggle-btn active" data-value="jour">Jour</button>
-          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
-          <button class="toggle-btn" data-value="nuit">Nuit</button>
-          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
-        </div>
-      </div>
-
-      <div class="section-card" id="consult-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
         </div>
       </div>
     </section>
@@ -117,6 +117,24 @@
       </div>
 
       <div class="section-card">
+        <h3>Période horaire</h3>
+        <div class="toggle-group" data-field="periode-visite">
+          <button class="toggle-btn active" data-value="jour">Jour</button>
+          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
+          <button class="toggle-btn" data-value="nuit">Nuit</button>
+          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
+        </div>
+      </div>
+
+      <div class="section-card" id="visite-mode-section" style="display:none">
+        <h3>Mode de garde</h3>
+        <div class="toggle-group" data-field="mode-visite">
+          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
+        </div>
+      </div>
+
+      <div class="section-card">
         <h3>Majorations</h3>
         <div class="majo-grid" id="visite-majo-grid">
           <button class="majo-btn" data-majo="MCG">
@@ -136,7 +154,7 @@
             <span class="majo-label">Insuf. cardiaque</span>
           </button>
           <button class="majo-btn" data-majo="MIS">
-            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIS">i</span></span>
+            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
             <span class="majo-label">Insuf. rénale</span>
           </button>
           <button class="majo-btn" data-majo="MUT">
@@ -148,27 +166,9 @@
             <span class="majo-label">Non programmé</span>
           </button>
           <button class="majo-btn" data-majo="MHP">
-            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5,60€</span><span class="info-icon" data-info="MHP">i</span></span>
-            <span class="majo-label">Handicap/précarité</span>
+            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MHP">i</span></span>
+            <span class="majo-label">Hors PDSA</span>
           </button>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <h3>Période horaire</h3>
-        <div class="toggle-group" data-field="periode-visite">
-          <button class="toggle-btn active" data-value="jour">Jour</button>
-          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
-          <button class="toggle-btn" data-value="nuit">Nuit</button>
-          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
-        </div>
-      </div>
-
-      <div class="section-card" id="visite-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode-visite">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
         </div>
       </div>
 
@@ -279,7 +279,10 @@
 
   <!-- Barre résultat fixe -->
   <div class="result-bar" id="result-bar">
-    <div class="result-codes" id="result-codes">G</div>
+    <div class="result-main">
+      <div class="result-codes" id="result-codes">G</div>
+      <div class="result-amo-amc" id="result-amo-amc">AMO 21,00€ | AMC 9,00€</div>
+    </div>
     <div class="result-total" id="result-total">30,00€</div>
   </div>
 

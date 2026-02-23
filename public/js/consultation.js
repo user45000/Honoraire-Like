@@ -27,8 +27,14 @@ const Consultation = (() => {
     // Type d'acte
     const acteGrid = document.getElementById('consult-acte-grid');
     acteGrid.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        showActeInfo(infoIcon.dataset.info);
+        return;
+      }
       const btn = e.target.closest('.acte-btn');
-      if (!btn) return;
+      if (!btn || btn.classList.contains('disabled')) return;
       acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
@@ -81,6 +87,7 @@ const Consultation = (() => {
     }
 
     updateActePrices();
+    updateActeStates();
     updateAllMajoStates();
   }
 
@@ -95,7 +102,15 @@ const Consultation = (() => {
     } else {
       state.majorations = state.majorations.filter(m => m !== 'MEG');
       megBtn.classList.remove('active');
+      // Si l'utilisateur est sur un acte pédiatrique et repasse en adulte → revenir à G
+      if (Engine.ACTES_PEDIATRIQUES.includes(state.acte)) {
+        state.acte = 'G';
+        const acteGrid = document.getElementById('consult-acte-grid');
+        acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+        acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+      }
     }
+    updateActeStates();
   }
 
   function toggleMajoration(code, btn) {
@@ -159,6 +174,24 @@ const Consultation = (() => {
     });
   }
 
+  /**
+   * Grise/dégrise les actes pédiatriques selon l'âge du patient
+   */
+  function updateActeStates() {
+    const acteGrid = document.getElementById('consult-acte-grid');
+    for (const code of Engine.ACTES_PEDIATRIQUES) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      if (state.age === 'adulte') {
+        btn.classList.add('disabled');
+        btn.title = 'Acte pédiatrique uniquement';
+      } else {
+        btn.classList.remove('disabled');
+        btn.title = '';
+      }
+    }
+  }
+
   function updateModeVisibility() {
     const section = document.getElementById('consult-mode-section');
     if (state.periode === 'jour') {
@@ -194,6 +227,7 @@ const Consultation = (() => {
 
   function onShow() {
     updateActePrices();
+    updateActeStates();
     updateAllMajoStates();
     recalculate();
   }

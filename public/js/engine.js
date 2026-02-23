@@ -41,6 +41,22 @@ const Engine = (() => {
   const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP'];
 
   /**
+   * Actes pédiatriques — grisés si patient adulte
+   */
+  const ACTES_PEDIATRIQUES = ['COE', 'COB', 'COD'];
+
+  /**
+   * Composants facturés 100% AMO (pas de part AMC)
+   */
+  const CODES_AMO100 = [
+    'F', 'MN', 'MM',
+    'CRN', 'CRM', 'CRD', 'CRS',
+    'VRN', 'VRM', 'VRD', 'VRS',
+    'SNP',
+    'COE', 'COB', 'COD'
+  ];
+
+  /**
    * Détermine les majorations disponibles selon le contexte complet
    * Retourne un objet { code: { available: bool, reason: string } }
    */
@@ -74,14 +90,14 @@ const Engine = (() => {
       }
 
       // 4. MEG : non cumulable avec consultations complexes (art. 15.8, 15.9)
-      //    et non cumulable avec COE (art. 14.9)
+      //    et non cumulable avec COE/COB/COD (art. 14.9)
       if (available && code === 'MEG') {
         if (isComplex) {
           available = false;
           reason = `Non cumulable avec ${acte} (consultation complexe)`;
-        } else if (acte === 'COE') {
+        } else if (ACTES_PEDIATRIQUES.includes(acte)) {
           available = false;
-          reason = 'Non cumulable avec COE (art. 14.9)';
+          reason = `Non cumulable avec ${acte} (art. 14.9)`;
         }
       }
 
@@ -267,10 +283,26 @@ const Engine = (() => {
       }
     }
 
+    // Calcul AMO/AMC
+    let amo = 0;
+    let amc = 0;
+    for (const d of details) {
+      if (d.montant === 0) continue;
+      const code = d.code.replace(/[()]/g, '');
+      if (CODES_AMO100.includes(code)) {
+        amo += d.montant;
+      } else {
+        amo += d.montant * 0.7;
+        amc += d.montant * 0.3;
+      }
+    }
+
     return {
       codes,
       details,
-      total: Math.round(total * 100) / 100
+      total: Math.round(total * 100) / 100,
+      amo: Math.round(amo * 100) / 100,
+      amc: Math.round(amc * 100) / 100
     };
   }
 
@@ -335,8 +367,8 @@ const Engine = (() => {
       // MCG/MEG : pas avec consultations complexes
       if ((code === 'MCG' || code === 'MEG') && isComplex) continue;
 
-      // MEG : pas avec COE
-      if (code === 'MEG' && acte === 'COE') continue;
+      // MEG : pas avec COE/COB/COD
+      if (code === 'MEG' && ACTES_PEDIATRIQUES.includes(acte)) continue;
 
       // SNP : pas avec PDSA ni F/MN/MM
       if (code === 'SNP' && (isRegule || (isHorsJour && !isRegule))) continue;
@@ -455,6 +487,7 @@ const Engine = (() => {
     getAvailableMajos,
     isHoraireApplicable,
     isDeplacementApplicable,
-    ACTES_COMPLEXES
+    ACTES_COMPLEXES,
+    ACTES_PEDIATRIQUES
   };
 })();

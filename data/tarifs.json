@@ -15,38 +15,47 @@
     },
     "TCG": {
       "label": "Téléconsultation",
-      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "tarifs": { "metro": 25.00, "antilles": 30.00, "reunion": 30.00 },
       "type": "consultation"
     },
     "GL1": {
       "label": "Consultation longue - diabète/ALD",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Consultation longue MT (>80 ans, 1×/an/patient) : post-hospitalisation ≤45j (non cumulable MSH/MIC même séjour), déprescription (≥10 lignes ordonnance), dossier APA"
     },
     "GL2": {
       "label": "Consultation longue - IVG",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Consultation longue IVG médicamenteuse"
     },
     "GL3": {
       "label": "Consultation longue - prévention",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Consultation longue de prévention"
     },
     "COE": {
-      "label": "Consultation obligatoire enfant",
-      "tarifs": { "metro": 46.00, "antilles": 55.20, "reunion": 55.20 },
-      "type": "consultation"
+      "label": "Examen obligatoire nourrisson (certificat)",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "consultation",
+      "pediatrique": true,
+      "amo100": true
     },
     "COD": {
-      "label": "Consultation obligatoire décès",
-      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
-      "type": "consultation"
+      "label": "Examen obligatoire enfant <6 ans",
+      "tarifs": { "metro": 35.00, "antilles": 42.00, "reunion": 42.00 },
+      "type": "consultation",
+      "pediatrique": true,
+      "amo100": true
     },
     "COB": {
-      "label": "Consultation obligatoire bilan",
-      "tarifs": { "metro": 46.00, "antilles": 55.20, "reunion": 55.20 },
-      "type": "consultation"
+      "label": "Examen obligatoire enfant ≥6 ans",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "consultation",
+      "pediatrique": true,
+      "amo100": true
     },
     "VG": {
       "label": "Visite généraliste",
@@ -94,7 +103,7 @@
     },
     "MIS": {
       "label": "Majoration insuffisance rénale sévère",
-      "tarif": 23.00,
+      "tarif": 30.00,
       "description": "Suivi patient IRC stade 4-5 (art. 15.9). Non cumulable avec MSH/MIC.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["MSH", "MIC"]
@@ -114,8 +123,8 @@
     },
     "MHP": {
       "label": "Majoration hors régulation PDSA",
-      "tarif": 5.60,
-      "description": "Soins non programmés hors régulation pendant horaires PDSA (art. 22-4). Non cumulable avec SNP, PDSA, F/MN/MM, MDN/MDD.",
+      "tarif": 5.00,
+      "description": "Consultation non programmée horaires PDSA (art. 22-4). Non cumulable avec SNP, PDSA, F/MN/MM, MDN/MDD.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["SNP"]
     }
