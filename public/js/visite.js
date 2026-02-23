@@ -23,6 +23,7 @@ const Visite = (() => {
       btn.classList.add('active');
       state.age = btn.dataset.value;
       handleAgeChange();
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -34,7 +35,7 @@ const Visite = (() => {
       acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
-      updateMajoAvailability();
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -51,6 +52,7 @@ const Visite = (() => {
       if (!btn || btn.classList.contains('disabled')) return;
       const code = btn.dataset.majo;
       toggleMajoration(code, btn);
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -64,6 +66,8 @@ const Visite = (() => {
       state.periode = btn.dataset.value;
       updateModeVisibility();
       updateDeplacementForPeriode();
+      updateDeplacementVisibility();
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -76,6 +80,8 @@ const Visite = (() => {
         modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.mode = btn.dataset.value;
+        updateDeplacementVisibility();
+        updateAllMajoStates();
         recalculate();
       });
     }
@@ -88,6 +94,7 @@ const Visite = (() => {
       depGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.deplacement = btn.dataset.value;
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -125,6 +132,7 @@ const Visite = (() => {
 
     updateActePrices();
     updateDeplacementPrices();
+    updateAllMajoStates();
   }
 
   function handleAgeChange() {
@@ -148,7 +156,6 @@ const Visite = (() => {
     if (isActive) {
       state.majorations = state.majorations.filter(m => m !== code);
       btn.classList.remove('active');
-      updateMajoExclusions();
     } else {
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
@@ -156,53 +163,51 @@ const Visite = (() => {
         const exBtn = document.querySelector(`#visite-majo-grid [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
+      // Vérifier les exclusions inverses
+      const tarifs = Engine.getTarifs();
+      if (tarifs) {
+        for (const m of [...state.majorations]) {
+          const majo = tarifs.majorations[m];
+          if (majo?.exclusifs?.includes(code)) {
+            state.majorations = state.majorations.filter(x => x !== m);
+            const mBtn = document.querySelector(`#visite-majo-grid [data-majo="${m}"]`);
+            if (mBtn) mBtn.classList.remove('active');
+          }
+        }
+      }
       state.majorations.push(code);
       btn.classList.add('active');
-      updateMajoExclusions();
     }
   }
 
-  function updateMajoExclusions() {
+  /**
+   * Met à jour la disponibilité de TOUTES les majorations
+   */
+  function updateAllMajoStates() {
+    const availability = Engine.getAvailableMajos(
+      state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations
+    );
     const majoGrid = document.getElementById('visite-majo-grid');
-    majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
-      const code = btn.dataset.majo;
-      if (code === 'MEG' && state.age !== 'enfant') {
-        btn.classList.add('disabled');
-        return;
-      }
-      let isExcluded = false;
-      for (const activeCode of state.majorations) {
-        if (activeCode !== code && Engine.areExclusive(activeCode, code)) {
-          isExcluded = true;
-          break;
-        }
-      }
-      if (isExcluded && !state.majorations.includes(code)) {
-        btn.classList.add('disabled');
-      } else {
-        btn.classList.remove('disabled');
-      }
-    });
-  }
 
-  function updateMajoAvailability() {
-    const tarifs = Engine.getTarifs();
-    if (!tarifs) return;
-    const majoGrid = document.getElementById('visite-majo-grid');
     majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
-      const majo = tarifs.majorations[code];
-      if (majo && majo.applicableTo && !majo.applicableTo.includes(state.acte)) {
+      const info = availability[code];
+      if (!info) return;
+
+      if (!info.available && !state.majorations.includes(code)) {
         btn.classList.add('disabled');
-        btn.classList.remove('active');
+        btn.title = info.reason || '';
+      } else if (!info.available && state.majorations.includes(code)) {
+        // Majo active mais plus valide : la retirer
         state.majorations = state.majorations.filter(m => m !== code);
-      } else if (code === 'MEG' && state.age !== 'enfant') {
+        btn.classList.remove('active');
         btn.classList.add('disabled');
+        btn.title = info.reason || '';
       } else {
         btn.classList.remove('disabled');
+        btn.title = '';
       }
     });
-    updateMajoExclusions();
   }
 
   function updateModeVisibility() {
@@ -212,6 +217,24 @@ const Visite = (() => {
       state.mode = 'nonregule';
     } else {
       section.style.display = '';
+    }
+  }
+
+  /**
+   * Masque la section déplacement si mode régulé PDSA (art. 22-3)
+   */
+  function updateDeplacementVisibility() {
+    const depSection = document.querySelector('#tab-visite .toggle-group[data-field="deplacement"]')?.closest('.section-card');
+    if (!depSection) return;
+
+    if (state.mode === 'regule') {
+      depSection.style.opacity = '0.4';
+      depSection.style.pointerEvents = 'none';
+      depSection.title = 'Non cumulable avec majorations PDSA régulées (art. 22-3)';
+    } else {
+      depSection.style.opacity = '';
+      depSection.style.pointerEvents = '';
+      depSection.title = '';
     }
   }
 
@@ -293,7 +316,9 @@ const Visite = (() => {
   function onShow() {
     updateActePrices();
     updateDeplacementPrices();
+    updateDeplacementVisibility();
     updateIKInfo();
+    updateAllMajoStates();
     recalculate();
   }
 

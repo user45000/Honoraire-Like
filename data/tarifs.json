@@ -68,53 +68,56 @@
     "MCG": {
       "label": "Majoration de coordination généraliste",
       "tarif": 5.00,
-      "description": "Coordination par le médecin traitant",
-      "applicableTo": ["G", "VG", "TCG"]
+      "description": "Coordination par le médecin traitant (art. 2 bis)",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["SNP"]
     },
     "MEG": {
       "label": "Majoration enfant 0-6 ans",
       "tarif": 5.00,
-      "description": "Patient âgé de 0 à 6 ans",
+      "description": "Patient âgé de 0 à 6 ans (art. 14.7)",
       "applicableTo": ["G", "VG", "TCG"]
     },
     "MSH": {
       "label": "Majoration sortie hospitalisation",
       "tarif": 23.00,
-      "description": "Consultation dans les 7 jours après sortie d'hospitalisation",
+      "description": "Consultation dans les 30 jours après sortie d'hospitalisation (art. 15.5). Non cumulable avec MDN/MDD en visite.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["MIC", "MIS"]
     },
     "MIC": {
       "label": "Majoration insuffisance cardiaque",
       "tarif": 23.00,
-      "description": "Suivi trimestriel patient IC chronique",
+      "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["MSH", "MIS"]
     },
     "MIS": {
       "label": "Majoration insuffisance rénale sévère",
       "tarif": 23.00,
-      "description": "Suivi patient IRC stade 4-5",
+      "description": "Suivi patient IRC stade 4-5 (art. 15.9). Non cumulable avec MSH/MIC.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["MSH", "MIC"]
     },
     "MUT": {
       "label": "Majoration urgence traitant",
       "tarif": 5.00,
-      "description": "Urgence par le médecin traitant, dans les 48h",
+      "description": "Urgence par le médecin traitant, dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA.",
       "applicableTo": ["G", "VG"]
     },
     "SNP": {
       "label": "Soins non programmés",
       "tarif": 15.00,
-      "description": "Consultation non programmée d'un patient non connu",
-      "applicableTo": ["G", "VG", "TCG"]
+      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Non cumulable avec MCG, MHP, majorations d'urgence et PDSA.",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["MCG", "MHP"]
     },
     "MHP": {
-      "label": "Majoration handicap/précarité",
+      "label": "Majoration hors régulation PDSA",
       "tarif": 5.60,
-      "description": "Patient en situation de handicap ou précarité (CMU-C/ACS)",
-      "applicableTo": ["G", "VG", "TCG"]
+      "description": "Soins non programmés hors régulation pendant horaires PDSA (art. 22-4). Non cumulable avec SNP, PDSA, F/MN/MM, MDN/MDD.",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["SNP"]
     }
   },
   "majorationsHoraires": {

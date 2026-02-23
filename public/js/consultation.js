@@ -19,8 +19,8 @@ const Consultation = (() => {
       ageGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.age = btn.dataset.value;
-      // Auto-toggle MEG
       handleAgeChange();
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -32,26 +32,24 @@ const Consultation = (() => {
       acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
-      updateMajoAvailability();
+      updateAllMajoStates();
       recalculate();
     });
 
     // Majorations
     const majoGrid = document.getElementById('consult-majo-grid');
     majoGrid.addEventListener('click', (e) => {
-      // Info icon click
       const infoIcon = e.target.closest('.info-icon');
       if (infoIcon) {
         e.stopPropagation();
         showMajoInfo(infoIcon.dataset.info);
         return;
       }
-
       const btn = e.target.closest('.majo-btn');
       if (!btn || btn.classList.contains('disabled')) return;
-
       const code = btn.dataset.majo;
       toggleMajoration(code, btn);
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -64,6 +62,7 @@ const Consultation = (() => {
       btn.classList.add('active');
       state.periode = btn.dataset.value;
       updateModeVisibility();
+      updateAllMajoStates();
       recalculate();
     });
 
@@ -76,99 +75,88 @@ const Consultation = (() => {
         modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.mode = btn.dataset.value;
+        updateAllMajoStates();
         recalculate();
       });
     }
 
     updateActePrices();
+    updateAllMajoStates();
   }
 
   function handleAgeChange() {
     const majoGrid = document.getElementById('consult-majo-grid');
     const megBtn = majoGrid.querySelector('[data-majo="MEG"]');
     if (state.age === 'enfant') {
-      // Auto-check MEG
       if (!state.majorations.includes('MEG')) {
         state.majorations.push('MEG');
         megBtn.classList.add('active');
       }
-      megBtn.classList.remove('disabled');
     } else {
-      // Remove MEG
       state.majorations = state.majorations.filter(m => m !== 'MEG');
       megBtn.classList.remove('active');
-      megBtn.classList.add('disabled');
     }
   }
 
   function toggleMajoration(code, btn) {
     const isActive = btn.classList.contains('active');
-
     if (isActive) {
-      // Décocher
       state.majorations = state.majorations.filter(m => m !== code);
       btn.classList.remove('active');
-      // Réactiver les exclus
-      updateMajoExclusions();
     } else {
-      // Cocher — désactiver les exclusifs
+      // Désactiver les exclusifs
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
         state.majorations = state.majorations.filter(m => m !== ex);
         const exBtn = document.querySelector(`#consult-majo-grid [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
+      // Vérifier aussi les exclusions inverses
+      const tarifs = Engine.getTarifs();
+      if (tarifs) {
+        for (const m of [...state.majorations]) {
+          const majo = tarifs.majorations[m];
+          if (majo?.exclusifs?.includes(code)) {
+            state.majorations = state.majorations.filter(x => x !== m);
+            const mBtn = document.querySelector(`#consult-majo-grid [data-majo="${m}"]`);
+            if (mBtn) mBtn.classList.remove('active');
+          }
+        }
+      }
       state.majorations.push(code);
       btn.classList.add('active');
-      updateMajoExclusions();
     }
   }
 
-  function updateMajoExclusions() {
+  /**
+   * Met à jour la disponibilité de TOUTES les majorations
+   * en utilisant Engine.getAvailableMajos avec le contexte complet
+   */
+  function updateAllMajoStates() {
+    const availability = Engine.getAvailableMajos(
+      state.acte, state.age, state.periode, state.mode, false, null, state.majorations
+    );
     const majoGrid = document.getElementById('consult-majo-grid');
-    const allBtns = majoGrid.querySelectorAll('.majo-btn');
 
-    allBtns.forEach(btn => {
-      const code = btn.dataset.majo;
-      if (code === 'MEG' && state.age !== 'enfant') {
-        btn.classList.add('disabled');
-        return;
-      }
-      // Check if this majo is excluded by any active one
-      let isExcluded = false;
-      for (const activeCode of state.majorations) {
-        if (activeCode !== code && Engine.areExclusive(activeCode, code)) {
-          isExcluded = true;
-          break;
-        }
-      }
-      if (isExcluded && !state.majorations.includes(code)) {
-        btn.classList.add('disabled');
-      } else {
-        btn.classList.remove('disabled');
-      }
-    });
-  }
-
-  function updateMajoAvailability() {
-    const tarifs = Engine.getTarifs();
-    if (!tarifs) return;
-
-    const majoGrid = document.getElementById('consult-majo-grid');
     majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
-      const majo = tarifs.majorations[code];
-      if (majo && majo.applicableTo && !majo.applicableTo.includes(state.acte)) {
+      const info = availability[code];
+      if (!info) return;
+
+      if (!info.available && !state.majorations.includes(code)) {
         btn.classList.add('disabled');
-        btn.classList.remove('active');
+        btn.title = info.reason || '';
+      } else if (!info.available && state.majorations.includes(code)) {
+        // Majo active mais plus valide : la retirer
         state.majorations = state.majorations.filter(m => m !== code);
-      } else if (code === 'MEG' && state.age !== 'enfant') {
+        btn.classList.remove('active');
         btn.classList.add('disabled');
+        btn.title = info.reason || '';
       } else {
         btn.classList.remove('disabled');
+        btn.title = '';
       }
     });
-    updateMajoExclusions();
   }
 
   function updateModeVisibility() {
@@ -206,6 +194,7 @@ const Consultation = (() => {
 
   function onShow() {
     updateActePrices();
+    updateAllMajoStates();
     recalculate();
   }
 
