@@ -211,16 +211,16 @@ body {
 
 .majo-btn {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  padding: 8px 10px;
+  padding: 8px 6px 8px 10px;
   border: 2px solid var(--border);
   background: var(--card);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
-  position: relative;
   text-align: left;
+  gap: 4px;
 }
 
 .majo-btn.active {
@@ -252,32 +252,35 @@ body {
   font-size: 11px;
   color: var(--text-secondary);
   flex: 1;
-  min-width: 60px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .majo-price {
   font-size: 12px;
   font-weight: 600;
   color: var(--success);
-  margin-left: auto;
+  white-space: nowrap;
 }
 
 .info-icon {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 16px;
-  height: 16px;
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
   border-radius: 50%;
   background: var(--bg);
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   font-style: italic;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  margin-left: 2px;
+  flex-shrink: 0;
 }
 
 /* === IK Section === */
