@@ -1,0 +1,243 @@
+{
+  "version": "2026-01",
+  "lastUpdate": "2026-02-23",
+  "source": "Convention médicale 2024-2029, tarifs au 01/01/2026",
+  "consultations": {
+    "G": {
+      "label": "Consultation généraliste",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "consultation"
+    },
+    "APC": {
+      "label": "Avis ponctuel de consultant",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "consultation"
+    },
+    "TCG": {
+      "label": "Téléconsultation",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "consultation"
+    },
+    "GL1": {
+      "label": "Consultation longue - diabète/ALD",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "consultation"
+    },
+    "GL2": {
+      "label": "Consultation longue - IVG",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "consultation"
+    },
+    "GL3": {
+      "label": "Consultation longue - prévention",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "consultation"
+    },
+    "COE": {
+      "label": "Consultation obligatoire enfant",
+      "tarifs": { "metro": 46.00, "antilles": 55.20, "reunion": 55.20 },
+      "type": "consultation"
+    },
+    "COD": {
+      "label": "Consultation obligatoire décès",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "consultation"
+    },
+    "COB": {
+      "label": "Consultation obligatoire bilan",
+      "tarifs": { "metro": 46.00, "antilles": 55.20, "reunion": 55.20 },
+      "type": "consultation"
+    },
+    "VG": {
+      "label": "Visite généraliste",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "visite"
+    },
+    "VL": {
+      "label": "Visite longue",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "visite"
+    },
+    "VSP": {
+      "label": "Visite très complexe (soins palliatifs)",
+      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "type": "visite"
+    }
+  },
+  "majorations": {
+    "MCG": {
+      "label": "Majoration de coordination généraliste",
+      "tarif": 5.00,
+      "description": "Coordination par le médecin traitant",
+      "applicableTo": ["G", "VG", "TCG"]
+    },
+    "MEG": {
+      "label": "Majoration enfant 0-6 ans",
+      "tarif": 5.00,
+      "description": "Patient âgé de 0 à 6 ans",
+      "applicableTo": ["G", "VG", "TCG"]
+    },
+    "MSH": {
+      "label": "Majoration sortie hospitalisation",
+      "tarif": 23.00,
+      "description": "Consultation dans les 7 jours après sortie d'hospitalisation",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["MIC", "MIS"]
+    },
+    "MIC": {
+      "label": "Majoration insuffisance cardiaque",
+      "tarif": 23.00,
+      "description": "Suivi trimestriel patient IC chronique",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["MSH", "MIS"]
+    },
+    "MIS": {
+      "label": "Majoration insuffisance rénale sévère",
+      "tarif": 23.00,
+      "description": "Suivi patient IRC stade 4-5",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["MSH", "MIC"]
+    },
+    "MUT": {
+      "label": "Majoration urgence traitant",
+      "tarif": 5.00,
+      "description": "Urgence par le médecin traitant, dans les 48h",
+      "applicableTo": ["G", "VG"]
+    },
+    "SNP": {
+      "label": "Soins non programmés",
+      "tarif": 15.00,
+      "description": "Consultation non programmée d'un patient non connu",
+      "applicableTo": ["G", "VG", "TCG"]
+    },
+    "MHP": {
+      "label": "Majoration handicap/précarité",
+      "tarif": 5.60,
+      "description": "Patient en situation de handicap ou précarité (CMU-C/ACS)",
+      "applicableTo": ["G", "VG", "TCG"]
+    }
+  },
+  "majorationsHoraires": {
+    "regulees": {
+      "CRN": {
+        "label": "Nuit profonde régulée (0h-6h)",
+        "tarif": 42.50
+      },
+      "CRM": {
+        "label": "Nuit régulée (20h-0h / 6h-8h)",
+        "tarif": 46.50
+      },
+      "CRS": {
+        "label": "Samedi après-midi régulé",
+        "tarif": 26.50
+      },
+      "CRD": {
+        "label": "Dimanche et férié régulé",
+        "tarif": 26.50
+      }
+    },
+    "nonRegulees": {
+      "F": {
+        "label": "Urgence jour (Férié/Dim)",
+        "tarif": 19.06
+      },
+      "MN": {
+        "label": "Nuit (20h-0h / 6h-8h)",
+        "tarif": 35.00
+      },
+      "MM": {
+        "label": "Nuit profonde (0h-6h)",
+        "tarif": 40.00
+      }
+    },
+    "visiteRegulees": {
+      "VRN": {
+        "label": "Visite nuit profonde régulée (0h-6h)",
+        "tarif": 52.50
+      },
+      "VRM": {
+        "label": "Visite nuit régulée (20h-0h / 6h-8h)",
+        "tarif": 66.00
+      },
+      "VRS": {
+        "label": "Visite samedi a.m. régulée",
+        "tarif": 36.50
+      },
+      "VRD": {
+        "label": "Visite dimanche/férié régulée",
+        "tarif": 36.50
+      }
+    }
+  },
+  "deplacement": {
+    "MD": {
+      "label": "Majoration de déplacement",
+      "tarifs": { "metro": 10.00, "antilles": 10.00, "reunion": 10.00 },
+      "exclusifs": ["MDN", "MDI", "MDD", "MDM"]
+    },
+    "MDM": {
+      "label": "Déplacement montagne",
+      "tarifs": { "metro": 15.00, "antilles": 15.00, "reunion": 15.00 },
+      "exclusifs": ["MD", "MDN", "MDI", "MDD"]
+    },
+    "MDD": {
+      "label": "Déplacement dimanche/férié",
+      "tarifs": { "metro": 29.10, "antilles": 29.41, "reunion": 29.76 },
+      "exclusifs": ["MD", "MDM", "MDN", "MDI"]
+    },
+    "MDN": {
+      "label": "Déplacement nuit (20h-0h / 6h-8h)",
+      "tarifs": { "metro": 45.00, "antilles": 45.00, "reunion": 45.00 },
+      "exclusifs": ["MD", "MDM", "MDD", "MDI"]
+    },
+    "MDI": {
+      "label": "Déplacement nuit profonde (0h-6h)",
+      "tarifs": { "metro": 50.00, "antilles": 50.00, "reunion": 50.00 },
+      "exclusifs": ["MD", "MDM", "MDD", "MDN"]
+    }
+  },
+  "ik": {
+    "plaine": {
+      "tarifs": { "metro": 0.61, "antilles": 0.67, "reunion": 0.73 },
+      "franchise_km": 4
+    },
+    "montagne": {
+      "tarifs": { "metro": 1.00, "antilles": 1.01, "reunion": 1.10 },
+      "franchise_km": 2
+    },
+    "piedSki": {
+      "tarifs": { "metro": 4.57, "antilles": 5.03, "reunion": 5.49 },
+      "franchise_km": 0
+    }
+  },
+  "ccam": [
+    { "code": "DEQP003", "label": "ECG 12 dérivations", "tarif": 14.77, "cumulG": true },
+    { "code": "JKHD001", "label": "Frottis cervico-vaginal", "tarif": 13.00, "cumulG": true },
+    { "code": "GLQP012", "label": "Spirométrie", "tarif": 41.87, "cumulG": true },
+    { "code": "QZJA002", "label": "Suture de plaie superficielle < 3cm", "tarif": 26.52, "cumulG": true },
+    { "code": "QZJA005", "label": "Suture de plaie superficielle 3-10cm", "tarif": 39.78, "cumulG": true },
+    { "code": "QZJA017", "label": "Suture de plaie profonde", "tarif": 66.33, "cumulG": true },
+    { "code": "YYYY036", "label": "Ablation de fils/agrafes", "tarif": 4.83, "cumulG": true },
+    { "code": "QZEA002", "label": "Ablation de corps étranger sous-cutané", "tarif": 27.06, "cumulG": true },
+    { "code": "QZFA006", "label": "Cryothérapie / azote liquide (1 lésion)", "tarif": 24.40, "cumulG": true },
+    { "code": "QZFA031", "label": "Cryothérapie / azote liquide (2-5 lésions)", "tarif": 38.40, "cumulG": true },
+    { "code": "BAQP001", "label": "Examen du fond d'œil", "tarif": 20.66, "cumulG": true },
+    { "code": "YYYY180", "label": "Injection sous-cutanée ou intramusculaire", "tarif": 3.78, "cumulG": false },
+    { "code": "YYYY070", "label": "Injection intraveineuse", "tarif": 3.78, "cumulG": false },
+    { "code": "YYYY015", "label": "Pansement simple", "tarif": 4.50, "cumulG": false },
+    { "code": "YYYY023", "label": "Pansement lourd et complexe", "tarif": 9.00, "cumulG": false },
+    { "code": "AHQP001", "label": "Audiométrie tonale", "tarif": 25.10, "cumulG": true },
+    { "code": "GEQP002", "label": "Bandelette urinaire (BU)", "tarif": 4.59, "cumulG": true },
+    { "code": "JKQP002", "label": "Pose de stérilet", "tarif": 38.40, "cumulG": true },
+    { "code": "JKRD001", "label": "Retrait de stérilet", "tarif": 38.40, "cumulG": true },
+    { "code": "QZHA002", "label": "Pose d'implant contraceptif", "tarif": 17.99, "cumulG": true },
+    { "code": "QZGA004", "label": "Retrait d'implant contraceptif", "tarif": 41.80, "cumulG": true },
+    { "code": "YYYY190", "label": "Vaccination (injection vaccinale)", "tarif": 7.20, "cumulG": true },
+    { "code": "ZZQP042", "label": "Échographie abdominale", "tarif": 53.06, "cumulG": true },
+    { "code": "CDQP010", "label": "Échographie thyroïdienne", "tarif": 38.06, "cumulG": true },
+    { "code": "JQQP002", "label": "Échographie pelvienne", "tarif": 47.69, "cumulG": true },
+    { "code": "MGQP002", "label": "Écho-doppler veineux membre inférieur", "tarif": 49.26, "cumulG": true },
+    { "code": "ZZLP025", "label": "Test CRP rapide", "tarif": 7.00, "cumulG": true },
+    { "code": "ALQP003", "label": "Tympanométrie", "tarif": 26.40, "cumulG": true }
+  ]
+}

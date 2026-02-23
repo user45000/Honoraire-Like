@@ -1,0 +1,176 @@
+/**
+ * App — Navigation, état global, chargement des tarifs
+ */
+const App = (() => {
+  let currentTab = 'consultation';
+
+  async function init() {
+    // Charger les paramètres
+    loadSettings();
+
+    // Charger les tarifs
+    await loadTarifs();
+
+    // Initialiser les modules
+    Consultation.init();
+    Visite.init();
+    CCAM.init();
+
+    // Navigation
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTab(btn.dataset.tab);
+      });
+    });
+
+    // Paramètres
+    initParams();
+
+    // Modal
+    initModal();
+
+    // Afficher l'onglet initial
+    Consultation.onShow();
+  }
+
+  async function loadTarifs() {
+    try {
+      const basePath = getBasePath();
+      const res = await fetch(`${basePath}api/tarifs`);
+      const data = await res.json();
+      Engine.setTarifs(data);
+      CCAM.setActes(data.ccam || []);
+    } catch (err) {
+      console.error('Erreur chargement tarifs:', err);
+    }
+  }
+
+  function getBasePath() {
+    // Détecte si on est derrière un reverse proxy
+    const path = window.location.pathname;
+    const match = path.match(/^(\/[^/]+\/)/);
+    if (match && match[1] !== '/') return match[1];
+    return '/';
+  }
+
+  function switchTab(tabName) {
+    currentTab = tabName;
+
+    // Update tab content
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById(`tab-${tabName}`);
+    if (target) target.classList.add('active');
+
+    // Update nav
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.nav-btn[data-tab="${tabName}"]`)?.classList.add('active');
+
+    // Show/hide result bar
+    const resultBar = document.getElementById('result-bar');
+    if (tabName === 'consultation' || tabName === 'visite') {
+      resultBar.style.display = '';
+      if (tabName === 'consultation') Consultation.onShow();
+      else Visite.onShow();
+    } else {
+      resultBar.style.display = 'none';
+      if (tabName === 'ccam') CCAM.onShow();
+    }
+  }
+
+  function updateResult(result) {
+    const codesEl = document.getElementById('result-codes');
+    const totalEl = document.getElementById('result-total');
+
+    codesEl.textContent = result.codes.join(' + ');
+    totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
+  }
+
+  // === Paramètres ===
+  function initParams() {
+    // Secteur
+    initToggleParam('secteur', 'hon_secteur', 's1');
+    // Zone tarification
+    initToggleParam('zone', 'hon_zone', 'metro', onZoneChange);
+    // Géo
+    initToggleParam('geo', 'hon_geo', 'plaine', onGeoChange);
+  }
+
+  function initToggleParam(field, storageKey, defaultVal, onChange) {
+    const group = document.querySelector(`#tab-params .toggle-group[data-field="${field}"]`);
+    if (!group) return;
+
+    const saved = localStorage.getItem(storageKey) || defaultVal;
+
+    // Restore saved state
+    group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    const activeBtn = group.querySelector(`[data-value="${saved}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
+
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem(storageKey, btn.dataset.value);
+      if (onChange) onChange(btn.dataset.value);
+    });
+  }
+
+  function loadSettings() {
+    // S'assurer que les défauts sont en place
+    if (!localStorage.getItem('hon_secteur')) localStorage.setItem('hon_secteur', 's1');
+    if (!localStorage.getItem('hon_zone')) localStorage.setItem('hon_zone', 'metro');
+    if (!localStorage.getItem('hon_geo')) localStorage.setItem('hon_geo', 'plaine');
+  }
+
+  function onZoneChange() {
+    // Recalculer les prix affichés
+    Consultation.updateActePrices();
+    Visite.updateActePrices();
+    Visite.updateDeplacementPrices();
+  }
+
+  function onGeoChange() {
+    Visite.updateDeplacementPrices();
+  }
+
+  // === Modal info ===
+  function initModal() {
+    const overlay = document.getElementById('modal-overlay');
+    const closeBtn = document.getElementById('modal-close');
+
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeModal();
+    });
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('active');
+  }
+
+  return { init, updateResult, switchTab, getBasePath };
+})();
+
+/**
+ * Affiche une modale d'info pour une majoration
+ */
+function showMajoInfo(code) {
+  const tarifs = Engine.getTarifs();
+  if (!tarifs) return;
+
+  const majo = tarifs.majorations[code];
+  if (!majo) return;
+
+  document.getElementById('modal-title').textContent = `${code} — ${majo.label}`;
+  document.getElementById('modal-body').innerHTML = `
+    <p class="majo-detail-tarif">+${majo.tarif.toFixed(2).replace('.', ',')}€</p>
+    <p>${majo.description || ''}</p>
+    ${majo.exclusifs ? `<p style="margin-top:8px;font-size:12px;color:#e74c3c">Non cumulable avec : ${majo.exclusifs.join(', ')}</p>` : ''}
+    ${majo.applicableTo ? `<p style="margin-top:4px;font-size:12px;color:#5a6070">Applicable à : ${majo.applicableTo.join(', ')}</p>` : ''}
+  `;
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+// Démarrage
+document.addEventListener('DOMContentLoaded', () => App.init());

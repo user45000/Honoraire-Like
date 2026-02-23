@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#2c3e6b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Honoraires MG</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>Honoraires MG</h1>
+  </header>
+
+  <main class="app-main">
+    <!-- Onglet Consultation -->
+    <section id="tab-consultation" class="tab-content active">
+      <div class="section-card">
+        <h3>Patient</h3>
+        <div class="toggle-group" data-field="age">
+          <button class="toggle-btn active" data-value="adulte">Adulte</button>
+          <button class="toggle-btn" data-value="enfant">0-6 ans</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Type d'acte</h3>
+        <div class="acte-grid" id="consult-acte-grid">
+          <button class="acte-btn active" data-acte="G">G<span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="TCG">TCG<span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="APC">APC<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="GL1">GL1<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="GL2">GL2<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="GL3">GL3<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="COE">COE<span class="acte-price">46€</span></button>
+          <button class="acte-btn" data-acte="COD">COD<span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="COB">COB<span class="acte-price">46€</span></button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Majorations</h3>
+        <div class="majo-grid" id="consult-majo-grid">
+          <button class="majo-btn" data-majo="MCG">
+            <span class="majo-code">MCG</span>
+            <span class="majo-label">Coordination</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MCG">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MEG">
+            <span class="majo-code">MEG</span>
+            <span class="majo-label">Enfant 0-6</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MEG">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MSH">
+            <span class="majo-code">MSH</span>
+            <span class="majo-label">Sortie hospit.</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MSH">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MIC">
+            <span class="majo-code">MIC</span>
+            <span class="majo-label">Insuf. cardiaque</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MIC">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MIS">
+            <span class="majo-code">MIS</span>
+            <span class="majo-label">Insuf. rénale</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MIS">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MUT">
+            <span class="majo-code">MUT</span>
+            <span class="majo-label">Urgence traitant</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MUT">i</span>
+          </button>
+          <button class="majo-btn" data-majo="SNP">
+            <span class="majo-code">SNP</span>
+            <span class="majo-label">Non programmé</span>
+            <span class="majo-price">+15€</span>
+            <span class="info-icon" data-info="SNP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MHP">
+            <span class="majo-code">MHP</span>
+            <span class="majo-label">Handicap/précarité</span>
+            <span class="majo-price">+5,60€</span>
+            <span class="info-icon" data-info="MHP">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Période horaire</h3>
+        <div class="toggle-group" data-field="periode">
+          <button class="toggle-btn active" data-value="jour">Jour</button>
+          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
+          <button class="toggle-btn" data-value="nuit">Nuit</button>
+          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
+        </div>
+      </div>
+
+      <div class="section-card" id="consult-mode-section" style="display:none">
+        <h3>Mode de garde</h3>
+        <div class="toggle-group" data-field="mode">
+          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Visite -->
+    <section id="tab-visite" class="tab-content">
+      <div class="section-card">
+        <h3>Patient</h3>
+        <div class="toggle-group" data-field="age-visite">
+          <button class="toggle-btn active" data-value="adulte">Adulte</button>
+          <button class="toggle-btn" data-value="enfant">0-6 ans</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Type de visite</h3>
+        <div class="acte-grid" id="visite-acte-grid">
+          <button class="acte-btn active" data-acte="VG">VG<span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="VL">VL<span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="VSP">VSP<span class="acte-price">60€</span></button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Majorations</h3>
+        <div class="majo-grid" id="visite-majo-grid">
+          <button class="majo-btn" data-majo="MCG">
+            <span class="majo-code">MCG</span>
+            <span class="majo-label">Coordination</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MCG">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MEG">
+            <span class="majo-code">MEG</span>
+            <span class="majo-label">Enfant 0-6</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MEG">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MSH">
+            <span class="majo-code">MSH</span>
+            <span class="majo-label">Sortie hospit.</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MSH">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MIC">
+            <span class="majo-code">MIC</span>
+            <span class="majo-label">Insuf. cardiaque</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MIC">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MIS">
+            <span class="majo-code">MIS</span>
+            <span class="majo-label">Insuf. rénale</span>
+            <span class="majo-price">+23€</span>
+            <span class="info-icon" data-info="MIS">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MUT">
+            <span class="majo-code">MUT</span>
+            <span class="majo-label">Urgence traitant</span>
+            <span class="majo-price">+5€</span>
+            <span class="info-icon" data-info="MUT">i</span>
+          </button>
+          <button class="majo-btn" data-majo="SNP">
+            <span class="majo-code">SNP</span>
+            <span class="majo-label">Non programmé</span>
+            <span class="majo-price">+15€</span>
+            <span class="info-icon" data-info="SNP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MHP">
+            <span class="majo-code">MHP</span>
+            <span class="majo-label">Handicap/précarité</span>
+            <span class="majo-price">+5,60€</span>
+            <span class="info-icon" data-info="MHP">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Période horaire</h3>
+        <div class="toggle-group" data-field="periode-visite">
+          <button class="toggle-btn active" data-value="jour">Jour</button>
+          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
+          <button class="toggle-btn" data-value="nuit">Nuit</button>
+          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
+        </div>
+      </div>
+
+      <div class="section-card" id="visite-mode-section" style="display:none">
+        <h3>Mode de garde</h3>
+        <div class="toggle-group" data-field="mode-visite">
+          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Déplacement</h3>
+        <div class="toggle-group" data-field="deplacement">
+          <button class="toggle-btn active" data-value="MD">MD<span class="toggle-price">10€</span></button>
+          <button class="toggle-btn" data-value="MDM">MDM<span class="toggle-price">15€</span></button>
+          <button class="toggle-btn" data-value="MDD">MDD<span class="toggle-price">29,10€</span></button>
+          <button class="toggle-btn" data-value="MDN">MDN<span class="toggle-price">45€</span></button>
+          <button class="toggle-btn" data-value="MDI">MDI<span class="toggle-price">50€</span></button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Indemnité kilométrique (IK)</h3>
+        <div class="ik-section">
+          <label class="ik-toggle">
+            <input type="checkbox" id="ik-enabled">
+            <span class="ik-slider"></span>
+            <span class="ik-label">Activer IK</span>
+          </label>
+          <div class="ik-controls" id="ik-controls" style="display:none">
+            <div class="ik-km-input">
+              <button class="ik-btn" id="ik-minus">-</button>
+              <input type="number" id="ik-km" value="5" min="0" max="200" step="1">
+              <span class="ik-unit">km</span>
+              <button class="ik-btn" id="ik-plus">+</button>
+            </div>
+            <div class="ik-info" id="ik-info"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet CCAM -->
+    <section id="tab-ccam" class="tab-content">
+      <div class="section-card">
+        <div class="ccam-search-wrap">
+          <input type="text" id="ccam-search" placeholder="Rechercher un acte (code ou mot-clé)..." class="ccam-search-input">
+        </div>
+      </div>
+
+      <div id="ccam-favorites" class="section-card" style="display:none">
+        <h3>Favoris</h3>
+        <div id="ccam-fav-list" class="ccam-list"></div>
+      </div>
+
+      <div class="section-card">
+        <h3>Actes courants</h3>
+        <div id="ccam-list" class="ccam-list"></div>
+      </div>
+    </section>
+
+    <!-- Onglet Paramètres -->
+    <section id="tab-params" class="tab-content">
+      <div class="section-card">
+        <h3>Secteur conventionnel</h3>
+        <div class="toggle-group" data-field="secteur">
+          <button class="toggle-btn active" data-value="s1">Secteur 1</button>
+          <button class="toggle-btn" data-value="s2optam">S2 OPTAM</button>
+          <button class="toggle-btn" data-value="s2hors">S2 hors OPTAM</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Zone de tarification</h3>
+        <div class="toggle-group" data-field="zone">
+          <button class="toggle-btn active" data-value="metro">Métropole</button>
+          <button class="toggle-btn" data-value="antilles">Antilles</button>
+          <button class="toggle-btn" data-value="reunion">Réunion/Guyane</button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Zone géographique</h3>
+        <div class="toggle-group" data-field="geo">
+          <button class="toggle-btn active" data-value="plaine">Plaine</button>
+          <button class="toggle-btn" data-value="montagne">Montagne</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Onglet Crédits -->
+    <section id="tab-credits" class="tab-content">
+      <div class="section-card credits-card">
+        <h2>Honoraires MG</h2>
+        <p class="credits-version">Version 1.0 - Tarifs au 01/01/2026</p>
+        <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
+        <p>Basé sur la convention médicale 2024-2029.</p>
+        <div class="credits-sources">
+          <h3>Sources</h3>
+          <ul>
+            <li>Convention nationale des médecins libéraux 2024-2029</li>
+            <li>ameli.fr — nomenclature et tarifs</li>
+            <li>omniprat.org — guide pratique MG</li>
+          </ul>
+        </div>
+        <div class="credits-disclaimer">
+          <p>Cette application est fournie à titre indicatif. Vérifiez toujours les tarifs officiels sur ameli.fr.</p>
+        </div>
+        <div class="credits-footer">
+          <p>Dernière mise à jour des tarifs : <span id="credits-date">23/02/2026</span></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barre résultat fixe -->
+  <div class="result-bar" id="result-bar">
+    <div class="result-codes" id="result-codes">G</div>
+    <div class="result-total" id="result-total">30,00€</div>
+  </div>
+
+  <!-- Navigation bottom -->
+  <nav class="bottom-nav">
+    <button class="nav-btn active" data-tab="consultation">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
+      <span>Consult.</span>
+    </button>
+    <button class="nav-btn" data-tab="visite">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Visite</span>
+    </button>
+    <button class="nav-btn" data-tab="ccam">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>CCAM</span>
+    </button>
+    <button class="nav-btn" data-tab="params">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+      <span>Param.</span>
+    </button>
+    <button class="nav-btn" data-tab="credits">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+      <span>Crédits</span>
+    </button>
+  </nav>
+
+  <!-- Modal info -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal-content" id="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title"></h3>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script src="js/engine.js"></script>
+  <script src="js/consultation.js"></script>
+  <script src="js/visite.js"></script>
+  <script src="js/ccam.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
