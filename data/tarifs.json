@@ -123,11 +123,11 @@
   "majorationsHoraires": {
     "regulees": {
       "CRN": {
-        "label": "Nuit profonde régulée (0h-6h)",
+        "label": "Nuit régulée (20h-0h / 6h-8h)",
         "tarif": 42.50
       },
       "CRM": {
-        "label": "Nuit régulée (20h-0h / 6h-8h)",
+        "label": "Milieu de nuit régulé (0h-6h)",
         "tarif": 46.50
       },
       "CRS": {
@@ -155,11 +155,11 @@
     },
     "visiteRegulees": {
       "VRN": {
-        "label": "Visite nuit profonde régulée (0h-6h)",
+        "label": "Visite nuit régulée (20h-0h / 6h-8h)",
         "tarif": 52.50
       },
       "VRM": {
-        "label": "Visite nuit régulée (20h-0h / 6h-8h)",
+        "label": "Visite milieu de nuit régulée (0h-6h)",
         "tarif": 66.00
       },
       "VRS": {

@@ -372,7 +372,7 @@ const Engine = (() => {
     if (!tarifs) return null;
 
     if (isVisite && mode === 'regule') {
-      const map = { 'dimferie': 'VRD', 'nuit': 'VRM', 'nuitprofonde': 'VRN' };
+      const map = { 'dimferie': 'VRD', 'nuit': 'VRN', 'nuitprofonde': 'VRM' };
       const code = map[periode];
       if (!code) return null;
       const entry = tarifs.majorationsHoraires.visiteRegulees[code];
@@ -380,7 +380,7 @@ const Engine = (() => {
     }
 
     if (mode === 'regule') {
-      const map = { 'dimferie': 'CRD', 'nuit': 'CRM', 'nuitprofonde': 'CRN' };
+      const map = { 'dimferie': 'CRD', 'nuit': 'CRN', 'nuitprofonde': 'CRM' };
       const code = map[periode];
       if (!code) return null;
       const entry = tarifs.majorationsHoraires.regulees[code];
