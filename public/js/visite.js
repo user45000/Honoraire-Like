@@ -284,7 +284,8 @@ const Visite = (() => {
       isVisite: true,
       deplacement: state.deplacement,
       ikEnabled: state.ikEnabled,
-      ikKm: state.ikKm
+      ikKm: state.ikKm,
+      ccamActes: CCAM.getSelectedActes()
     });
     App.updateResult(result);
   }

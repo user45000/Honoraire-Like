@@ -198,7 +198,8 @@ const Consultation = (() => {
       majorations: state.majorations,
       periode: state.periode,
       mode: state.mode,
-      isVisite: false
+      isVisite: false,
+      ccamActes: CCAM.getSelectedActes()
     });
     App.updateResult(result);
   }

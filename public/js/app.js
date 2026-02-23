@@ -65,15 +65,19 @@ const App = (() => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.nav-btn[data-tab="${tabName}"]`)?.classList.add('active');
 
-    // Show/hide result bar
+    // Show/hide result bar (visible aussi sur CCAM si actes sélectionnés)
     const resultBar = document.getElementById('result-bar');
     if (tabName === 'consultation' || tabName === 'visite') {
       resultBar.style.display = '';
       if (tabName === 'consultation') Consultation.onShow();
       else Visite.onShow();
+    } else if (tabName === 'ccam') {
+      CCAM.onShow();
+      // Afficher la barre si des actes sont sélectionnés
+      const sel = CCAM.getSelectedActes();
+      resultBar.style.display = sel.length > 0 ? '' : 'none';
     } else {
       resultBar.style.display = 'none';
-      if (tabName === 'ccam') CCAM.onShow();
     }
   }
 
@@ -149,7 +153,31 @@ const App = (() => {
     document.getElementById('modal-overlay').classList.remove('active');
   }
 
-  return { init, updateResult, switchTab, getBasePath };
+  /**
+   * Appelé quand la sélection CCAM change
+   * Recalcule sur l'onglet consultation ou visite actif
+   */
+  function onCCAMChanged() {
+    const sel = CCAM.getSelectedActes();
+    const resultBar = document.getElementById('result-bar');
+
+    if (currentTab === 'ccam') {
+      resultBar.style.display = sel.length > 0 ? '' : 'none';
+    }
+
+    // Toujours recalculer la consultation ou visite active
+    if (currentTab === 'consultation' || currentTab === 'ccam') {
+      Consultation.recalculate();
+    } else if (currentTab === 'visite') {
+      Visite.recalculate();
+    }
+  }
+
+  function getCurrentTab() {
+    return currentTab;
+  }
+
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab };
 })();
 
 /**

@@ -54,7 +54,8 @@ const Engine = (() => {
 
     const {
       acte, age, majorations = [], periode, mode,
-      isVisite = false, deplacement, ikEnabled = false, ikKm = 0
+      isVisite = false, deplacement, ikEnabled = false, ikKm = 0,
+      ccamActes = []
     } = params;
 
     const codes = [];
@@ -119,11 +120,88 @@ const Engine = (() => {
       }
     }
 
+    // 6. Actes CCAM associés
+    if (ccamActes && ccamActes.length > 0) {
+      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif);
+      for (const item of ccamResult.items) {
+        codes.push(item.code);
+        details.push(item);
+        total += item.montant;
+      }
+      // Si un acte CCAM non cumulable est plus cher que G, remplacer G
+      if (ccamResult.replaceConsult) {
+        // Retirer l'acte de consultation du total
+        total -= acteTarif;
+        details[0].montant = 0;
+        details[0].label += ' (non facturé — acte CCAM plus rémunérateur)';
+        codes[0] = '(' + codes[0] + ')';
+      }
+    }
+
     return {
       codes,
       details,
       total: Math.round(total * 100) / 100
     };
+  }
+
+  /**
+   * Calcule les actes CCAM avec règles d'association
+   * - cumulG "oui" : facturé à 100% en sus de G
+   * - cumulG "50%" : facturé à 50% en sus de G
+   * - cumulG "non" : facturer le plus rémunérateur (G ou CCAM)
+   * - 2 actes CCAM : 1er à 100%, 2ème à 50% (max 2)
+   */
+  function calculateCCAM(ccamActes, consultCode, consultTarif) {
+    const items = [];
+    let replaceConsult = false;
+
+    // Trier par tarif décroissant (acte principal en premier)
+    const sorted = [...ccamActes].sort((a, b) => b.tarif - a.tarif);
+
+    for (let i = 0; i < Math.min(sorted.length, 2); i++) {
+      const acte = sorted[i];
+      const cumul = acte.cumulG || 'non';
+
+      if (cumul === 'oui') {
+        // Cumulable à 100% avec G
+        const taux = i === 0 ? 1 : 0.5; // 2ème acte CCAM à 50%
+        const montant = Math.round(acte.tarif * taux * 100) / 100;
+        const tauxLabel = taux < 1 ? ` (${Math.round(taux * 100)}%)` : '';
+        items.push({
+          code: acte.code,
+          label: acte.label + tauxLabel,
+          montant
+        });
+      } else if (cumul === '50%') {
+        // Cumulable à 50% avec G (biopsies)
+        const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
+        items.push({
+          code: acte.code,
+          label: acte.label + ' (50%)',
+          montant
+        });
+      } else {
+        // Non cumulable : facturer le plus rémunérateur
+        if (acte.tarif > consultTarif) {
+          replaceConsult = true;
+          items.push({
+            code: acte.code,
+            label: acte.label,
+            montant: acte.tarif
+          });
+        } else {
+          // G plus rémunérateur, CCAM à 0
+          items.push({
+            code: '(' + acte.code + ')',
+            label: acte.label + ' (non facturé — G plus rémunérateur)',
+            montant: 0
+          });
+        }
+      }
+    }
+
+    return { items, replaceConsult };
   }
 
   /**
@@ -238,6 +316,11 @@ const Engine = (() => {
     return majo?.exclusifs || [];
   }
 
+  function getCCAMByCode(code) {
+    if (!tarifs) return null;
+    return (tarifs.ccam || []).find(a => a.code === code) || null;
+  }
+
   return {
     setTarifs,
     getTarifs,
@@ -246,6 +329,8 @@ const Engine = (() => {
     getActeTarif,
     calculate,
     calculateIK,
+    calculateCCAM,
+    getCCAMByCode,
     areExclusive,
     getExcludedBy,
     filterMajorations
