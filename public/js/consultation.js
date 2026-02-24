@@ -7,7 +7,8 @@ const Consultation = (() => {
     acte: 'G',
     majorations: [],
     periode: 'jour',
-    mode: 'nonregule'
+    mode: 'nonregule',
+    heure: null
   };
 
   function init() {
@@ -132,7 +133,7 @@ const Consultation = (() => {
    */
   function updateAllMajoStates() {
     const availability = Engine.getAvailableMajos(
-      state.acte, state.age, state.periode, state.mode, false, null, state.majorations
+      state.acte, state.age, state.periode, state.mode, false, null, state.majorations, state.heure
     );
     const majoGrid = document.getElementById('consult-majo-grid');
 
@@ -212,6 +213,7 @@ const Consultation = (() => {
       periode: state.periode,
       mode: state.mode,
       isVisite: false,
+      heure: state.heure,
       ccamActes: CCAM.getSelectedActes()
     });
     App.updateResult(result);
@@ -242,5 +244,11 @@ const Consultation = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode };
+  function setHeure(value) {
+    state.heure = value;
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure };
 })();

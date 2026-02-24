@@ -90,6 +90,34 @@ body {
   margin-right: 12px;
 }
 
+/* === Saisie heure (pour SHE) === */
+.heure-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.heure-row label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #5a6070;
+  white-space: nowrap;
+}
+.heure-row input[type="time"] {
+  border: 1.5px solid #d0d7e3;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: #2c3e6b;
+  background: #fff;
+  cursor: pointer;
+}
+.heure-row input[type="time"]:focus {
+  outline: none;
+  border-color: #4a90e8;
+}
+
 /* === Barre mode de garde (sous la barre période) === */
 .mode-bar {
   margin-left: 12px;

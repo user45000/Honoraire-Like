@@ -64,10 +64,10 @@ const Engine = (() => {
    * Composants facturés 100% AMO (pas de part AMC)
    */
   const CODES_AMO100 = [
-    'F', 'MN', 'MM',
+    // F, MN, MM : majorations horaires non-régulées → 70% AMO standard (ticket modérateur)
     'CRN', 'CRM', 'CRD', 'CRS',
     'VRN', 'VRM', 'VRD', 'VRS',
-    'SNP',
+    'SNP', 'MRT', 'SHE',
     'COE', 'COB', 'COD', 'CCP'
   ];
 
@@ -75,7 +75,7 @@ const Engine = (() => {
    * Détermine les majorations disponibles selon le contexte complet
    * Retourne un objet { code: { available: bool, reason: string } }
    */
-  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos) {
+  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos, heure) {
     if (!tarifs) return {};
     const result = {};
     const isRegule = mode === 'regule';
@@ -191,6 +191,35 @@ const Engine = (() => {
         }
       }
 
+      // MU : visite de jour non-régulée uniquement (non-cumulable avec F/MN/MM)
+      if (available && code === 'MU' && (isHorsJour || isRegule)) {
+        available = false;
+        reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
+      }
+
+      // MRT : non cumulable avec PDSA ni avec F/MN/MM
+      if (available && code === 'MRT' && isRegule) {
+        available = false;
+        reason = 'Non cumulable avec PDSA';
+      }
+      if (available && code === 'MRT' && isHorsJour && !isRegule) {
+        available = false;
+        reason = 'Non cumulable avec majorations horaires non régulées';
+      }
+
+      // SHE : nécessite SNP ou MRT actif + heure entre 19h et 21h
+      if (available && code === 'SHE') {
+        const h = (heure !== undefined && heure !== null) ? heure : -1;
+        const hasSnpOrMrt = activeMajos && (activeMajos.includes('SNP') || activeMajos.includes('MRT'));
+        if (!hasSnpOrMrt) {
+          available = false;
+          reason = 'Nécessite SNP ou MRT actif';
+        } else if (h < 19 || h >= 21) {
+          available = false;
+          reason = 'Applicable uniquement entre 19h et 21h en semaine';
+        }
+      }
+
       result[code] = { available, reason };
     }
 
@@ -226,7 +255,7 @@ const Engine = (() => {
     const {
       acte, age, majorations = [], periode, mode,
       isVisite = false, deplacement, ikEnabled = false, ikKm = 0,
-      ccamActes = []
+      ccamActes = [], heure
     } = params;
 
     const codes = [];
@@ -240,7 +269,7 @@ const Engine = (() => {
     total += acteTarif;
 
     // 2. Majorations (avec règles contextuelles NGAP)
-    const activeMajos = filterMajorations(majorations, age, acte, periode, mode, isVisite, deplacement);
+    const activeMajos = filterMajorations(majorations, age, acte, periode, mode, isVisite, deplacement, heure);
     for (const majoCode of activeMajos) {
       const majo = tarifs.majorations[majoCode];
       if (majo) {
@@ -371,7 +400,7 @@ const Engine = (() => {
   /**
    * Filtre les majorations selon TOUTES les règles NGAP contextuelles
    */
-  function filterMajorations(selected, age, acte, periode, mode, isVisite, deplacement) {
+  function filterMajorations(selected, age, acte, periode, mode, isVisite, deplacement, heure) {
     if (!tarifs) return [];
     const isRegule = mode === 'regule';
     const isHorsJour = periode !== 'jour';
@@ -417,6 +446,19 @@ const Engine = (() => {
       if (majo.exclusifs) {
         const hasConflict = result.some(r => majo.exclusifs.includes(r));
         if (hasConflict) continue;
+      }
+
+      // MU : visite de jour non-régulée uniquement
+      if (code === 'MU' && (isHorsJour || isRegule)) continue;
+
+      // MRT : non avec PDSA, non avec F/MN/MM
+      if (code === 'MRT' && (isRegule || (isHorsJour && !isRegule))) continue;
+
+      // SHE : nécessite SNP ou MRT dans result + heure 19-21
+      if (code === 'SHE') {
+        const h = (heure !== undefined && heure !== null) ? heure : -1;
+        const hasSnpOrMrt = result.includes('SNP') || result.includes('MRT');
+        if (!hasSnpOrMrt || h < 19 || h >= 21) continue;
       }
 
       result.push(code);

@@ -50,6 +50,20 @@ const App = (() => {
       }
     });
 
+    // Heure partagée (pour SHE et règles horaires)
+    const heureInput = document.getElementById('heure-input');
+    const now = new Date();
+    heureInput.value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+    const heureInitiale = now.getHours();
+    Consultation.setHeure(heureInitiale);
+    Visite.setHeure(heureInitiale);
+    heureInput.addEventListener('change', () => {
+      const parts = heureInput.value.split(':');
+      const h = parts.length >= 1 ? parseInt(parts[0], 10) : null;
+      Consultation.setHeure(h);
+      Visite.setHeure(h);
+    });
+
     // Paramètres
     initParams();
 

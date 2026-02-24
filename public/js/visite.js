@@ -10,7 +10,8 @@ const Visite = (() => {
     mode: 'nonregule',
     deplacement: 'MD',
     ikEnabled: false,
-    ikKm: 5
+    ikKm: 5,
+    heure: null
   };
 
   function init() {
@@ -157,7 +158,7 @@ const Visite = (() => {
    */
   function updateAllMajoStates() {
     const availability = Engine.getAvailableMajos(
-      state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations
+      state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations, state.heure
     );
     const majoGrid = document.getElementById('visite-majo-grid');
 
@@ -279,6 +280,7 @@ const Visite = (() => {
       deplacement: state.deplacement,
       ikEnabled: state.ikEnabled,
       ikKm: state.ikKm,
+      heure: state.heure,
       ccamActes: CCAM.getSelectedActes()
     });
     App.updateResult(result);
@@ -310,5 +312,11 @@ const Visite = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode, setMode };
+  function setHeure(value) {
+    state.heure = value;
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure };
 })();

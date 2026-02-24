@@ -135,9 +135,9 @@
     "SNP": {
       "label": "Soins non programmés",
       "tarif": 15.00,
-      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Non cumulable avec MCG, MUT, MHP, majorations d'urgence et PDSA.",
+      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Pour les patients hors patientèle. Non cumulable avec MCG, MUT, MHP, MRT, majorations d'urgence et PDSA.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MCG", "MHP", "MUT"]
+      "exclusifs": ["MCG", "MHP", "MUT", "MRT"]
     },
     "MHP": {
       "label": "Majoration hors régulation PDSA",
@@ -145,6 +145,27 @@
       "description": "Consultation non programmée horaires PDSA (art. 22-4). Non cumulable avec SNP, PDSA, F/MN/MM, MDN/MDD.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["SNP"]
+    },
+    "MU": {
+      "label": "Majoration urgence visite",
+      "tarif": 22.60,
+      "description": "Visite urgente interrompant les consultations ou sur demande du centre 15. Uniquement en visite de jour non régulée. Non cumulable avec F/MN/MM. Cumulable avec IK et ECG.",
+      "applicableTo": ["VG", "VL", "VSP"],
+      "exclusifs": []
+    },
+    "MRT": {
+      "label": "Régulation médecin traitant (SAS)",
+      "tarif": 15.00,
+      "description": "Urgence régulée via SAS pour la patientèle propre du médecin traitant. Alternative au SNP pour ses propres patients (art. 14.1.3). Non cumulable avec SNP.",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": ["SNP", "MCG", "MHP", "MUT"]
+    },
+    "SHE": {
+      "label": "Majoration horaire étendu SAS",
+      "tarif": 5.00,
+      "description": "En sus de SNP ou MRT, entre 19h et 21h, en semaine (lun-ven), sur régulation SAS uniquement.",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": []
     }
   },
   "majorationsHoraires": {
