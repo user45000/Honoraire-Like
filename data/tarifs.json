@@ -43,22 +43,30 @@
       "label": "Examen obligatoire nourrisson (certificat)",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
       "type": "consultation",
-      "pediatrique": true,
+      "enfantOnly": true,
       "amo100": true
     },
     "COD": {
       "label": "Examen obligatoire enfant <6 ans",
       "tarifs": { "metro": 35.00, "antilles": 42.00, "reunion": 42.00 },
       "type": "consultation",
-      "pediatrique": true,
+      "enfantOnly": true,
       "amo100": true
     },
     "COB": {
       "label": "Examen obligatoire enfant ≥6 ans",
       "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
       "type": "consultation",
-      "pediatrique": true,
+      "jeuneOnly": true,
       "amo100": true
+    },
+    "CCP": {
+      "label": "Consultation contraception et prévention sexuelle",
+      "tarifs": { "metro": 47.50, "antilles": 47.50, "reunion": 47.50 },
+      "type": "consultation",
+      "jeuneOnly": true,
+      "amo100": true,
+      "description": "Première consultation de contraception et prévention en santé sexuelle. Patient ≤ 25 ans (hommes et femmes). 100% AMO automatique. 1 fois par patient. Non cumulable avec MCG."
     },
     "VG": {
       "label": "Visite généraliste",

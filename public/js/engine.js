@@ -38,12 +38,22 @@ const Engine = (() => {
    * Actes considérés comme "complexes" (art. 15.8/15.9)
    * Non cumulables avec MCG et MEG
    */
-  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP'];
+  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP', 'CCP'];
 
   /**
-   * Actes pédiatriques — grisés si patient non enfant
+   * Actes enfant (0-6 ans) — grisés si patient non enfant
    */
-  const ACTES_PEDIATRIQUES = ['COE', 'COB', 'COD'];
+  const ACTES_ENFANT = ['COE', 'COD'];
+
+  /**
+   * Actes jeune (6-25 ans) — grisés si patient non jeune
+   */
+  const ACTES_JEUNE = ['COB', 'CCP'];
+
+  /**
+   * Tous les actes pédiatriques/jeune (pour MEG non-cumul)
+   */
+  const ACTES_PEDIATRIQUES = ['COE', 'COD', 'COB'];
 
   /**
    * Actes senior (>80 ans, médecin traitant uniquement) — grisés si patient non senior
@@ -58,7 +68,7 @@ const Engine = (() => {
     'CRN', 'CRM', 'CRD', 'CRS',
     'VRN', 'VRM', 'VRD', 'VRS',
     'SNP',
-    'COE', 'COB', 'COD'
+    'COE', 'COB', 'COD', 'CCP'
   ];
 
   /**
@@ -93,6 +103,9 @@ const Engine = (() => {
         available = false;
         reason = 'Réservé aux patients de plus de 80 ans';
       }
+
+      // 2c. MOP : non cumulable avec CCP (âges mutuellement exclusifs, mais sécurité)
+      // (MEG non cumulable avec CCP déjà géré par age check ci-dessus)
 
       // 3. MCG : non cumulable avec consultations complexes (art. 2bis, 15.8, 15.9)
       if (available && code === 'MCG' && isComplex) {
@@ -369,10 +382,10 @@ const Engine = (() => {
       const majo = tarifs.majorations[code];
       if (!majo) continue;
 
-      // MEG : enfant uniquement
+      // MEG : enfant (0-6 ans) uniquement
       if (code === 'MEG' && age !== 'enfant') continue;
 
-      // MOP : senior uniquement
+      // MOP : senior (>80 ans) uniquement
       if (code === 'MOP' && age !== 'senior') continue;
 
       // applicableTo
@@ -502,6 +515,8 @@ const Engine = (() => {
     isHoraireApplicable,
     isDeplacementApplicable,
     ACTES_COMPLEXES,
+    ACTES_ENFANT,
+    ACTES_JEUNE,
     ACTES_PEDIATRIQUES,
     ACTES_SENIOR
   };

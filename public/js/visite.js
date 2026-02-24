@@ -108,6 +108,8 @@ const Visite = (() => {
   function handleAgeChange() {
     const majoGrid = document.getElementById('visite-majo-grid');
     const megBtn = majoGrid.querySelector('[data-majo="MEG"]');
+
+    // MEG : auto-activer pour enfant 0-6 ans seulement
     if (state.age === 'enfant') {
       if (!state.majorations.includes('MEG')) {
         state.majorations.push('MEG');
