@@ -19,22 +19,25 @@
       "type": "consultation"
     },
     "GL1": {
-      "label": "Consultation longue - diabète/ALD",
+      "label": "Consultation longue post-hospitalisation",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
       "type": "consultation",
-      "description": "Consultation longue MT (>80 ans, 1×/an/patient) : post-hospitalisation ≤45j (non cumulable MSH/MIC même séjour), déprescription (≥10 lignes ordonnance), dossier APA"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Dans les 45 jours post-sortie d'hospitalisation. Non cumulable avec MSH ou MIC pour le même séjour."
     },
     "GL2": {
-      "label": "Consultation longue - IVG",
+      "label": "Consultation longue déprescription",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
       "type": "consultation",
-      "description": "Consultation longue IVG médicamenteuse"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Patient sous ≥10 lignes de médicaments, après bilan de médication réalisé par le pharmacien."
     },
     "GL3": {
-      "label": "Consultation longue - prévention",
+      "label": "Consultation longue orientation médico-sociale",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
       "type": "consultation",
-      "description": "Consultation longue de prévention"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Dossier MDPH, APA ou ViaTrajectoire. Non cumulable avec MPH pour la même demande."
     },
     "COE": {
       "label": "Examen obligatoire nourrisson (certificat)",
@@ -77,9 +80,9 @@
     "MCG": {
       "label": "Majoration de coordination généraliste",
       "tarif": 5.00,
-      "description": "Coordination par le médecin traitant (art. 2 bis)",
+      "description": "Coordination par le médecin traitant (art. 2 bis). Non cumulable avec MUT, SNP.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["SNP"]
+      "exclusifs": ["SNP", "MUT"]
     },
     "MEG": {
       "label": "Majoration enfant 0-6 ans",
@@ -111,15 +114,22 @@
     "MUT": {
       "label": "Majoration urgence traitant",
       "tarif": 5.00,
-      "description": "Urgence par le médecin traitant, dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA.",
-      "applicableTo": ["G", "VG"]
+      "description": "RDV spécialiste obtenu par le MT dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA, MCG, SNP.",
+      "applicableTo": ["G", "VG"],
+      "exclusifs": ["MCG", "SNP"]
+    },
+    "MOP": {
+      "label": "Majoration personne âgée >80 ans",
+      "tarif": 5.00,
+      "description": "Patient de plus de 80 ans. Applicable uniquement si le médecin n'est PAS le médecin traitant du patient (le MT perçoit le FMT à la place). Tarif opposable obligatoire.",
+      "applicableTo": ["G", "VG", "TCG"]
     },
     "SNP": {
       "label": "Soins non programmés",
       "tarif": 15.00,
-      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Non cumulable avec MCG, MHP, majorations d'urgence et PDSA.",
+      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Non cumulable avec MCG, MUT, MHP, majorations d'urgence et PDSA.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MCG", "MHP"]
+      "exclusifs": ["MCG", "MHP", "MUT"]
     },
     "MHP": {
       "label": "Majoration hors régulation PDSA",

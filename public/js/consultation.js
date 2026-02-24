@@ -67,18 +67,31 @@ const Consultation = (() => {
   function handleAgeChange() {
     const majoGrid = document.getElementById('consult-majo-grid');
     const megBtn = majoGrid.querySelector('[data-majo="MEG"]');
+    const acteGrid = document.getElementById('consult-acte-grid');
+
     if (state.age === 'enfant') {
       if (!state.majorations.includes('MEG')) {
         state.majorations.push('MEG');
         megBtn.classList.add('active');
       }
+      // Quitter un acte senior si on passe en enfant
+      if (Engine.ACTES_SENIOR.includes(state.acte)) {
+        state.acte = 'G';
+        acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+        acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+      }
     } else {
       state.majorations = state.majorations.filter(m => m !== 'MEG');
       megBtn.classList.remove('active');
-      // Si l'utilisateur est sur un acte pédiatrique et repasse en adulte → revenir à G
+      // Quitter un acte pédiatrique si on n'est plus enfant
       if (Engine.ACTES_PEDIATRIQUES.includes(state.acte)) {
         state.acte = 'G';
-        const acteGrid = document.getElementById('consult-acte-grid');
+        acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+        acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+      }
+      // Quitter un acte senior si on n'est plus senior
+      if (Engine.ACTES_SENIOR.includes(state.acte) && state.age !== 'senior') {
+        state.acte = 'G';
         acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
         acteGrid.querySelector('[data-acte="G"]').classList.add('active');
       }
@@ -148,19 +161,32 @@ const Consultation = (() => {
   }
 
   /**
-   * Grise/dégrise les actes pédiatriques selon l'âge du patient
+   * Grise/dégrise les actes selon l'âge du patient
    */
   function updateActeStates() {
     const acteGrid = document.getElementById('consult-acte-grid');
+    // Actes pédiatriques : uniquement pour enfant
     for (const code of Engine.ACTES_PEDIATRIQUES) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      if (state.age === 'adulte') {
-        btn.classList.add('disabled');
-        btn.title = 'Acte pédiatrique uniquement';
-      } else {
+      if (state.age === 'enfant') {
         btn.classList.remove('disabled');
         btn.title = '';
+      } else {
+        btn.classList.add('disabled');
+        btn.title = 'Acte pédiatrique uniquement';
+      }
+    }
+    // Actes senior (GL1/GL2/GL3) : uniquement pour >80 ans (médecin traitant)
+    for (const code of Engine.ACTES_SENIOR) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      if (state.age === 'senior') {
+        btn.classList.remove('disabled');
+        btn.title = '';
+      } else {
+        btn.classList.add('disabled');
+        btn.title = 'Réservé aux patients >80 ans (médecin traitant)';
       }
     }
   }

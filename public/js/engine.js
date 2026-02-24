@@ -41,9 +41,14 @@ const Engine = (() => {
   const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP'];
 
   /**
-   * Actes pédiatriques — grisés si patient adulte
+   * Actes pédiatriques — grisés si patient non enfant
    */
   const ACTES_PEDIATRIQUES = ['COE', 'COB', 'COD'];
+
+  /**
+   * Actes senior (>80 ans, médecin traitant uniquement) — grisés si patient non senior
+   */
+  const ACTES_SENIOR = ['GL1', 'GL2', 'GL3'];
 
   /**
    * Composants facturés 100% AMO (pas de part AMC)
@@ -81,6 +86,12 @@ const Engine = (() => {
       if (available && code === 'MEG' && age !== 'enfant') {
         available = false;
         reason = 'Réservé aux enfants 0-6 ans';
+      }
+
+      // 2b. MOP : uniquement patient >80 ans
+      if (available && code === 'MOP' && age !== 'senior') {
+        available = false;
+        reason = 'Réservé aux patients de plus de 80 ans';
       }
 
       // 3. MCG : non cumulable avec consultations complexes (art. 2bis, 15.8, 15.9)
@@ -361,6 +372,9 @@ const Engine = (() => {
       // MEG : enfant uniquement
       if (code === 'MEG' && age !== 'enfant') continue;
 
+      // MOP : senior uniquement
+      if (code === 'MOP' && age !== 'senior') continue;
+
       // applicableTo
       if (majo.applicableTo && !majo.applicableTo.includes(acte)) continue;
 
@@ -488,6 +502,7 @@ const Engine = (() => {
     isHoraireApplicable,
     isDeplacementApplicable,
     ACTES_COMPLEXES,
-    ACTES_PEDIATRIQUES
+    ACTES_PEDIATRIQUES,
+    ACTES_SENIOR
   };
 })();
