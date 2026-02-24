@@ -85,18 +85,20 @@ body {
 }
 
 .periode-bar {
-  height: var(--periode-height);
   background: var(--card);
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin: 8px 12px 10px;
+  box-shadow: var(--shadow);
 }
 
 /* === Barre mode de garde (sous la barre période) === */
 .mode-bar {
-  height: var(--mode-height);
   background: #eef0f8;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin: 0 12px 10px;
+  box-shadow: var(--shadow);
   display: none;
 }
 
