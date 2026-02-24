@@ -56,21 +56,6 @@ const Visite = (() => {
       recalculate();
     });
 
-    // Période horaire
-    const periodeGroup = document.querySelector('#tab-visite .toggle-group[data-field="periode-visite"]');
-    periodeGroup.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-      periodeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.periode = btn.dataset.value;
-      updateModeVisibility();
-      updateDeplacementForPeriode();
-      updateDeplacementVisibility();
-      updateAllMajoStates();
-      recalculate();
-    });
-
     // Mode de garde
     const modeGroup = document.querySelector('#tab-visite .toggle-group[data-field="mode-visite"]');
     if (modeGroup) {
@@ -322,5 +307,14 @@ const Visite = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices };
+  function setPeriode(value) {
+    state.periode = value;
+    updateModeVisibility();
+    updateDeplacementForPeriode();
+    updateDeplacementVisibility();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode };
 })();

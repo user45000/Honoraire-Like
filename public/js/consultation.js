@@ -59,19 +59,6 @@ const Consultation = (() => {
       recalculate();
     });
 
-    // Période horaire
-    const periodeGroup = document.querySelector('#tab-consultation .toggle-group[data-field="periode"]');
-    periodeGroup.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-      periodeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.periode = btn.dataset.value;
-      updateModeVisibility();
-      updateAllMajoStates();
-      recalculate();
-    });
-
     // Mode de garde
     const modeGroup = document.querySelector('#tab-consultation .toggle-group[data-field="mode"]');
     if (modeGroup) {
@@ -236,5 +223,12 @@ const Consultation = (() => {
     return state;
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices };
+  function setPeriode(value) {
+    state.periode = value;
+    updateModeVisibility();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode };
 })();

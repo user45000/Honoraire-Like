@@ -23,6 +23,18 @@ const App = (() => {
       });
     });
 
+    // Période horaire partagée
+    const periodeShared = document.getElementById('periode-shared');
+    periodeShared.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      periodeShared.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const value = btn.dataset.value;
+      Consultation.setPeriode(value);
+      Visite.setPeriode(value);
+    });
+
     // Paramètres
     initParams();
 
