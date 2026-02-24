@@ -95,18 +95,15 @@ const App = (() => {
     // Show/hide result bar + période/mode bars
     const resultBar = document.getElementById('result-bar');
     const periodeBar = document.querySelector('.periode-bar');
-    const appMain = document.querySelector('.app-main');
     if (tabName === 'consultation' || tabName === 'visite') {
       resultBar.style.display = '';
       periodeBar.style.display = '';
-      appMain.style.paddingTop = '';
       if (tabName === 'consultation') Consultation.onShow();
       else Visite.onShow();
     } else if (tabName === 'ccam') {
       CCAM.onShow();
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      appMain.style.paddingTop = 'calc(var(--header-height) + var(--safe-top) + 8px)';
       // Afficher la barre si des actes sont sélectionnés
       const sel = CCAM.getSelectedActes();
       resultBar.style.display = sel.length > 0 ? '' : 'none';
@@ -114,7 +111,6 @@ const App = (() => {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      appMain.style.paddingTop = 'calc(var(--header-height) + var(--safe-top) + 8px)';
     }
   }
 
@@ -136,16 +132,13 @@ const App = (() => {
   function updateModeBar(visible, mode) {
     const modeBar = document.getElementById('mode-bar');
     const group = document.getElementById('mode-bar-group');
-    const appMain = document.querySelector('.app-main');
     if (visible) {
       group.querySelectorAll('.toggle-btn').forEach(b => {
         b.classList.toggle('active', b.dataset.value === mode);
       });
       modeBar.classList.add('visible');
-      appMain.style.paddingTop = 'calc(var(--header-height) + var(--periode-height) + var(--mode-height) + var(--safe-top) + 8px)';
     } else {
       modeBar.classList.remove('visible');
-      appMain.style.paddingTop = '';
     }
   }
 

@@ -79,29 +79,22 @@ body {
   letter-spacing: 0.3px;
 }
 
-/* === Barre période horaire fixe === */
+/* === Barre période horaire === */
+.header-spacer {
+  height: calc(var(--header-height) + var(--safe-top));
+}
+
 .periode-bar {
-  position: fixed;
-  top: calc(var(--header-height) + var(--safe-top));
-  left: 0;
-  right: 0;
   height: var(--periode-height);
   background: var(--card);
-  z-index: 90;
   padding: 6px 12px;
   border-bottom: 1px solid var(--border);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
 }
 
 /* === Barre mode de garde (sous la barre période) === */
 .mode-bar {
-  position: fixed;
-  top: calc(var(--header-height) + var(--periode-height) + var(--safe-top));
-  left: 0;
-  right: 0;
   height: var(--mode-height);
   background: #eef0f8;
-  z-index: 88;
   padding: 6px 12px;
   border-bottom: 1px solid var(--border);
   display: none;
@@ -113,7 +106,7 @@ body {
 
 /* === Main === */
 .app-main {
-  padding-top: calc(var(--header-height) + var(--periode-height) + var(--safe-top) + 8px);
+  padding-top: 8px;
   padding-bottom: calc(var(--result-height) + var(--nav-height) + var(--safe-bottom) + 8px);
   padding-left: 12px;
   padding-right: 12px;
@@ -914,16 +907,7 @@ body {
   }
 
   .periode-bar {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%);
     border-radius: 0 0 10px 10px;
-  }
-
-  .mode-bar {
-    max-width: 480px;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   .result-bar {
