@@ -35,6 +35,21 @@ const App = (() => {
       Visite.setPeriode(value);
     });
 
+    // Mode de garde partagé
+    const modeBarGroup = document.getElementById('mode-bar-group');
+    modeBarGroup.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      modeBarGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const value = btn.dataset.value;
+      if (currentTab === 'consultation') {
+        Consultation.setMode(value);
+      } else if (currentTab === 'visite') {
+        Visite.setMode(value);
+      }
+    });
+
     // Paramètres
     initParams();
 
@@ -77,19 +92,29 @@ const App = (() => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`.nav-btn[data-tab="${tabName}"]`)?.classList.add('active');
 
-    // Show/hide result bar (visible aussi sur CCAM si actes sélectionnés)
+    // Show/hide result bar + période/mode bars
     const resultBar = document.getElementById('result-bar');
+    const periodeBar = document.querySelector('.periode-bar');
+    const appMain = document.querySelector('.app-main');
     if (tabName === 'consultation' || tabName === 'visite') {
       resultBar.style.display = '';
+      periodeBar.style.display = '';
+      appMain.style.paddingTop = '';
       if (tabName === 'consultation') Consultation.onShow();
       else Visite.onShow();
     } else if (tabName === 'ccam') {
       CCAM.onShow();
+      periodeBar.style.display = 'none';
+      document.getElementById('mode-bar').classList.remove('visible');
+      appMain.style.paddingTop = 'calc(var(--header-height) + var(--safe-top) + 8px)';
       // Afficher la barre si des actes sont sélectionnés
       const sel = CCAM.getSelectedActes();
       resultBar.style.display = sel.length > 0 ? '' : 'none';
     } else {
       resultBar.style.display = 'none';
+      periodeBar.style.display = 'none';
+      document.getElementById('mode-bar').classList.remove('visible');
+      appMain.style.paddingTop = 'calc(var(--header-height) + var(--safe-top) + 8px)';
     }
   }
 
@@ -105,6 +130,22 @@ const App = (() => {
       const amoStr = result.amo.toFixed(2).replace('.', ',');
       const amcStr = result.amc.toFixed(2).replace('.', ',');
       amoAmcEl.textContent = `AMO ${amoStr}€ | AMC ${amcStr}€`;
+    }
+  }
+
+  function updateModeBar(visible, mode) {
+    const modeBar = document.getElementById('mode-bar');
+    const group = document.getElementById('mode-bar-group');
+    const appMain = document.querySelector('.app-main');
+    if (visible) {
+      group.querySelectorAll('.toggle-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.value === mode);
+      });
+      modeBar.classList.add('visible');
+      appMain.style.paddingTop = 'calc(var(--header-height) + var(--periode-height) + var(--mode-height) + var(--safe-top) + 8px)';
+    } else {
+      modeBar.classList.remove('visible');
+      appMain.style.paddingTop = '';
     }
   }
 
@@ -196,7 +237,7 @@ const App = (() => {
     return currentTab;
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab };
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar };
 })();
 
 /**

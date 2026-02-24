@@ -23,6 +23,7 @@
   --result-height: 52px;
   --header-height: 48px;
   --periode-height: 46px;
+  --mode-height: 46px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -90,6 +91,24 @@ body {
   padding: 6px 12px;
   border-bottom: 1px solid var(--border);
   box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* === Barre mode de garde (sous la barre période) === */
+.mode-bar {
+  position: fixed;
+  top: calc(var(--header-height) + var(--periode-height) + var(--safe-top));
+  left: 0;
+  right: 0;
+  height: var(--mode-height);
+  background: #eef0f8;
+  z-index: 88;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  display: none;
+}
+
+.mode-bar.visible {
+  display: block;
 }
 
 /* === Main === */
@@ -899,6 +918,12 @@ body {
     left: 50%;
     transform: translateX(-50%);
     border-radius: 0 0 10px 10px;
+  }
+
+  .mode-bar {
+    max-width: 480px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   .result-bar {

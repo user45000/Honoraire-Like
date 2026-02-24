@@ -23,6 +23,13 @@
     </div>
   </div>
 
+  <div class="mode-bar" id="mode-bar">
+    <div class="toggle-group" id="mode-bar-group">
+      <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+      <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
+    </div>
+  </div>
+
   <main class="app-main">
     <!-- Onglet Consultation -->
     <section id="tab-consultation" class="tab-content active">
@@ -46,14 +53,6 @@
           <button class="acte-btn" data-acte="COE">COE<span class="acte-price">60€</span></button>
           <button class="acte-btn" data-acte="COD">COD<span class="acte-price">35€</span></button>
           <button class="acte-btn" data-acte="COB">COB<span class="acte-price">30€</span></button>
-        </div>
-      </div>
-
-      <div class="section-card" id="consult-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
         </div>
       </div>
 
@@ -112,14 +111,6 @@
           <button class="acte-btn active" data-acte="VG">VG<span class="acte-price">30€</span></button>
           <button class="acte-btn" data-acte="VL">VL<span class="acte-price">60€</span></button>
           <button class="acte-btn" data-acte="VSP">VSP<span class="acte-price">60€</span></button>
-        </div>
-      </div>
-
-      <div class="section-card" id="visite-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode-visite">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
         </div>
       </div>
 

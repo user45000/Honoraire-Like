@@ -56,21 +56,6 @@ const Visite = (() => {
       recalculate();
     });
 
-    // Mode de garde
-    const modeGroup = document.querySelector('#tab-visite .toggle-group[data-field="mode-visite"]');
-    if (modeGroup) {
-      modeGroup.addEventListener('click', (e) => {
-        const btn = e.target.closest('.toggle-btn');
-        if (!btn) return;
-        modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.mode = btn.dataset.value;
-        updateDeplacementVisibility();
-        updateAllMajoStates();
-        recalculate();
-      });
-    }
-
     // Déplacement
     const depGroup = document.querySelector('#tab-visite .toggle-group[data-field="deplacement"]');
     depGroup.addEventListener('click', (e) => {
@@ -196,12 +181,11 @@ const Visite = (() => {
   }
 
   function updateModeVisibility() {
-    const section = document.getElementById('visite-mode-section');
     if (state.periode === 'jour') {
-      section.style.display = 'none';
       state.mode = 'nonregule';
+      App.updateModeBar(false, state.mode);
     } else {
-      section.style.display = '';
+      App.updateModeBar(true, state.mode);
     }
   }
 
@@ -304,6 +288,14 @@ const Visite = (() => {
     updateDeplacementVisibility();
     updateIKInfo();
     updateAllMajoStates();
+    App.updateModeBar(state.periode !== 'jour', state.mode);
+    recalculate();
+  }
+
+  function setMode(value) {
+    state.mode = value;
+    updateDeplacementVisibility();
+    updateAllMajoStates();
     recalculate();
   }
 
@@ -316,5 +308,5 @@ const Visite = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode };
+  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode, setMode };
 })();

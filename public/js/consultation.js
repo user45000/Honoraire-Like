@@ -59,20 +59,6 @@ const Consultation = (() => {
       recalculate();
     });
 
-    // Mode de garde
-    const modeGroup = document.querySelector('#tab-consultation .toggle-group[data-field="mode"]');
-    if (modeGroup) {
-      modeGroup.addEventListener('click', (e) => {
-        const btn = e.target.closest('.toggle-btn');
-        if (!btn) return;
-        modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.mode = btn.dataset.value;
-        updateAllMajoStates();
-        recalculate();
-      });
-    }
-
     updateActePrices();
     updateActeStates();
     updateAllMajoStates();
@@ -180,12 +166,11 @@ const Consultation = (() => {
   }
 
   function updateModeVisibility() {
-    const section = document.getElementById('consult-mode-section');
     if (state.periode === 'jour') {
-      section.style.display = 'none';
       state.mode = 'nonregule';
+      App.updateModeBar(false, state.mode);
     } else {
-      section.style.display = '';
+      App.updateModeBar(true, state.mode);
     }
   }
 
@@ -216,6 +201,13 @@ const Consultation = (() => {
     updateActePrices();
     updateActeStates();
     updateAllMajoStates();
+    App.updateModeBar(state.periode !== 'jour', state.mode);
+    recalculate();
+  }
+
+  function setMode(value) {
+    state.mode = value;
+    updateAllMajoStates();
     recalculate();
   }
 
@@ -230,5 +222,5 @@ const Consultation = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, setPeriode };
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode };
 })();
