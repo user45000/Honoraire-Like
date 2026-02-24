@@ -163,43 +163,25 @@ const Consultation = (() => {
   function updateActeStates() {
     const acteGrid = document.getElementById('consult-acte-grid');
 
-    // Actes enfant (COE, COD) : uniquement pour 0-6 ans
+    // Actes enfant (COE, COD) : visibles uniquement pour 0-6 ans
     for (const code of Engine.ACTES_ENFANT) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      if (state.age === 'enfant') {
-        btn.classList.remove('disabled');
-        btn.title = '';
-      } else {
-        btn.classList.add('disabled');
-        btn.title = 'Réservé aux enfants 0-6 ans';
-      }
+      btn.style.display = state.age === 'enfant' ? '' : 'none';
     }
 
-    // Actes jeune (COB, CCP) : uniquement pour 6-25 ans
+    // Actes jeune (COB, CCP) : visibles uniquement pour 6-25 ans
     for (const code of Engine.ACTES_JEUNE) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      if (state.age === 'jeune') {
-        btn.classList.remove('disabled');
-        btn.title = '';
-      } else {
-        btn.classList.add('disabled');
-        btn.title = 'Réservé aux patients 6-25 ans';
-      }
+      btn.style.display = state.age === 'jeune' ? '' : 'none';
     }
 
-    // Actes senior (GL1/GL2/GL3) : uniquement pour >80 ans (médecin traitant)
+    // Actes senior (GL1/GL2/GL3) : visibles uniquement pour >80 ans
     for (const code of Engine.ACTES_SENIOR) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      if (state.age === 'senior') {
-        btn.classList.remove('disabled');
-        btn.title = '';
-      } else {
-        btn.classList.add('disabled');
-        btn.title = 'Réservé aux patients >80 ans (médecin traitant)';
-      }
+      btn.style.display = state.age === 'senior' ? '' : 'none';
     }
   }
 
