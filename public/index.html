@@ -25,7 +25,17 @@
       <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
     </div>
     <div class="heure-row">
-      <label for="heure-input">🕐 Heure</label>
+      <label>🕐</label>
+      <select id="jour-input">
+        <option value="0">Lundi</option>
+        <option value="1">Mardi</option>
+        <option value="2">Mercredi</option>
+        <option value="3">Jeudi</option>
+        <option value="4">Vendredi</option>
+        <option value="5">Samedi</option>
+        <option value="6">Dimanche</option>
+        <option value="7">Jour férié</option>
+      </select>
       <input type="time" id="heure-input">
     </div>
   </div>
@@ -277,7 +287,7 @@
     <section id="tab-credits" class="tab-content">
       <div class="section-card credits-card">
         <h2>Honoraires MG</h2>
-        <p class="credits-version">Version 1.1 - Tarifs au 01/01/2026</p>
+        <p class="credits-version">Version 1.2 - Tarifs au 01/01/2026</p>
         <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
         <p>Basé sur la convention médicale 2024-2029.</p>
         <div class="credits-authors">

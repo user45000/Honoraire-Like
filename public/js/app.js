@@ -50,19 +50,25 @@ const App = (() => {
       }
     });
 
-    // Heure partagée (pour SHE et règles horaires)
+    // Heure et jour partagés (auto-détection période + SHE)
     const heureInput = document.getElementById('heure-input');
+    const jourInput = document.getElementById('jour-input');
     const now = new Date();
     heureInput.value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    const heureInitiale = now.getHours();
-    Consultation.setHeure(heureInitiale);
-    Visite.setHeure(heureInitiale);
+    // JS getDay(): 0=dim,1=lun..6=sam → notre: 0=lun..5=sam,6=dim
+    jourInput.value = (now.getDay() === 0 ? 6 : now.getDay() - 1).toString();
+    Consultation.setHeure(now.getHours());
+    Visite.setHeure(now.getHours());
+    applyAutoPeriode();
+
     heureInput.addEventListener('change', () => {
       const parts = heureInput.value.split(':');
       const h = parts.length >= 1 ? parseInt(parts[0], 10) : null;
       Consultation.setHeure(h);
       Visite.setHeure(h);
+      applyAutoPeriode();
     });
+    jourInput.addEventListener('change', applyAutoPeriode);
 
     // Paramètres
     initParams();
@@ -242,6 +248,30 @@ const App = (() => {
 
   function getCurrentTab() {
     return currentTab;
+  }
+
+  // === Auto-détection période selon jour + heure (NGAP) ===
+  function computePeriodeFromJourHeure(jour, heure) {
+    // jour: 0=Lun..4=Ven, 5=Sam, 6=Dim, 7=Férié
+    if (jour >= 6) return 'dimferie';           // Dimanche ou Jour férié
+    if (heure < 6) return 'nuitprofonde';       // 0h-6h → Nuit profonde (MM)
+    if (heure >= 20 || heure < 8) return 'nuit'; // 6h-8h et 20h-24h → Nuit (MN)
+    if (jour === 5 && heure >= 12) return 'nuit'; // Samedi 12h-20h → Nuit (MN)
+    return 'jour';                               // Reste → Jour
+  }
+
+  function applyAutoPeriode() {
+    const periodeEl = document.getElementById('periode-shared');
+    const jourEl = document.getElementById('jour-input');
+    const heureEl = document.getElementById('heure-input');
+    const jour = parseInt(jourEl.value, 10);
+    const h = parseInt((heureEl.value || '8').split(':')[0], 10);
+    const periode = computePeriodeFromJourHeure(jour, h);
+    periodeEl.querySelectorAll('.toggle-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === periode);
+    });
+    Consultation.setPeriode(periode);
+    Visite.setPeriode(periode);
   }
 
   return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar };
