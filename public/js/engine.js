@@ -333,7 +333,7 @@ const Engine = (() => {
 
     // 6. Actes CCAM associés
     if (ccamActes && ccamActes.length > 0) {
-      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif);
+      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
       for (const item of ccamResult.items) {
         codes.push(item.code);
         details.push(item);
@@ -375,8 +375,10 @@ const Engine = (() => {
 
   /**
    * Calcule les actes CCAM avec règles d'association
+   * baseOnly : actes cumulables à 100% uniquement avec G/VG de base
+   *   (convention 2024 — non valable avec consultations complexes ou MSH/MIC actifs)
    */
-  function calculateCCAM(ccamActes, consultCode, consultTarif) {
+  function calculateCCAM(ccamActes, consultCode, consultTarif, activeMajos) {
     const items = [];
     let replaceConsult = false;
 
@@ -384,7 +386,18 @@ const Engine = (() => {
 
     for (let i = 0; i < Math.min(sorted.length, 2); i++) {
       const acte = sorted[i];
-      const cumul = acte.cumulG || 'non';
+      let cumul = acte.cumulG || 'non';
+
+      // baseOnly : cumul 100% autorisé UNIQUEMENT avec G ou VG basique
+      // → devient non-cumulable si acte complexe ou MSH/MIC actif
+      if (cumul === 'oui' && acte.baseOnly) {
+        const isBaseConsult = (consultCode === 'G' || consultCode === 'VG');
+        const hasMicOrMsh = activeMajos &&
+          (activeMajos.includes('MIC') || activeMajos.includes('MSH'));
+        if (!isBaseConsult || hasMicOrMsh) {
+          cumul = 'non';
+        }
+      }
 
       if (cumul === 'oui') {
         const taux = i === 0 ? 1 : 0.5;
