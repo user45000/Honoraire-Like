@@ -165,32 +165,32 @@
     "MSH": {
       "label": "Majoration sortie hospitalisation",
       "tarif": 23.00,
-      "description": "Consultation dans les 30 jours après sortie d'hospitalisation pour chirurgie ou décompensation d'une pathologie chronique grave. Par le médecin traitant uniquement. 1 fois par hospitalisation. Non cumulable avec MIC, MIS.",
-      "applicableTo": ["G", "VG", "TCG"],
+      "description": "Consultation dans les 30 jours après sortie d'hospitalisation pour chirurgie ou décompensation d'une pathologie chronique grave. Par le médecin traitant uniquement. 1 fois par hospitalisation. Non cumulable avec MIC, MIS. Présentiel obligatoire (non applicable en téléconsultation).",
+      "applicableTo": ["G", "VG"],
       "exclusifs": ["MIC", "MIS"],
       "mtOnly": true
     },
     "MIC": {
       "label": "Majoration insuffisance cardiaque",
       "tarif": 23.00,
-      "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite.",
-      "applicableTo": ["G", "VG", "TCG"],
+      "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite. Présentiel obligatoire (non applicable en téléconsultation).",
+      "applicableTo": ["G", "VG"],
       "exclusifs": ["MSH", "MIS"],
       "mtOnly": true
     },
     "MIS": {
       "label": "Majoration d'information et de stratégie",
       "tarif": 30.00,
-      "description": "Consultation initiale d'annonce d'une pathologie grave : cancer, maladie neurodégénérative ou neurologique évolutive, ou trouble du neurodéveloppement (TND). Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/PIV.",
-      "applicableTo": ["G", "VG", "TCG"],
+      "description": "Consultation initiale d'annonce d'une pathologie grave : cancer, maladie neurodégénérative ou neurologique évolutive, ou trouble du neurodéveloppement (TND). Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/PIV. Présentiel obligatoire.",
+      "applicableTo": ["G", "VG"],
       "exclusifs": ["MSH", "MIC", "PIV"],
       "mtOnly": true
     },
     "PIV": {
       "label": "Majoration annonce VIH",
       "tarif": 30.00,
-      "description": "Consultation initiale à l'annonce d'une séropositivité VIH. Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/MIS.",
-      "applicableTo": ["G", "VG", "TCG"],
+      "description": "Consultation initiale à l'annonce d'une séropositivité VIH. Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/MIS. Présentiel obligatoire.",
+      "applicableTo": ["G", "VG"],
       "exclusifs": ["MSH", "MIC", "MIS"]
     },
     "MUT": {
@@ -262,9 +262,9 @@
     "RDV": {
       "label": "Bilan de prévention",
       "tarif": 30.00,
-      "description": "Majoration \"Mon bilan de prévention\" : G + RDV = 60€, 100% AMO. Tranches d'âge : 18-25 ans, 45-50 ans, 60-65 ans, 70-75 ans. 1 fois par tranche d'âge. Inclut dépistage addictions, prévention CV/cancer, santé mentale. Depuis le 01/01/2023.",
+      "description": "Majoration \"Mon bilan de prévention\" : G + RDV = 60€, 100% AMO. Tranches d'âge : 18-25 ans, 45-50 ans, 60-65 ans, 70-75 ans. 1 fois par tranche d'âge. Inclut dépistage addictions, prévention CV/cancer, santé mentale. Depuis le 01/01/2023. Non cumulable avec les majorations de soins aigus/urgence (MSH, MIC, MIS, PIV, MUT).",
       "applicableTo": ["G"],
-      "exclusifs": [],
+      "exclusifs": ["MSH", "MIC", "MIS", "PIV", "MUT"],
       "mtOnly": true
     }
   },
