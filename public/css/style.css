@@ -715,6 +715,26 @@ body {
   margin-bottom: 6px;
 }
 
+.credits-authors {
+  margin-top: 16px;
+  padding: 12px;
+  background: var(--surface-alt, #f5f5f5);
+  border-radius: 8px;
+}
+
+.credits-authors h3 {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.credits-authors p {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
 .credits-sources {
   margin-top: 20px;
   text-align: left;
@@ -737,6 +757,15 @@ body {
   color: var(--text);
   padding: 4px 0;
   border-bottom: 1px solid var(--border);
+}
+
+.credits-sources li a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.credits-sources li a:hover {
+  text-decoration: underline;
 }
 
 .credits-sources li:last-child {
