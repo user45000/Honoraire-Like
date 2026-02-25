@@ -80,19 +80,30 @@ const Engine = (() => {
    * Détermine les majorations disponibles selon le contexte complet
    * Retourne un objet { code: { available: bool, reason: string } }
    */
-  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos, heure) {
+  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos, heure, relation) {
     if (!tarifs) return {};
     const result = {};
     const isRegule = mode === 'regule';
     const isHorsJour = periode !== 'jour';
     const isComplex = ACTES_COMPLEXES.includes(acte);
+    const isMT = !relation || relation === 'mt';
 
     for (const [code, majo] of Object.entries(tarifs.majorations)) {
       let available = true;
       let reason = '';
 
+      // 0. Contexte patientèle : mtOnly / horsPatOnly
+      if (available && majo.mtOnly && !isMT) {
+        available = false;
+        reason = 'Réservé au médecin traitant';
+      }
+      if (available && majo.horsPatOnly && isMT) {
+        available = false;
+        reason = 'Réservé hors patientèle';
+      }
+
       // 1. Vérifier applicableTo (art. 14.7 MEG, art. 2bis MCG, etc.)
-      if (majo.applicableTo && !majo.applicableTo.includes(acte)) {
+      if (available && majo.applicableTo && !majo.applicableTo.includes(acte)) {
         available = false;
         reason = `Non applicable à ${acte}`;
       }

@@ -3,6 +3,7 @@
  */
 const App = (() => {
   let currentTab = 'consultation';
+  let currentRelation = 'mt';
 
   async function init() {
     // Charger les paramètres
@@ -102,6 +103,9 @@ const App = (() => {
     // Mode simple/complet
     initViewMode();
 
+    // Patientèle (MT / hors patientèle)
+    initRelation();
+
     // Afficher l'onglet initial
     Consultation.onShow();
   }
@@ -170,6 +174,7 @@ const App = (() => {
       CCAM.onShow();
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
+      document.getElementById('relation-bar').classList.remove('visible');
       // Afficher la barre si des actes sont sélectionnés
       const sel = CCAM.getSelectedActes();
       resultBar.style.display = sel.length > 0 ? '' : 'none';
@@ -177,6 +182,7 @@ const App = (() => {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
+      document.getElementById('relation-bar').classList.remove('visible');
     }
   }
 
@@ -291,6 +297,38 @@ const App = (() => {
     Visite.updateDeplacementPrices();
   }
 
+  // === Patientèle (MT / hors patientèle) ===
+  function initRelation() {
+    const saved = localStorage.getItem('hon_relation') || 'mt';
+    applyRelation(saved, true);
+
+    const group = document.getElementById('relation-shared');
+    group.addEventListener('click', (e) => {
+      const btn = e.target.closest('.toggle-btn');
+      if (!btn) return;
+      group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyRelation(btn.dataset.value, true);
+    });
+  }
+
+  function applyRelation(value, notify) {
+    currentRelation = value;
+    localStorage.setItem('hon_relation', value);
+    // Synchroniser le bouton actif
+    document.querySelectorAll('#relation-shared .toggle-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.value === value);
+    });
+    if (notify) {
+      Consultation.setRelation(value);
+      Visite.setRelation(value);
+    }
+  }
+
+  function getRelation() {
+    return currentRelation;
+  }
+
   // === Mode simple / complet ===
   function initViewMode() {
     const toggle = document.getElementById('view-mode-toggle');
@@ -382,7 +420,7 @@ const App = (() => {
     Visite.setPeriode(periode);
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar };
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar, getRelation };
 })();
 
 /**

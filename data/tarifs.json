@@ -153,7 +153,8 @@
       "tarif": 5.00,
       "description": "Applicable par un médecin autre que le MT, sur envoi du MT, pour soins itératifs (patient polypathologique avec autonomie réduite, nécessitant une coordination avec au moins un paramédical), ou patient loin de sa résidence habituelle. Synthèse adressée au MT obligatoire. Non cumulable avec MUT, SNP.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["SNP", "MUT"]
+      "exclusifs": ["SNP", "MUT"],
+      "horsPatOnly": true
     },
     "MEG": {
       "label": "Majoration enfant 0-6 ans",
@@ -166,21 +167,24 @@
       "tarif": 23.00,
       "description": "Consultation dans les 30 jours après sortie d'hospitalisation pour chirurgie ou décompensation d'une pathologie chronique grave. Par le médecin traitant uniquement. 1 fois par hospitalisation. Non cumulable avec MIC, MIS.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MIC", "MIS"]
+      "exclusifs": ["MIC", "MIS"],
+      "mtOnly": true
     },
     "MIC": {
       "label": "Majoration insuffisance cardiaque",
       "tarif": 23.00,
       "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MSH", "MIS"]
+      "exclusifs": ["MSH", "MIS"],
+      "mtOnly": true
     },
     "MIS": {
       "label": "Majoration d'information et de stratégie",
       "tarif": 30.00,
       "description": "Consultation initiale d'annonce d'une pathologie grave : cancer, maladie neurodégénérative ou neurologique évolutive, ou trouble du neurodéveloppement (TND). Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/PIV.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MSH", "MIC", "PIV"]
+      "exclusifs": ["MSH", "MIC", "PIV"],
+      "mtOnly": true
     },
     "PIV": {
       "label": "Majoration annonce VIH",
@@ -194,20 +198,23 @@
       "tarif": 5.00,
       "description": "RDV spécialiste obtenu par le MT dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA, MCG, SNP.",
       "applicableTo": ["G", "VG"],
-      "exclusifs": ["MCG", "SNP"]
+      "exclusifs": ["MCG", "SNP"],
+      "mtOnly": true
     },
     "MOP": {
       "label": "Majoration personne âgée >80 ans",
       "tarif": 5.00,
       "description": "Patient de plus de 80 ans. Applicable uniquement si le médecin n'est PAS le médecin traitant du patient (le MT perçoit le FMT à la place). Tarif opposable obligatoire.",
-      "applicableTo": ["G", "VG", "TCG"]
+      "applicableTo": ["G", "VG", "TCG"],
+      "horsPatOnly": true
     },
     "SNP": {
       "label": "Soins non programmés",
       "tarif": 15.00,
       "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Pour les patients hors patientèle. Non cumulable avec MCG, MUT, MHP, MRT, majorations d'urgence et PDSA.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MCG", "MHP", "MUT", "MRT"]
+      "exclusifs": ["MCG", "MHP", "MUT", "MRT"],
+      "horsPatOnly": true
     },
     "MHP": {
       "label": "Majoration hors régulation PDSA",
@@ -228,7 +235,8 @@
       "tarif": 15.00,
       "description": "Urgence régulée via SAS pour la patientèle propre du médecin traitant. Alternative au SNP pour ses propres patients (art. 14.1.3). Non cumulable avec SNP.",
       "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["SNP", "MCG", "MHP", "MUT"]
+      "exclusifs": ["SNP", "MCG", "MHP", "MUT"],
+      "mtOnly": true
     },
     "SHE": {
       "label": "Majoration horaire étendu SAS",
@@ -242,7 +250,8 @@
       "tarif": 10.00,
       "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant la régulation SAS (depuis le 01/01/2026). Cumulable avec MRT ou SNP.",
       "applicableTo": ["VG"],
-      "exclusifs": []
+      "exclusifs": [],
+      "horsPatOnly": true
     },
     "RQD": {
       "label": "Demande de téléexpertise (requérant)",
@@ -256,7 +265,8 @@
       "tarif": 30.00,
       "description": "Majoration \"Mon bilan de prévention\" : G + RDV = 60€, 100% AMO. Tranches d'âge : 18-25 ans, 45-50 ans, 60-65 ans, 70-75 ans. 1 fois par tranche d'âge. Inclut dépistage addictions, prévention CV/cancer, santé mentale. Depuis le 01/01/2023.",
       "applicableTo": ["G"],
-      "exclusifs": []
+      "exclusifs": [],
+      "mtOnly": true
     }
   },
   "majorationsHoraires": {

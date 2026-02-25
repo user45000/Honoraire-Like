@@ -8,7 +8,8 @@ const Consultation = (() => {
     majorations: [],
     periode: 'jour',
     mode: 'nonregule',
-    heure: null
+    heure: null,
+    relation: 'mt'
   };
 
   function init() {
@@ -133,7 +134,7 @@ const Consultation = (() => {
    */
   function updateAllMajoStates() {
     const availability = Engine.getAvailableMajos(
-      state.acte, state.age, state.periode, state.mode, false, null, state.majorations, state.heure
+      state.acte, state.age, state.periode, state.mode, false, null, state.majorations, state.heure, state.relation
     );
     const majoGrid = document.getElementById('consult-majo-grid');
 
@@ -178,11 +179,11 @@ const Consultation = (() => {
       btn.style.display = state.age === 'jeune' ? '' : 'none';
     }
 
-    // Actes senior (GL1/GL2/GL3) : visibles uniquement pour >80 ans
+    // Actes senior (GL1/GL2/GL3) : visibles uniquement pour >80 ans ET médecin traitant
     for (const code of Engine.ACTES_SENIOR) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      btn.style.display = state.age === 'senior' ? '' : 'none';
+      btn.style.display = (state.age === 'senior' && state.relation === 'mt') ? '' : 'none';
     }
   }
 
@@ -224,6 +225,21 @@ const Consultation = (() => {
     updateActeStates();
     updateAllMajoStates();
     App.updateModeBar(state.periode !== 'jour', state.mode);
+    document.getElementById('relation-bar').classList.add('visible');
+    recalculate();
+  }
+
+  function setRelation(value) {
+    state.relation = value;
+    // Si un acte MT-only était actif (GL1/2/3) → reset sur G
+    if (value === 'hors' && Engine.ACTES_SENIOR.includes(state.acte)) {
+      state.acte = 'G';
+      const acteGrid = document.getElementById('consult-acte-grid');
+      acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+      acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+    }
+    updateActeStates();
+    updateAllMajoStates();
     recalculate();
   }
 
@@ -250,5 +266,5 @@ const Consultation = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure };
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation };
 })();
