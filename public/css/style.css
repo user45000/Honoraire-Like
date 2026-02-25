@@ -482,6 +482,52 @@ body {
   padding: 6px 10px;
 }
 
+.ik-geo-btn {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ik-geo-btn:active { background: var(--primary-dark, #2872D4); }
+.ik-geo-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.ik-geo-status {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-secondary);
+  min-height: 16px;
+}
+.ik-geo-status.warn { color: #e07b00; }
+.ik-geo-status.ok   { color: var(--success); }
+
+/* === Cabinet médical (Paramètres) === */
+.cabinet-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.cabinet-address-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--card);
+}
+.cabinet-address-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
 /* === CCAM === */
 .ccam-search-wrap {
   position: relative;

@@ -25,7 +25,6 @@
       <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
     </div>
     <div class="heure-row">
-      <label>🕐</label>
       <select id="jour-input">
         <option value="0">Lundi</option>
         <option value="1">Mardi</option>
@@ -223,10 +222,12 @@
             <span class="ik-label">Activer IK</span>
           </label>
           <div class="ik-controls" id="ik-controls" style="display:none">
+            <button class="ik-geo-btn" id="ik-geolocate">📍 Distance depuis le cabinet</button>
+            <div class="ik-geo-status" id="ik-geo-status"></div>
             <div class="ik-km-input">
               <button class="ik-btn" id="ik-minus">-</button>
               <input type="number" id="ik-km" value="5" min="0" max="200" step="1">
-              <span class="ik-unit">km</span>
+              <span class="ik-unit">km (aller)</span>
               <button class="ik-btn" id="ik-plus">+</button>
             </div>
             <div class="ik-info" id="ik-info"></div>
@@ -281,13 +282,19 @@
           <button class="toggle-btn" data-value="montagne">Montagne</button>
         </div>
       </div>
+
+      <div class="section-card">
+        <h3>Cabinet médical</h3>
+        <p class="cabinet-hint">Adresse utilisée pour le calcul automatique des IK</p>
+        <input type="text" id="cabinet-address" class="cabinet-address-input" placeholder="3 rue de la Paix, 75001 Paris" autocomplete="street-address">
+      </div>
     </section>
 
     <!-- Onglet Crédits -->
     <section id="tab-credits" class="tab-content">
       <div class="section-card credits-card">
         <h2>Honoraires MG</h2>
-        <p class="credits-version">Version 1.2 - Tarifs au 01/01/2026</p>
+        <p class="credits-version">Version 1.3 - Tarifs au 01/01/2026</p>
         <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
         <p>Basé sur la convention médicale 2024-2029.</p>
         <div class="credits-authors">

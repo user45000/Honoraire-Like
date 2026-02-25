@@ -101,6 +101,9 @@ const Visite = (() => {
       recalculate();
     });
 
+    // IK géolocalisation
+    document.getElementById('ik-geolocate').addEventListener('click', handleGeolocate);
+
     updateActePrices();
     updateDeplacementPrices();
     updateAllMajoStates();
@@ -316,6 +319,93 @@ const Visite = (() => {
     state.heure = value;
     updateAllMajoStates();
     recalculate();
+  }
+
+  // === Géolocalisation IK ===
+  async function handleGeolocate() {
+    const btn = document.getElementById('ik-geolocate');
+    const status = document.getElementById('ik-geo-status');
+
+    const cabinetAddr = localStorage.getItem('hon_cabinet_address') || '';
+    if (!cabinetAddr.trim()) {
+      status.textContent = '⚠️ Renseignez l\'adresse du cabinet dans Paramètres';
+      status.className = 'ik-geo-status warn';
+      return;
+    }
+
+    btn.disabled = true;
+    status.textContent = '📡 Géolocalisation en cours…';
+    status.className = 'ik-geo-status';
+
+    try {
+      // 1. Position GPS actuelle (= chez le patient)
+      const pos = await getGeolocation();
+      const patLat = pos.coords.latitude;
+      const patLng = pos.coords.longitude;
+
+      // 2. Géocodage de l'adresse du cabinet
+      status.textContent = '📍 Localisation du cabinet…';
+      const cab = await geocodeAddress(cabinetAddr);
+      if (!cab) {
+        status.textContent = '⚠️ Cabinet introuvable — vérifiez l\'adresse dans Paramètres';
+        status.className = 'ik-geo-status warn';
+        btn.disabled = false;
+        return;
+      }
+
+      // 3. Calcul de l'itinéraire routier (OSRM)
+      status.textContent = '🗺️ Calcul de l\'itinéraire…';
+      const distKm = await getRouteDistance(cab.lng, cab.lat, patLng, patLat);
+      if (distKm === null) {
+        status.textContent = '⚠️ Itinéraire introuvable';
+        status.className = 'ik-geo-status warn';
+        btn.disabled = false;
+        return;
+      }
+
+      // 4. Remplir le champ km (aller simple, franchise gérée par le moteur)
+      const km = Math.round(distKm);
+      state.ikKm = km;
+      document.getElementById('ik-km').value = km;
+      updateIKInfo();
+      recalculate();
+      status.textContent = `✅ ${distKm.toFixed(1)} km (aller) — franchise déduite automatiquement`;
+      status.className = 'ik-geo-status ok';
+    } catch (e) {
+      status.textContent = '❌ ' + (e.message || 'Erreur');
+      status.className = 'ik-geo-status warn';
+    }
+
+    btn.disabled = false;
+  }
+
+  function getGeolocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Géolocalisation non supportée par ce navigateur'));
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(resolve, () => {
+        reject(new Error('Accès à la position refusé ou indisponible'));
+      }, { timeout: 12000, maximumAge: 0, enableHighAccuracy: true });
+    });
+  }
+
+  async function geocodeAddress(address) {
+    const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(address)}&limit=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.features || data.features.length === 0) return null;
+    const [lng, lat] = data.features[0].geometry.coordinates;
+    return { lat, lng };
+  }
+
+  async function getRouteDistance(lng1, lat1, lng2, lat2) {
+    const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=false`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) return null;
+    return data.routes[0].distance / 1000;
   }
 
   return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure };

@@ -70,6 +70,13 @@ const App = (() => {
     });
     jourInput.addEventListener('change', applyAutoPeriode);
 
+    // Adresse cabinet
+    const cabinetInput = document.getElementById('cabinet-address');
+    cabinetInput.value = localStorage.getItem('hon_cabinet_address') || '';
+    cabinetInput.addEventListener('change', () => {
+      localStorage.setItem('hon_cabinet_address', cabinetInput.value.trim());
+    });
+
     // Paramètres
     initParams();
 
@@ -102,6 +109,7 @@ const App = (() => {
 
   function switchTab(tabName) {
     currentTab = tabName;
+    window.scrollTo(0, 0);
 
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
