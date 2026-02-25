@@ -68,7 +68,9 @@ const Engine = (() => {
     'CRN', 'CRM', 'CRD', 'CRS',
     'VRN', 'VRM', 'VRD', 'VRS',
     'SNP', 'MRT', 'SHE',
-    'COE', 'COB', 'COD', 'CCP'
+    'COE', 'COB', 'COD', 'CCP',
+    // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
+    'RDV'
   ];
 
   /**
@@ -197,6 +199,12 @@ const Engine = (() => {
         reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
       }
 
+      // MVR : visite rapide SAS, uniquement en mode régulé
+      if (available && code === 'MVR' && !isRegule) {
+        available = false;
+        reason = 'MVR applicable uniquement sur régulation SAS (mode régulé)';
+      }
+
       // MRT : non cumulable avec PDSA ni avec F/MN/MM
       if (available && code === 'MRT' && isRegule) {
         available = false;
@@ -229,9 +237,12 @@ const Engine = (() => {
   /**
    * Vérifie si la majoration horaire est applicable à l'acte
    * TCG : non cumulable avec F/MN/MM (art. 14.9.3) mais PDSA ok
+   * TE2 : acte asynchrone, aucune majoration horaire applicable
    */
   function isHoraireApplicable(acte, periode, mode) {
     if (periode === 'jour') return false;
+    // TE2 : téléexpertise asynchrone, pas de majoration horaire
+    if (acte === 'TE2') return false;
     // TCG : pas de F/MN/MM (art. 14.9.3), mais PDSA ok
     if (acte === 'TCG' && mode !== 'regule') return false;
     return true;
@@ -337,12 +348,15 @@ const Engine = (() => {
     }
 
     // Calcul AMO/AMC
+    // RDV (bilan de prévention) rend aussi l'acte G 100% AMO
+    const hasRDV = details.some(d => d.code === 'RDV');
     let amo = 0;
     let amc = 0;
     for (const d of details) {
       if (d.montant === 0) continue;
       const code = d.code.replace(/[()]/g, '');
-      if (CODES_AMO100.includes(code)) {
+      const isAMO100 = CODES_AMO100.includes(code) || (hasRDV && code === 'G');
+      if (isAMO100) {
         amo += d.montant;
       } else {
         amo += d.montant * 0.7;
@@ -450,6 +464,9 @@ const Engine = (() => {
 
       // MU : visite de jour non-régulée uniquement
       if (code === 'MU' && (isHorsJour || isRegule)) continue;
+
+      // MVR : uniquement en mode régulé SAS
+      if (code === 'MVR' && !isRegule) continue;
 
       // MRT : non avec PDSA, non avec F/MN/MM
       if (code === 'MRT' && (isRegule || (isHorsJour && !isRegule))) continue;
