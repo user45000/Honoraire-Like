@@ -219,10 +219,15 @@ const Engine = (() => {
         reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
       }
 
-      // MVR : visite rapide SAS, uniquement en mode régulé
-      if (available && code === 'MVR' && !isRegule) {
-        available = false;
-        reason = 'MVR applicable uniquement sur régulation SAS (mode régulé)';
+      // MVR : dans les 24h après régulation SAS
+      // En journée : nécessite MRT (patientèle) ou SNP (hors patientèle) actif
+      // En PDSA régulé : contexte SAS implicite
+      if (available && code === 'MVR') {
+        const hasSnpOrMrt = activeMajos && (activeMajos.includes('SNP') || activeMajos.includes('MRT'));
+        if (!isRegule && !hasSnpOrMrt) {
+          available = false;
+          reason = 'MVR applicable après régulation SAS (avec MRT ou SNP en journée, ou mode PDSA régulé)';
+        }
       }
 
       // MRT : non cumulable avec PDSA ni avec F/MN/MM
@@ -494,17 +499,24 @@ const Engine = (() => {
       // MSH/MIC : pas avec MDN/MDD en visite
       if ((code === 'MSH' || code === 'MIC') && isVisite && (deplacement === 'MDN' || deplacement === 'MDD')) continue;
 
-      // Exclusifs mutuels (MSH/MIC/MIS, SNP/MCG, SNP/MHP)
+      // Exclusifs mutuels — vérification dans les deux sens (certains sont asymétriques)
       if (majo.exclusifs) {
         const hasConflict = result.some(r => majo.exclusifs.includes(r));
         if (hasConflict) continue;
       }
+      // Sens inverse : un majo déjà dans result excluant ce code
+      if (result.some(r => tarifs.majorations[r]?.exclusifs?.includes(code))) continue;
 
       // MU : visite de jour non-régulée uniquement
       if (code === 'MU' && (isHorsJour || isRegule)) continue;
 
-      // MVR : uniquement en mode régulé SAS
-      if (code === 'MVR' && !isRegule) continue;
+      // MVR : dans les 24h après régulation SAS
+      // En journée : nécessite MRT ou SNP dans result
+      // En PDSA régulé : contexte SAS implicite
+      if (code === 'MVR') {
+        const hasSnpOrMrt = result.includes('SNP') || result.includes('MRT');
+        if (!isRegule && !hasSnpOrMrt) continue;
+      }
 
       // MRT : non avec PDSA, non avec F/MN/MM
       if (code === 'MRT' && (isRegule || (isHorsJour && !isRegule))) continue;

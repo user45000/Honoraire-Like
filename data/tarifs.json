@@ -248,10 +248,9 @@
     "MVR": {
       "label": "Majoration visite rapide SAS",
       "tarif": 10.00,
-      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant la régulation SAS (depuis le 01/01/2026). Cumulable avec MRT ou SNP.",
+      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant la régulation SAS (depuis le 01/01/2026). Cumulable avec MRT (patientèle MT) ou SNP (hors patientèle) en journée, ou avec les majorations PDSA régulées la nuit.",
       "applicableTo": ["VG"],
-      "exclusifs": [],
-      "horsPatOnly": true
+      "exclusifs": []
     },
     "RQD": {
       "label": "Demande de téléexpertise (requérant)",
