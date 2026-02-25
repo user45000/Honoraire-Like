@@ -113,9 +113,9 @@
       "exclusifs": ["MSH", "MIS"]
     },
     "MIS": {
-      "label": "Majoration insuffisance rénale sévère",
+      "label": "Majoration d'information et de stratégie",
       "tarif": 30.00,
-      "description": "Suivi patient IRC stade 4-5 (art. 15.9). Non cumulable avec MSH/MIC.",
+      "description": "Consultation initiale d'information et de mise en place d'une stratégie thérapeutique pour patient atteint de cancer ou de pathologie neurologique évolutive (depuis le 01/11/2017). Code transmis à l'AM : MTX (anonymisation). Non cumulable avec MSH/MIC.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": ["MSH", "MIC"]
     },
