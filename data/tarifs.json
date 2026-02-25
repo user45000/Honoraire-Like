@@ -18,6 +18,12 @@
       "tarifs": { "metro": 25.00, "antilles": 30.00, "reunion": 30.00 },
       "type": "consultation"
     },
+    "TE2": {
+      "label": "Téléexpertise (médecin requis)",
+      "tarifs": { "metro": 20.00, "antilles": 24.00, "reunion": 24.00 },
+      "type": "consultation",
+      "description": "Acte du médecin qui répond à une demande de téléexpertise. Max 4 fois/an par patient pour le même médecin requis. Réponse sous 7 jours (ou 24h si urgence). Acte isolé, non cumulable avec G/VG pour le même patient le même jour."
+    },
     "GL1": {
       "label": "Consultation longue post-hospitalisation",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
@@ -173,6 +179,27 @@
       "description": "En sus de SNP ou MRT, entre 19h et 21h, en semaine (lun-ven), sur régulation SAS uniquement.",
       "applicableTo": ["G", "VG", "TCG"],
       "exclusifs": []
+    },
+    "MVR": {
+      "label": "Majoration visite rapide SAS",
+      "tarif": 10.00,
+      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant la régulation SAS (depuis le 01/01/2026). Cumulable avec MRT ou SNP.",
+      "applicableTo": ["VG"],
+      "exclusifs": []
+    },
+    "RQD": {
+      "label": "Demande de téléexpertise (requérant)",
+      "tarif": 10.00,
+      "description": "Acte du médecin qui sollicite une téléexpertise (médecin requérant). Cumulable avec la consultation ou visite du même jour. Max 4 fois/an par patient.",
+      "applicableTo": ["G", "VG", "TCG"],
+      "exclusifs": []
+    },
+    "RDV": {
+      "label": "Bilan de prévention",
+      "tarif": 30.00,
+      "description": "Majoration \"Mon bilan de prévention\" : G + RDV = 60€, 100% AMO. Tranches d'âge : 18-25 ans, 45-50 ans, 60-65 ans, 70-75 ans. 1 fois par tranche d'âge. Inclut dépistage addictions, prévention CV/cancer, santé mentale. Depuis le 01/01/2023.",
+      "applicableTo": ["G"],
+      "exclusifs": []
     }
   },
   "majorationsHoraires": {
@@ -183,7 +210,7 @@
       },
       "CRM": {
         "label": "Milieu de nuit régulé (0h-6h)",
-        "tarif": 46.50
+        "tarif": 51.50
       },
       "CRS": {
         "label": "Samedi après-midi régulé",
@@ -301,6 +328,8 @@
     { "code": "MGQP002", "label": "Écho-doppler veineux membre inférieur", "tarif": 49.26, "cumulG": "non", "note": "Acte isolé" },
     { "code": "ZZLP025", "label": "Test CRP rapide", "tarif": 7.00, "cumulG": "non", "note": "Acte isolé" },
     { "code": "ALQP003", "label": "Tympanométrie", "tarif": 26.40, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZHA001", "label": "Biopsie dermo-épidermique", "tarif": 10.50, "cumulG": "50%", "note": "Cumulable à 50% avec G/VG (biopsie)" }
+    { "code": "QZHA001", "label": "Biopsie dermo-épidermique", "tarif": 10.50, "cumulG": "50%", "note": "Cumulable à 50% avec G/VG (biopsie)" },
+    { "code": "FSD", "label": "Forfait Sécurité Dermatologie", "tarif": 45.00, "cumulG": "non", "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire." },
+    { "code": "YYYY490", "label": "Supplément ECG en visite à domicile", "tarif": 9.60, "cumulG": "non", "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile." }
   ]
 }
