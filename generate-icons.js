@@ -81,13 +81,13 @@ function sdfStethoscope(x, y) {
   return Math.min(binauralD, lTip, rTip, lTube, rTube, jDot, mainTube, cpD);
 }
 
-// ── Fond : teal médical profond ────────────────────────────────────────────
+// ── Fond : couleur de l'app (#3d5a99 → #1e2d4f) ───────────────────────────
 function bgColor(nx, ny) {
   const t = clamp(((nx + 1) + (ny + 1)) / 4);
   return [
-    Math.round(lerp(0x0D, 0x06, t)),
-    Math.round(lerp(0x73, 0x3B, t)),
-    Math.round(lerp(0x99, 0x55, t)),
+    Math.round(lerp(0x3d, 0x1e, t)),
+    Math.round(lerp(0x5a, 0x2d, t)),
+    Math.round(lerp(0x99, 0x4f, t)),
   ];
 }
 
