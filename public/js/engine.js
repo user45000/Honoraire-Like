@@ -219,14 +219,14 @@ const Engine = (() => {
         reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
       }
 
-      // MVR : dans les 24h après régulation SAS
-      // En journée : nécessite MRT (patientèle) ou SNP (hors patientèle) actif
-      // En PDSA régulé : contexte SAS implicite
+      // MVR : dans les 24h après régulation SAS de JOUR uniquement
+      // Non applicable en PDSA régulé (VRN/VRM/VRD ont leurs propres majorations)
+      // Nécessite SNP (hors patientèle) ou MRT (patientèle MT) actif
       if (available && code === 'MVR') {
         const hasSnpOrMrt = activeMajos && (activeMajos.includes('SNP') || activeMajos.includes('MRT'));
-        if (!isRegule && !hasSnpOrMrt) {
+        if (!hasSnpOrMrt) {
           available = false;
-          reason = 'MVR applicable après régulation SAS (avec MRT ou SNP en journée, ou mode PDSA régulé)';
+          reason = 'MVR applicable uniquement en journée après régulation SAS (SNP ou MRT requis)';
         }
       }
 
@@ -510,12 +510,11 @@ const Engine = (() => {
       // MU : visite de jour non-régulée uniquement
       if (code === 'MU' && (isHorsJour || isRegule)) continue;
 
-      // MVR : dans les 24h après régulation SAS
-      // En journée : nécessite MRT ou SNP dans result
-      // En PDSA régulé : contexte SAS implicite
+      // MVR : dans les 24h après régulation SAS de JOUR (non applicable la nuit PDSA)
+      // Nécessite SNP ou MRT dans result
       if (code === 'MVR') {
         const hasSnpOrMrt = result.includes('SNP') || result.includes('MRT');
-        if (!isRegule && !hasSnpOrMrt) continue;
+        if (!hasSnpOrMrt) continue;
       }
 
       // MRT : non avec PDSA, non avec F/MN/MM

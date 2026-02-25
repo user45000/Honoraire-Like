@@ -248,7 +248,7 @@
     "MVR": {
       "label": "Majoration visite rapide SAS",
       "tarif": 10.00,
-      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant la régulation SAS (depuis le 01/01/2026). Cumulable avec MRT (patientèle MT) ou SNP (hors patientèle) en journée, ou avec les majorations PDSA régulées la nuit.",
+      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant une régulation SAS de jour (depuis le 01/01/2026). Cumulable avec SNP ou MRT. Non applicable la nuit en PDSA (VRN/VRM/VRD s'appliquent à la place).",
       "applicableTo": ["VG"],
       "exclusifs": []
     },
