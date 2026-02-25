@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2c3e6b">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -286,7 +286,11 @@
       <div class="section-card">
         <h3>Cabinet médical</h3>
         <p class="cabinet-hint">Adresse utilisée pour le calcul automatique des IK</p>
-        <input type="text" id="cabinet-address" class="cabinet-address-input" placeholder="3 rue de la Paix, 75001 Paris" autocomplete="street-address">
+        <div class="cabinet-address-wrapper">
+          <input type="text" id="cabinet-address" class="cabinet-address-input" placeholder="3 rue de la Paix, 75001 Paris" autocomplete="off">
+          <ul id="cabinet-suggestions" class="address-suggestions" hidden></ul>
+          <span id="cabinet-saved" class="cabinet-saved-status"></span>
+        </div>
       </div>
     </section>
 
@@ -294,7 +298,7 @@
     <section id="tab-credits" class="tab-content">
       <div class="section-card credits-card">
         <h2>Honoraires MG</h2>
-        <p class="credits-version">Version 1.3 - Tarifs au 01/01/2026</p>
+        <p class="credits-version">Version 1.4 - Tarifs au 01/01/2026</p>
         <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
         <p>Basé sur la convention médicale 2024-2029.</p>
         <div class="credits-authors">

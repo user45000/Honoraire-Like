@@ -72,9 +72,25 @@ const App = (() => {
 
     // Adresse cabinet
     const cabinetInput = document.getElementById('cabinet-address');
+    const cabinetSuggestions = document.getElementById('cabinet-suggestions');
+    const cabinetSaved = document.getElementById('cabinet-saved');
     cabinetInput.value = localStorage.getItem('hon_cabinet_address') || '';
-    cabinetInput.addEventListener('change', () => {
-      localStorage.setItem('hon_cabinet_address', cabinetInput.value.trim());
+
+    let cabinetDebounce = null;
+    cabinetInput.addEventListener('input', () => {
+      clearTimeout(cabinetDebounce);
+      const q = cabinetInput.value.trim();
+      if (q.length < 3) { cabinetSuggestions.hidden = true; return; }
+      cabinetDebounce = setTimeout(() => fetchAddressSuggestions(q, cabinetSuggestions, cabinetInput, cabinetSaved), 300);
+    });
+
+    cabinetInput.addEventListener('blur', () => {
+      setTimeout(() => { cabinetSuggestions.hidden = true; }, 200);
+      saveCabinetAddress(cabinetInput, cabinetSaved);
+    });
+
+    cabinetInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { cabinetSuggestions.hidden = true; saveCabinetAddress(cabinetInput, cabinetSaved); }
     });
 
     // Paramètres
@@ -206,6 +222,40 @@ const App = (() => {
     if (!localStorage.getItem('hon_secteur')) localStorage.setItem('hon_secteur', 's1');
     if (!localStorage.getItem('hon_zone')) localStorage.setItem('hon_zone', 'metro');
     if (!localStorage.getItem('hon_geo')) localStorage.setItem('hon_geo', 'plaine');
+  }
+
+  function saveCabinetAddress(input, savedEl) {
+    const val = input.value.trim();
+    if (!val) return;
+    localStorage.setItem('hon_cabinet_address', val);
+    savedEl.textContent = '✓ Adresse enregistrée';
+    savedEl.classList.remove('fade');
+    clearTimeout(savedEl._fadeTimer);
+    savedEl._fadeTimer = setTimeout(() => {
+      savedEl.classList.add('fade');
+      setTimeout(() => { savedEl.textContent = ''; savedEl.classList.remove('fade'); }, 500);
+    }, 2000);
+  }
+
+  async function fetchAddressSuggestions(q, listEl, input, savedEl) {
+    try {
+      const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=5`);
+      const data = await res.json();
+      listEl.innerHTML = '';
+      if (!data.features || data.features.length === 0) { listEl.hidden = true; return; }
+      data.features.forEach(f => {
+        const li = document.createElement('li');
+        li.textContent = f.properties.label;
+        li.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          input.value = f.properties.label;
+          listEl.hidden = true;
+          saveCabinetAddress(input, savedEl);
+        });
+        listEl.appendChild(li);
+      });
+      listEl.hidden = false;
+    } catch (_) { listEl.hidden = true; }
   }
 
   function onZoneChange() {
