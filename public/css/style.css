@@ -683,6 +683,11 @@ body {
   background: rgba(44,62,107,0.06);
 }
 
+.ccam-item.dimmed {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
 .ccam-item:active {
   transform: scale(0.99);
 }
@@ -761,6 +766,23 @@ body {
   background: var(--border);
 }
 
+.ccam-rank {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.rank-primary {
+  color: var(--primary);
+  background: rgba(44,62,107,0.12);
+}
+
+.rank-secondary {
+  color: #e67e22;
+  background: rgba(230,126,34,0.12);
+}
+
 .ccam-add-btn {
   width: 32px;
   height: 32px;
@@ -824,6 +846,33 @@ body {
   font-size: 11px;
   color: var(--text-secondary);
   flex: 1;
+}
+
+.ccam-sel-taux {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  white-space: nowrap;
+  flex: 0;
+}
+
+.ccam-sel-taux.taux-full {
+  color: var(--success);
+  background: rgba(39,174,96,0.12);
+}
+
+.ccam-sel-taux.taux-half {
+  color: #e67e22;
+  background: rgba(230,126,34,0.12);
+}
+
+.ccam-sel-limit {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 6px;
+  text-align: center;
 }
 
 .ccam-sel-remove {

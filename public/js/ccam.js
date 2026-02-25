@@ -68,6 +68,7 @@ const CCAM = (() => {
   function renderItem(acte) {
     const isFav = favorites.includes(acte.code);
     const isSelected = selectedActes.some(a => a.code === acte.code);
+    const maxReached = selectedActes.length >= 2 && !isSelected;
     const cumul = acte.cumulG || 'non';
 
     let cumulBadge = '';
@@ -79,8 +80,18 @@ const CCAM = (() => {
       cumulBadge = '<span class="ccam-cumul no">isolé</span>';
     }
 
+    // Badge de rang quand 2 actes sont sélectionnés
+    let rankBadge = '';
+    if (isSelected && selectedActes.length === 2) {
+      const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+      const rank = sorted.findIndex(a => a.code === acte.code);
+      rankBadge = rank === 0
+        ? '<span class="ccam-rank rank-primary">① principal</span>'
+        : '<span class="ccam-rank rank-secondary">② 50%</span>';
+    }
+
     return `
-      <div class="ccam-item ${isSelected ? 'selected' : ''}" data-code="${acte.code}">
+      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : ''}" data-code="${acte.code}">
         <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${acte.code}">
           ${isFav ? '&#9733;' : '&#9734;'}
         </button>
@@ -88,12 +99,14 @@ const CCAM = (() => {
           <div class="ccam-top-row">
             <span class="ccam-code">${acte.code}</span>
             ${cumulBadge}
+            ${rankBadge}
           </div>
           <span class="ccam-label">${acte.label}</span>
         </div>
         <span class="ccam-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</span>
-        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${acte.code}" title="${isSelected ? 'Retirer' : 'Ajouter au calcul'}">
-          ${isSelected ? '✓' : '+'}
+        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${acte.code}"
+          title="${isSelected ? 'Retirer' : maxReached ? '2 actes maximum' : 'Ajouter au calcul'}">
+          ${isSelected ? '✓' : maxReached ? '–' : '+'}
         </button>
       </div>
     `;
@@ -129,10 +142,7 @@ const CCAM = (() => {
     if (idx >= 0) {
       selectedActes.splice(idx, 1);
     } else {
-      if (selectedActes.length >= 2) {
-        // Max 2 actes CCAM — retirer le premier
-        selectedActes.shift();
-      }
+      if (selectedActes.length >= 2) return; // Max 2 actes — bloqué
       const acte = allActes.find(a => a.code === code);
       if (acte) selectedActes.push(acte);
     }
@@ -167,22 +177,39 @@ const CCAM = (() => {
     }
 
     banner.style.display = '';
-    const acteLines = selectedActes.map(a => {
-      const cumul = a.cumulG || 'non';
-      let ruleText = '';
-      if (cumul === 'oui') ruleText = 'cumulable à 100% avec G';
-      else if (cumul === '50%') ruleText = 'cumulable à 50% avec G';
-      else ruleText = 'non cumulable — le plus rémunérateur sera facturé';
+
+    // Trier par tarif décroissant pour afficher ① principal puis ② 50%
+    const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+    const has2 = selectedActes.length === 2;
+
+    const acteLines = sorted.map((a, idx) => {
+      const rankIcon = has2 ? (idx === 0 ? '① ' : '② ') : '';
+      let tauxLabel = '';
+      let tauxClass = '';
+      if (has2) {
+        tauxLabel = idx === 0 ? '100%' : '50%';
+        tauxClass = idx === 0 ? 'taux-full' : 'taux-half';
+      } else {
+        const cumul = a.cumulG || 'non';
+        if (cumul === 'oui') { tauxLabel = '+ G'; tauxClass = 'taux-full'; }
+        else if (cumul === '50%') { tauxLabel = '50% + G'; tauxClass = 'taux-half'; }
+        else { tauxLabel = 'remplace G si + rémunérateur'; tauxClass = ''; }
+      }
       return `<div class="ccam-sel-item">
-        <strong>${a.code}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
-        <span class="ccam-sel-rule">${ruleText}</span>
+        <strong>${rankIcon}${a.code}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
+        <span class="ccam-sel-taux ${tauxClass}">${tauxLabel}</span>
         <button class="ccam-sel-remove" data-remove="${a.code}">&times;</button>
       </div>`;
     }).join('');
 
+    const limitMsg = has2
+      ? '<div class="ccam-sel-limit">2/2 — retirer un acte pour en ajouter un autre</div>'
+      : '';
+
     banner.innerHTML = `
       <div class="ccam-sel-header">Actes CCAM sélectionnés</div>
       ${acteLines}
+      ${limitMsg}
     `;
 
     banner.querySelectorAll('.ccam-sel-remove').forEach(btn => {

@@ -408,7 +408,11 @@ const Engine = (() => {
         const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
         items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
       } else {
-        if (acte.tarif > consultTarif) {
+        if (replaceConsult) {
+          // Acte précédent a déjà remplacé G — association à 50%
+          const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
+          items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
+        } else if (acte.tarif > consultTarif) {
           replaceConsult = true;
           items.push({ code: acte.code, label: acte.label, montant: acte.tarif });
         } else {
