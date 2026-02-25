@@ -15,6 +15,9 @@
 <body>
   <header class="app-header">
     <h1>Honoraires MG</h1>
+    <button class="view-mode-btn" id="view-mode-btn" title="Basculer entre mode simple et complet">
+      <span id="view-mode-label">− Simple</span>
+    </button>
   </header>
 
   <div class="header-spacer"></div>
@@ -68,7 +71,7 @@
         <div class="acte-grid" id="consult-acte-grid">
           <button class="acte-btn active" data-acte="G">G<span class="info-icon" data-info="G">i</span><span class="acte-price">30€</span></button>
           <button class="acte-btn" data-acte="TCG">TCG<span class="info-icon" data-info="TCG">i</span><span class="acte-price">25€</span></button>
-          <button class="acte-btn" data-acte="TE2">TE2<span class="info-icon" data-info="TE2">i</span><span class="acte-price">23€</span></button>
+          <button class="acte-btn" data-acte="TE2" data-advanced="true">TE2<span class="info-icon" data-info="TE2">i</span><span class="acte-price">23€</span></button>
           <button class="acte-btn" data-acte="APC">APC<span class="info-icon" data-info="APC">i</span><span class="acte-price">60€</span></button>
           <button class="acte-btn" data-acte="GL1">GL1<span class="info-icon" data-info="GL1">i</span><span class="acte-price">60€</span></button>
           <button class="acte-btn" data-acte="GL2">GL2<span class="info-icon" data-info="GL2">i</span><span class="acte-price">60€</span></button>
@@ -77,13 +80,13 @@
           <button class="acte-btn" data-acte="COD">COD<span class="info-icon" data-info="COD">i</span><span class="acte-price">35€</span></button>
           <button class="acte-btn" data-acte="COB">COB<span class="info-icon" data-info="COB">i</span><span class="acte-price">30€</span></button>
           <button class="acte-btn" data-acte="CCP">CCP<span class="info-icon" data-info="CCP">i</span><span class="acte-price">47,50€</span></button>
-          <button class="acte-btn" data-acte="EPG">EPG<span class="info-icon" data-info="EPG">i</span><span class="acte-price">30€</span></button>
-          <button class="acte-btn" data-acte="C2,5">C2,5<span class="info-icon" data-info="C2,5">i</span><span class="acte-price">57,50€</span></button>
-          <button class="acte-btn" data-acte="MPH">MPH<span class="info-icon" data-info="MPH">i</span><span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="CSE">CSE<span class="info-icon" data-info="CSE">i</span><span class="acte-price">47,50€</span></button>
-          <button class="acte-btn" data-acte="CSO">CSO<span class="info-icon" data-info="CSO">i</span><span class="acte-price">47,50€</span></button>
-          <button class="acte-btn" data-acte="CTE">CTE<span class="info-icon" data-info="CTE">i</span><span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="ASE">ASE<span class="info-icon" data-info="ASE">i</span><span class="acte-price">47,50€</span></button>
+          <button class="acte-btn" data-acte="EPG" data-advanced="true">EPG<span class="info-icon" data-info="EPG">i</span><span class="acte-price">30€</span></button>
+          <button class="acte-btn" data-acte="C2,5" data-advanced="true">C2,5<span class="info-icon" data-info="C2,5">i</span><span class="acte-price">57,50€</span></button>
+          <button class="acte-btn" data-acte="MPH" data-advanced="true">MPH<span class="info-icon" data-info="MPH">i</span><span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="CSE" data-advanced="true">CSE<span class="info-icon" data-info="CSE">i</span><span class="acte-price">47,50€</span></button>
+          <button class="acte-btn" data-acte="CSO" data-advanced="true">CSO<span class="info-icon" data-info="CSO">i</span><span class="acte-price">47,50€</span></button>
+          <button class="acte-btn" data-acte="CTE" data-advanced="true">CTE<span class="info-icon" data-info="CTE">i</span><span class="acte-price">60€</span></button>
+          <button class="acte-btn" data-acte="ASE" data-advanced="true">ASE<span class="info-icon" data-info="ASE">i</span><span class="acte-price">47,50€</span></button>
         </div>
       </div>
 
@@ -106,11 +109,11 @@
             <span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIC">i</span></span>
             <span class="majo-label">Insuf. cardiaque</span>
           </button>
-          <button class="majo-btn" data-majo="MIS">
+          <button class="majo-btn" data-majo="MIS" data-advanced="true">
             <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
             <span class="majo-label">Annonce cancer/neuro</span>
           </button>
-          <button class="majo-btn" data-majo="PIV">
+          <button class="majo-btn" data-majo="PIV" data-advanced="true">
             <span class="majo-row-top"><span class="majo-code">PIV</span><span class="majo-price">+30€</span><span class="info-icon" data-info="PIV">i</span></span>
             <span class="majo-label">Annonce VIH</span>
           </button>
@@ -190,11 +193,11 @@
             <span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIC">i</span></span>
             <span class="majo-label">Insuf. cardiaque</span>
           </button>
-          <button class="majo-btn" data-majo="MIS">
+          <button class="majo-btn" data-majo="MIS" data-advanced="true">
             <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
             <span class="majo-label">Annonce cancer/neuro</span>
           </button>
-          <button class="majo-btn" data-majo="PIV">
+          <button class="majo-btn" data-majo="PIV" data-advanced="true">
             <span class="majo-row-top"><span class="majo-code">PIV</span><span class="majo-price">+30€</span><span class="info-icon" data-info="PIV">i</span></span>
             <span class="majo-label">Annonce VIH</span>
           </button>
@@ -351,7 +354,7 @@
     <section id="tab-credits" class="tab-content">
       <div class="section-card credits-card">
         <h2>Honoraires MG</h2>
-        <p class="credits-version">Version 2.2 - Tarifs au 01/01/2026</p>
+        <p class="credits-version">Version 2.3 - Tarifs au 01/01/2026</p>
         <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
         <p>Basé sur la convention médicale 2024-2029.</p>
         <div class="credits-authors">

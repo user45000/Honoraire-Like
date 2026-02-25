@@ -78,6 +78,29 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* Toggle simple/complet */
+.view-mode-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 7px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  border-radius: 10px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.view-mode-btn:hover { background: rgba(255,255,255,0.28); }
+body.mode-simple .view-mode-btn { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+
+/* Masquage des éléments avancés en mode simple */
+body.mode-simple [data-advanced="true"] { display: none !important; }
+
 .app-header h1 {
   font-size: 17px;
   font-weight: 600;

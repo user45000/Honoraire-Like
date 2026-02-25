@@ -99,6 +99,9 @@ const App = (() => {
     // Modal
     initModal();
 
+    // Mode simple/complet
+    initViewMode();
+
     // Afficher l'onglet initial
     Consultation.onShow();
   }
@@ -286,6 +289,31 @@ const App = (() => {
 
   function onGeoChange() {
     Visite.updateDeplacementPrices();
+  }
+
+  // === Mode simple / complet ===
+  function initViewMode() {
+    const btn = document.getElementById('view-mode-btn');
+    const saved = localStorage.getItem('hon_view_mode') || 'complet';
+    applyViewMode(saved);
+    btn.addEventListener('click', () => {
+      const isSimple = document.body.classList.contains('mode-simple');
+      applyViewMode(isSimple ? 'complet' : 'simple');
+    });
+  }
+
+  function applyViewMode(mode) {
+    const isSimple = mode === 'simple';
+    document.body.classList.toggle('mode-simple', isSimple);
+    document.getElementById('view-mode-label').textContent = isSimple ? '+ Complet' : '− Simple';
+    localStorage.setItem('hon_view_mode', mode);
+    // Si un acte avancé était sélectionné et qu'on passe en mode simple → reset sur G
+    if (isSimple) {
+      const activeActe = document.querySelector('#consult-acte-grid .acte-btn.active');
+      if (activeActe && activeActe.dataset.advanced === 'true') {
+        document.querySelector('#consult-acte-grid .acte-btn[data-acte="G"]').click();
+      }
+    }
   }
 
   // === Modal info ===
