@@ -123,9 +123,28 @@ const App = (() => {
     return '/';
   }
 
+  // ── Bannière installation PWA ────────────────────────────────────────────
+  const _isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const _isInstalled = window.navigator.standalone === true
+    || window.matchMedia('(display-mode: standalone)').matches;
+
+  function updateInstallBanner(tabName) {
+    const banner = document.getElementById('pwa-install-banner');
+    if (!banner) return;
+    const dismissed = localStorage.getItem('hon_install_dismissed') === '1';
+    const shouldShow = tabName === 'params' && _isIOS && !_isInstalled && !dismissed;
+    banner.style.display = shouldShow ? 'flex' : 'none';
+  }
+
+  document.getElementById('pwa-install-close')?.addEventListener('click', () => {
+    localStorage.setItem('hon_install_dismissed', '1');
+    document.getElementById('pwa-install-banner').style.display = 'none';
+  });
+
   function switchTab(tabName) {
     currentTab = tabName;
     window.scrollTo(0, 0);
+    updateInstallBanner(tabName);
 
     // Update tab content
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));

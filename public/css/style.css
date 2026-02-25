@@ -573,6 +573,66 @@ body {
   opacity: 0;
 }
 
+/* === Bannière installation PWA === */
+.pwa-install-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  margin-bottom: 12px;
+}
+.pwa-install-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pwa-install-icon svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+.pwa-install-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.pwa-install-text strong {
+  font-size: 14px;
+}
+.pwa-install-text em {
+  font-style: normal;
+  font-weight: 600;
+}
+.pwa-share-icon {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  vertical-align: middle;
+  margin: 0 1px;
+  color: #fff;
+}
+.pwa-install-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
 /* === CCAM === */
 .ccam-search-wrap {
   position: relative;

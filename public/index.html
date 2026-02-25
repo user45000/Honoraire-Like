@@ -260,6 +260,24 @@
 
     <!-- Onglet Paramètres -->
     <section id="tab-params" class="tab-content">
+
+      <!-- Bannière installation PWA iOS (masquée si déjà installé ou ignoré) -->
+      <div id="pwa-install-banner" class="pwa-install-banner" style="display:none">
+        <div class="pwa-install-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <polyline points="12 6 12 14"/>
+            <polyline points="9 11 12 8 15 11"/>
+            <line x1="9" y1="18" x2="15" y2="18"/>
+          </svg>
+        </div>
+        <div class="pwa-install-text">
+          <strong>Installer l'application</strong>
+          <span>Appuyez sur <svg class="pwa-share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> puis <em>"Sur l'écran d'accueil"</em></span>
+        </div>
+        <button class="pwa-install-close" id="pwa-install-close" aria-label="Fermer">✕</button>
+      </div>
+
       <div class="section-card">
         <h3>Secteur conventionnel</h3>
         <div class="toggle-group" data-field="secteur">
