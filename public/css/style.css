@@ -78,25 +78,33 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-/* Toggle simple/complet */
-.view-mode-btn {
+/* Segmented control Simple / Complet */
+.view-mode-toggle {
   position: absolute;
-  right: 12px;
+  right: 10px;
   bottom: 7px;
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
-  border-radius: 10px;
-  padding: 3px 9px;
+  display: flex;
+  background: rgba(0,0,0,0.25);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+}
+.vmt-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.6);
   font-size: 11px;
   font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 6px;
   cursor: pointer;
-  letter-spacing: 0.2px;
+  transition: background 0.15s, color 0.15s;
   white-space: nowrap;
-  transition: background 0.15s;
 }
-.view-mode-btn:hover { background: rgba(255,255,255,0.28); }
-body.mode-simple .view-mode-btn { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.5); }
+.vmt-btn.active {
+  background: white;
+  color: var(--primary);
+}
 
 /* Masquage des éléments avancés en mode simple */
 body.mode-simple [data-advanced="true"] { display: none !important; }

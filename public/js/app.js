@@ -293,19 +293,22 @@ const App = (() => {
 
   // === Mode simple / complet ===
   function initViewMode() {
-    const btn = document.getElementById('view-mode-btn');
+    const toggle = document.getElementById('view-mode-toggle');
     const saved = localStorage.getItem('hon_view_mode') || 'complet';
     applyViewMode(saved);
-    btn.addEventListener('click', () => {
-      const isSimple = document.body.classList.contains('mode-simple');
-      applyViewMode(isSimple ? 'complet' : 'simple');
+    toggle.addEventListener('click', (e) => {
+      const btn = e.target.closest('.vmt-btn');
+      if (!btn) return;
+      applyViewMode(btn.dataset.mode);
     });
   }
 
   function applyViewMode(mode) {
     const isSimple = mode === 'simple';
     document.body.classList.toggle('mode-simple', isSimple);
-    document.getElementById('view-mode-label').textContent = isSimple ? '+ Complet' : '− Simple';
+    document.querySelectorAll('.vmt-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
     localStorage.setItem('hon_view_mode', mode);
     // Si un acte avancé était sélectionné et qu'on passe en mode simple → reset sur G
     if (isSimple) {
