@@ -225,7 +225,6 @@ const Consultation = (() => {
     updateActeStates();
     updateAllMajoStates();
     App.updateModeBar(state.periode !== 'jour', state.mode);
-    document.getElementById('relation-bar').classList.add('visible');
     recalculate();
   }
 

@@ -174,7 +174,6 @@ const App = (() => {
       CCAM.onShow();
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      document.getElementById('relation-bar').classList.remove('visible');
       // Afficher la barre si des actes sont sélectionnés
       const sel = CCAM.getSelectedActes();
       resultBar.style.display = sel.length > 0 ? '' : 'none';
@@ -182,7 +181,6 @@ const App = (() => {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      document.getElementById('relation-bar').classList.remove('visible');
     }
   }
 
@@ -302,12 +300,11 @@ const App = (() => {
     const saved = localStorage.getItem('hon_relation') || 'mt';
     applyRelation(saved, true);
 
-    const group = document.getElementById('relation-shared');
-    group.addEventListener('click', (e) => {
+    // Écoute tous les [data-field="relation"] (consultation + visite)
+    document.addEventListener('click', (e) => {
       const btn = e.target.closest('.toggle-btn');
       if (!btn) return;
-      group.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (!btn.closest('[data-field="relation"]')) return;
       applyRelation(btn.dataset.value, true);
     });
   }
@@ -315,8 +312,8 @@ const App = (() => {
   function applyRelation(value, notify) {
     currentRelation = value;
     localStorage.setItem('hon_relation', value);
-    // Synchroniser le bouton actif
-    document.querySelectorAll('#relation-shared .toggle-btn').forEach(b => {
+    // Sync tous les toggles relation (les deux onglets)
+    document.querySelectorAll('[data-field="relation"] .toggle-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.value === value);
     });
     if (notify) {

@@ -168,15 +168,9 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   display: block;
 }
 
-/* === Barre patientèle (MT / hors patientèle) === */
-.relation-bar {
-  margin-left: 12px;
-  margin-right: 12px;
-  display: none;
-}
-
-.relation-bar.visible {
-  display: block;
+/* Espacement entre deux toggle-groups dans la même carte (ex: Patientèle + Âge) */
+.section-card .toggle-group + .toggle-group {
+  margin-top: 8px;
 }
 
 /* === Main === */
