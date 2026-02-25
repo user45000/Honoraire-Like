@@ -20,7 +20,7 @@
     },
     "TE2": {
       "label": "Téléexpertise (médecin requis)",
-      "tarifs": { "metro": 20.00, "antilles": 24.00, "reunion": 24.00 },
+      "tarifs": { "metro": 23.00, "antilles": 23.00, "reunion": 23.00 },
       "type": "consultation",
       "description": "Acte du médecin qui répond à une demande de téléexpertise. Max 4 fois/an par patient pour le même médecin requis. Réponse sous 7 jours (ou 24h si urgence). Acte isolé, non cumulable avec G/VG pour le même patient le même jour."
     },
@@ -73,6 +73,54 @@
       "jeuneOnly": true,
       "amo100": true,
       "description": "Première consultation de contraception et prévention en santé sexuelle. Patient ≤ 25 ans (hommes et femmes). 100% AMO automatique. 1 fois par patient. Non cumulable avec MCG."
+    },
+    "EPG": {
+      "label": "Examen médical futur co-parent",
+      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "type": "consultation",
+      "description": "Examen du futur père/co-parent avant la naissance. Même tarif que G. Code transmis en MTX. Non cumulable avec MCG."
+    },
+    "C2,5": {
+      "label": "Entretien prénatal précoce",
+      "tarifs": { "metro": 57.50, "antilles": 57.50, "reunion": 57.50 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Première séance individuelle ou en couple à l'entretien prénatal précoce obligatoire. 100% AMO."
+    },
+    "ASE": {
+      "label": "Consultation Aide Sociale à l'Enfance",
+      "tarifs": { "metro": 47.50, "antilles": 47.50, "reunion": 47.50 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation pour enfants jusqu'à 18 ans confiés à l'Aide Sociale à l'Enfance. 100% AMO."
+    },
+    "CSE": {
+      "label": "Consultation suivi enfant autiste",
+      "tarifs": { "metro": 47.50, "antilles": 47.50, "reunion": 47.50 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation de suivi et de coordination de la prise en charge d'un enfant autiste (CSE). 100% AMO."
+    },
+    "CSO": {
+      "label": "Consultation obésité enfant",
+      "tarifs": { "metro": 47.50, "antilles": 47.50, "reunion": 47.50 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation pour les enfants en risque avéré d'obésité de 3 ans à moins de 13 ans. 100% AMO."
+    },
+    "CTE": {
+      "label": "Consultation repérage TND",
+      "tarifs": { "metro": 60.00, "antilles": 60.00, "reunion": 60.00 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Repérage des troubles du neuro-développement (TND) ou d'un trouble de la relation précoce parents-enfant. Cabinet uniquement. 100% AMO."
+    },
+    "MPH": {
+      "label": "Consultation très complexe handicap",
+      "tarifs": { "metro": 60.00, "antilles": 60.00, "reunion": 60.00 },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation très complexe dans le cadre de l'amélioration de la prise en charge des personnes avec handicap. 100% AMO. Non cumulable avec GL3 pour la même demande."
     },
     "VG": {
       "label": "Visite généraliste",
@@ -330,6 +378,95 @@
     { "code": "ALQP003", "label": "Tympanométrie", "tarif": 26.40, "cumulG": "non", "note": "Acte isolé" },
     { "code": "QZHA001", "label": "Biopsie dermo-épidermique", "tarif": 10.50, "cumulG": "50%", "note": "Cumulable à 50% avec G/VG (biopsie)" },
     { "code": "FSD", "label": "Forfait Sécurité Dermatologie", "tarif": 45.00, "cumulG": "non", "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire." },
-    { "code": "YYYY490", "label": "Supplément ECG en visite à domicile", "tarif": 9.60, "cumulG": "non", "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile." }
+    { "code": "YYYY490", "label": "Supplément ECG en visite à domicile", "tarif": 9.60, "cumulG": "non", "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile." },
+
+    { "code": "GLQP007", "label": "Polygraphie respiratoire nocturne", "tarif": 151.68, "cumulG": "non", "note": "Dépistage SAHOS. Acte isolé." },
+    { "code": "YYYY010", "label": "Traitement de premier recours (actes techniques)", "tarif": 48.00, "cumulG": "non", "note": "Traitement nécessitant actes techniques et présence prolongée." },
+
+    { "code": "QZJA001", "label": "Suture plaie profonde >10cm (hors face)", "tarif": 88.68, "cumulG": "non", "note": "Cabinet uniquement." },
+    { "code": "QZJA009", "label": "Évacuation collection superficielle cutanée", "tarif": 39.91, "cumulG": "non", "note": "Abcès, kyste superficiel." },
+    { "code": "QZJA012", "label": "Suture plaie profonde 3-10cm (hors face/main)", "tarif": 64.29, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZJA015", "label": "Suture plaie superficielle >10cm (hors face)", "tarif": 64.29, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZJA016", "label": "Suture plaie profonde <3cm (hors face/main)", "tarif": 50.99, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZJA021", "label": "Suture plusieurs plaies pulpo-unguéales", "tarif": 147.80, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZJA022", "label": "Suture plaie pulpo-unguéale", "tarif": 84.25, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZJB002", "label": "Évacuation collection superficielle et/ou profonde", "tarif": 26.60, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "QAJA002", "label": "Suture plaie superficielle face >10cm", "tarif": 86.46, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAJA004", "label": "Suture plaie profonde face <3cm", "tarif": 62.70, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAJA005", "label": "Suture plaie superficielle face 3-10cm", "tarif": 77.60, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAJA013", "label": "Suture plaie superficielle face <3cm", "tarif": 31.35, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "HAJA003", "label": "Suture plaie cutanée lèvre non transfixiante", "tarif": 35.47, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "HAJA006", "label": "Suture plaie transfixiante de lèvre", "tarif": 57.64, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "HAJA010", "label": "Suture plaie muqueuse intrabuccale", "tarif": 33.99, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "GAJA002", "label": "Suture plaie du nez", "tarif": 56.16, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "CAJA002", "label": "Suture plaie de l'auricule", "tarif": 48.77, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "QZFA001", "label": "Exérèse 2-5 lésions sous-cutanées (malignes)", "tarif": 73.90, "cumulG": "non", "note": "Associé au FSD si exérèse ambulatoire." },
+    { "code": "QZFA002", "label": "Exérèse 1 lésion sous-cutanée (maligne)", "tarif": 56.39, "cumulG": "non", "note": "Associé au FSD si exérèse ambulatoire." },
+    { "code": "QZFA010", "label": "Exérèse tangentielle 1-20 molluscum contagiosum", "tarif": 24.49, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA013", "label": "Curetage 1-5 lésions cutanées", "tarif": 34.13, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA015", "label": "Exérèse tangentielle ≥21 molluscum contagiosum", "tarif": 37.84, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA021", "label": "Exérèse tangentielle ≥6 lésions cutanées", "tarif": 36.36, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA022", "label": "Curetage >6 lésions cutanées", "tarif": 44.52, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA028", "label": "Exérèse tangentielle 1-5 lésions cutanées", "tarif": 30.42, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZFA036", "label": "Exérèse lésion superficielle <5cm²", "tarif": 28.80, "cumulG": "non", "note": "Associé au FSD si exérèse ambulatoire." },
+
+    { "code": "QZNP004", "label": "Cryothérapie 1-10 lésions (corps)", "tarif": 23.74, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZNP012", "label": "Cryothérapie 11-50 lésions (corps)", "tarif": 31.16, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZNP005", "label": "Cryothérapie >50 lésions (corps)", "tarif": 40.07, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QANP007", "label": "Cryothérapie 1-10 lésions (visage)", "tarif": 28.80, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QANP005", "label": "Cryothérapie >11 lésions (visage)", "tarif": 36.36, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZNP013", "label": "Électrocoagulation 1-5 lésions", "tarif": 25.23, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZNP025", "label": "Électrocoagulation ≥6 lésions", "tarif": 34.13, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "QAGA001", "label": "Ablation plusieurs corps étrangers profonds (visage/mains)", "tarif": 111.59, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAGA002", "label": "Ablation plusieurs corps étrangers superficiels (visage/mains)", "tarif": 79.07, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAGA003", "label": "Ablation corps étranger superficiel (visage/main)", "tarif": 49.51, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QAGA004", "label": "Ablation corps étranger profond (visage/main)", "tarif": 84.25, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZGA003", "label": "Ablation corps étranger profond (hors visage/mains)", "tarif": 62.82, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZGA006", "label": "Ablation plusieurs corps étrangers profonds (hors visage)", "tarif": 87.94, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZGA007", "label": "Ablation plusieurs corps étrangers superficiels (hors visage)", "tarif": 70.21, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "GAGD002", "label": "Ablation corps étranger de la cavité nasale", "tarif": 36.80, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "QZHA003", "label": "Biopsie tablette/lit de l'ongle", "tarif": 45.26, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZHA005", "label": "Biopsie des tissus sous-cutanés", "tarif": 26.60, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JMHA001", "label": "Biopsie de la vulve", "tarif": 25.99, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "QZGA002", "label": "Ablation ou changement d'un implant hormonal", "tarif": 41.80, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZLA004", "label": "Pose d'implant hormonal", "tarif": 18.77, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "QZQP001", "label": "Dermatoscopie surveillance lésion à haut risque", "tarif": 54.10, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "EGJA001", "label": "Évacuation d'une thrombose hémorroïdaire externe", "tarif": 62.70, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "HKFA008", "label": "Destruction de lésion de l'anus", "tarif": 38.40, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JZNP001", "label": "Destruction 10-50 lésions périnéales / organes génitaux", "tarif": 52.68, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JZNP002", "label": "Destruction <10 lésions périnéales / organes génitaux", "tarif": 36.36, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JZNP003", "label": "Destruction ≥51 lésions périnéales ou lésion >30cm²", "tarif": 75.68, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JMFA002", "label": "Exérèse de lésion vulvopérinéale", "tarif": 45.49, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JHNP001", "label": "Destruction de lésion du gland et/ou du prépuce", "tarif": 40.65, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "JHFA015", "label": "Exérèse de lésion de la peau du pénis", "tarif": 51.73, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "CAGD001", "label": "Ablation bouchon de cérumen simple (uni/bilatéral)", "tarif": 20.00, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "CAGD002", "label": "Ablation bouchon de cérumen épidermique (uni/bilatéral)", "tarif": 31.20, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "GABD001", "label": "Tamponnement nasal antérieur et postérieur", "tarif": 58.40, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "GABD002", "label": "Tamponnement nasal antérieur", "tarif": 28.80, "cumulG": "non", "note": "Acte isolé." },
+
+    { "code": "MZHB002", "label": "Ponction articulaire membre supérieur", "tarif": 30.10, "cumulG": "non", "note": "Sans guidage. Acte isolé." },
+    { "code": "NZHB002", "label": "Ponction articulaire membre inférieur", "tarif": 30.10, "cumulG": "non", "note": "Sans guidage. Acte isolé." },
+    { "code": "NZJB001", "label": "Évacuation collection articulaire membre inférieur", "tarif": 63.00, "cumulG": "non", "note": "Par voie transcutanée sans guidage." },
+
+    { "code": "MZMP001", "label": "Contention souple articulation membre supérieur", "tarif": 31.35, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MZMP004", "label": "Attelle rigide poignet/main (fracture sans réduction)", "tarif": 30.30, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MZMP006", "label": "Attelle rigide avant-bras/poignet/main (sans coude)", "tarif": 27.34, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MZMP013", "label": "Attelle antébrachio-palmaire (fracture sans réduction)", "tarif": 35.47, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MGMP001", "label": "Attelle de posture poignet et/ou main", "tarif": 46.90, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MHMP007", "label": "Orthèse statique d'un doigt", "tarif": 38.40, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "NFMP001", "label": "Contention souple du genou", "tarif": 41.80, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "NGMP001", "label": "Contention souple cheville/pied ou semelle plâtrée", "tarif": 20.90, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "NZMP003", "label": "Attelle rigide jambe/cheville/pied (sans genou)", "tarif": 27.57, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "NZMP006", "label": "Attelle rigide fémoro-jambière (fracture sans réduction)", "tarif": 44.34, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "NZMP014", "label": "Attelle rigide jambier-pédieuse (fracture sans réduction)", "tarif": 32.52, "cumulG": "non", "note": "Acte isolé." },
+    { "code": "MADP001", "label": "Contention orthopédique fracture de clavicule", "tarif": 41.80, "cumulG": "non", "note": "Acte isolé." }
   ]
 }

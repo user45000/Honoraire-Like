@@ -38,7 +38,8 @@ const Engine = (() => {
    * Actes considérés comme "complexes" (art. 15.8/15.9)
    * Non cumulables avec MCG et MEG
    */
-  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP', 'CCP'];
+  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP', 'CCP',
+    'EPG', 'C2,5', 'ASE', 'CSE', 'CSO', 'CTE', 'MPH'];
 
   /**
    * Actes enfant (0-6 ans) — grisés si patient non enfant
@@ -70,7 +71,9 @@ const Engine = (() => {
     'SNP', 'MRT', 'SHE',
     'COE', 'COB', 'COD', 'CCP',
     // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
-    'RDV'
+    'RDV',
+    // Consultations spécialisées à tarif national 100% AMO
+    'ASE', 'CSE', 'CSO', 'CTE', 'MPH', 'C2,5'
   ];
 
   /**
