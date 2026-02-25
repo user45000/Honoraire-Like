@@ -31,6 +31,12 @@ const Visite = (() => {
     // Type de visite
     const acteGrid = document.getElementById('visite-acte-grid');
     acteGrid.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        showActeInfo(infoIcon.dataset.info);
+        return;
+      }
       const btn = e.target.closest('.acte-btn');
       if (!btn) return;
       acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));

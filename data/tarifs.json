@@ -6,17 +6,20 @@
     "G": {
       "label": "Consultation généraliste",
       "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Consultation de médecine générale de secteur 1. Tarif de base. Applicable par le médecin traitant ou un autre généraliste. Cumulable avec la plupart des majorations (MCG, MEG, MSH, MIC, MIS, PIV, SNP, MRT…)."
     },
     "APC": {
       "label": "Avis ponctuel de consultant",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Consultation d'un médecin (généraliste ou spécialiste) à la demande explicite du médecin traitant. 1 fois par épisode pathologique. Une synthèse doit être adressée au MT. Non cumulable avec MCG."
     },
     "TCG": {
       "label": "Téléconsultation",
       "tarifs": { "metro": 25.00, "antilles": 30.00, "reunion": 30.00 },
-      "type": "consultation"
+      "type": "consultation",
+      "description": "Téléconsultation par vidéo (caméra obligatoire). Équivalent du G à distance. Nécessite l'accès au dossier patient. Cumulable avec majorations standards (sauf MEG). Non utilisable pour la première consultation d'un patient."
     },
     "TE2": {
       "label": "Téléexpertise (médecin requis)",
@@ -50,21 +53,24 @@
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
       "type": "consultation",
       "enfantOnly": true,
-      "amo100": true
+      "amo100": true,
+      "description": "Examen médical obligatoire du nourrisson avec délivrance d'un certificat de santé (2e, 9e ou 24e mois). Remis à la PMI. 100% AMO automatique."
     },
     "COD": {
       "label": "Examen obligatoire enfant <6 ans",
       "tarifs": { "metro": 35.00, "antilles": 42.00, "reunion": 42.00 },
       "type": "consultation",
       "enfantOnly": true,
-      "amo100": true
+      "amo100": true,
+      "description": "Examen médical obligatoire entre 3 mois et 6 ans (hors examens COE avec certificat). 100% AMO automatique."
     },
     "COB": {
       "label": "Examen obligatoire enfant ≥6 ans",
       "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
       "type": "consultation",
       "jeuneOnly": true,
-      "amo100": true
+      "amo100": true,
+      "description": "Examen médical obligatoire entre 6 et 16 ans. 100% AMO automatique."
     },
     "CCP": {
       "label": "Consultation contraception et prévention sexuelle",
@@ -125,17 +131,20 @@
     "VG": {
       "label": "Visite généraliste",
       "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
-      "type": "visite"
+      "type": "visite",
+      "description": "Visite à domicile du médecin généraliste. Équivalent du G pour les actes réalisés au domicile du patient. Indemnités de déplacement (MD, MDM, MDD, MDN, MDI) et IK à ajouter."
     },
     "VL": {
       "label": "Visite longue",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "visite"
+      "type": "visite",
+      "description": "Visite longue à domicile pour patient polypathologique ou situation nécessitant un temps de présence prolongé. Médecin traitant uniquement. Cumulable avec majorations (MUT, MRT, SNP…)."
     },
     "VSP": {
       "label": "Visite très complexe (soins palliatifs)",
       "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "visite"
+      "type": "visite",
+      "description": "Visite très complexe à domicile dans le cadre de soins palliatifs ou de situation médicale grave. Non cumulable avec VL pour le même patient le même jour."
     }
   },
   "majorations": {
