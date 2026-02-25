@@ -153,6 +153,12 @@ const Engine = (() => {
         reason = 'Non cumulable avec majorations horaires non régulées (art. 14.1.3)';
       }
 
+      // 6b. MHP : uniquement en horaires PDSA — inhibé en journée normale (art. 22-4)
+      if (available && code === 'MHP' && periode === 'jour') {
+        available = false;
+        reason = 'Hors horaires PDSA (nuit, dim. et jours fériés uniquement)';
+      }
+
       // 7. MHP : non cumulable avec PDSA (art. 22-4)
       if (available && code === 'MHP' && isRegule) {
         available = false;
@@ -474,8 +480,9 @@ const Engine = (() => {
       // SNP : pas avec PDSA ni F/MN/MM
       if (code === 'SNP' && (isRegule || (isHorsJour && !isRegule))) continue;
 
-      // MHP : pas avec PDSA, F/MN/MM, MDN/MDD
+      // MHP : pas avec PDSA, F/MN/MM, MDN/MDD ; uniquement en horaires PDSA
       if (code === 'MHP') {
+        if (periode === 'jour') continue;
         if (isRegule) continue;
         if (isHorsJour && !isRegule) continue;
         if (isVisite && (deplacement === 'MDN' || deplacement === 'MDD')) continue;

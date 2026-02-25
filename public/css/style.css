@@ -173,6 +173,20 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   margin-top: 8px;
 }
 
+/* Carte coordination numérique : TE2 (acte) + RQD (majoration) côte à côte */
+.coord-grid {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.coord-grid .acte-btn {
+  flex: 0 0 auto;
+  min-width: 68px;
+}
+.coord-grid .majo-btn {
+  flex: 1;
+}
+
 /* === Main === */
 .app-main {
   padding-top: 8px;
@@ -344,6 +358,13 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 .majo-btn.disabled {
   opacity: 0.35;
   pointer-events: none;
+}
+
+/* L'icône ⓘ reste cliquable même si le bouton est inhibé */
+.majo-btn.disabled .info-icon,
+.acte-btn.disabled .info-icon {
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .majo-btn:active {

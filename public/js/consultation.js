@@ -26,7 +26,7 @@ const Consultation = (() => {
       recalculate();
     });
 
-    // Type d'acte
+    // Type d'acte (grille principale)
     const acteGrid = document.getElementById('consult-acte-grid');
     acteGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -37,14 +37,14 @@ const Consultation = (() => {
       }
       const btn = e.target.closest('.acte-btn');
       if (!btn || btn.classList.contains('disabled')) return;
-      acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
       updateAllMajoStates();
       recalculate();
     });
 
-    // Majorations
+    // Majorations (grille principale)
     const majoGrid = document.getElementById('consult-majo-grid');
     majoGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -59,6 +59,33 @@ const Consultation = (() => {
       toggleMajoration(code, btn);
       updateAllMajoStates();
       recalculate();
+    });
+
+    // Coordination numérique (TE2 acte + RQD majoration)
+    const coordCard = document.getElementById('consult-coord-card');
+    coordCard.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        if (e.target.closest('.acte-btn')) showActeInfo(infoIcon.dataset.info);
+        else showMajoInfo(infoIcon.dataset.info);
+        return;
+      }
+      const acteBtn = e.target.closest('.acte-btn');
+      if (acteBtn && !acteBtn.classList.contains('disabled')) {
+        document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+        acteBtn.classList.add('active');
+        state.acte = acteBtn.dataset.acte;
+        updateAllMajoStates();
+        recalculate();
+        return;
+      }
+      const majoBtn = e.target.closest('.majo-btn');
+      if (majoBtn && !majoBtn.classList.contains('disabled')) {
+        toggleMajoration(majoBtn.dataset.majo, majoBtn);
+        updateAllMajoStates();
+        recalculate();
+      }
     });
 
     updateActePrices();
@@ -92,8 +119,8 @@ const Consultation = (() => {
       (isActeSenior && state.age !== 'senior')
     ) {
       state.acte = 'G';
-      acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
-      acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#tab-consultation [data-acte="G"]').classList.add('active');
     }
     updateActeStates();
   }
@@ -108,7 +135,7 @@ const Consultation = (() => {
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
         state.majorations = state.majorations.filter(m => m !== ex);
-        const exBtn = document.querySelector(`#consult-majo-grid [data-majo="${ex}"]`);
+        const exBtn = document.querySelector(`#tab-consultation [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
       // Vérifier aussi les exclusions inverses
@@ -118,7 +145,7 @@ const Consultation = (() => {
           const majo = tarifs.majorations[m];
           if (majo?.exclusifs?.includes(code)) {
             state.majorations = state.majorations.filter(x => x !== m);
-            const mBtn = document.querySelector(`#consult-majo-grid [data-majo="${m}"]`);
+            const mBtn = document.querySelector(`#tab-consultation [data-majo="${m}"]`);
             if (mBtn) mBtn.classList.remove('active');
           }
         }
@@ -136,9 +163,8 @@ const Consultation = (() => {
     const availability = Engine.getAvailableMajos(
       state.acte, state.age, state.periode, state.mode, false, null, state.majorations, state.heure, state.relation
     );
-    const majoGrid = document.getElementById('consult-majo-grid');
 
-    majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
+    document.querySelectorAll('#tab-consultation .majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
       const info = availability[code];
       if (!info) return;
@@ -197,8 +223,7 @@ const Consultation = (() => {
   }
 
   function updateActePrices() {
-    const grid = document.getElementById('consult-acte-grid');
-    grid.querySelectorAll('.acte-btn').forEach(btn => {
+    document.querySelectorAll('#tab-consultation .acte-btn').forEach(btn => {
       const code = btn.dataset.acte;
       const tarif = Engine.getActeTarif(code);
       const priceEl = btn.querySelector('.acte-price');
@@ -233,9 +258,8 @@ const Consultation = (() => {
     // Si un acte MT-only était actif (GL1/2/3) → reset sur G
     if (value === 'hors' && Engine.ACTES_SENIOR.includes(state.acte)) {
       state.acte = 'G';
-      const acteGrid = document.getElementById('consult-acte-grid');
-      acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
-      acteGrid.querySelector('[data-acte="G"]').classList.add('active');
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#tab-consultation [data-acte="G"]').classList.add('active');
     }
     updateActeStates();
     updateAllMajoStates();

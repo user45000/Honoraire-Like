@@ -47,7 +47,7 @@ const Visite = (() => {
       recalculate();
     });
 
-    // Majorations
+    // Majorations (grille principale)
     const majoGrid = document.getElementById('visite-majo-grid');
     majoGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -60,6 +60,22 @@ const Visite = (() => {
       if (!btn || btn.classList.contains('disabled')) return;
       const code = btn.dataset.majo;
       toggleMajoration(code, btn);
+      updateAllMajoStates();
+      recalculate();
+    });
+
+    // Coordination numérique (RQD)
+    const coordCard = document.getElementById('visite-coord-card');
+    coordCard.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        showMajoInfo(infoIcon.dataset.info);
+        return;
+      }
+      const btn = e.target.closest('.majo-btn');
+      if (!btn || btn.classList.contains('disabled')) return;
+      toggleMajoration(btn.dataset.majo, btn);
       updateAllMajoStates();
       recalculate();
     });
@@ -143,7 +159,7 @@ const Visite = (() => {
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
         state.majorations = state.majorations.filter(m => m !== ex);
-        const exBtn = document.querySelector(`#visite-majo-grid [data-majo="${ex}"]`);
+        const exBtn = document.querySelector(`#tab-visite [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
       // Vérifier les exclusions inverses
@@ -153,7 +169,7 @@ const Visite = (() => {
           const majo = tarifs.majorations[m];
           if (majo?.exclusifs?.includes(code)) {
             state.majorations = state.majorations.filter(x => x !== m);
-            const mBtn = document.querySelector(`#visite-majo-grid [data-majo="${m}"]`);
+            const mBtn = document.querySelector(`#tab-visite [data-majo="${m}"]`);
             if (mBtn) mBtn.classList.remove('active');
           }
         }
@@ -170,9 +186,8 @@ const Visite = (() => {
     const availability = Engine.getAvailableMajos(
       state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations, state.heure, state.relation
     );
-    const majoGrid = document.getElementById('visite-majo-grid');
 
-    majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
+    document.querySelectorAll('#tab-visite .majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
       const info = availability[code];
       if (!info) return;
