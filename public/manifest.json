@@ -1,0 +1,26 @@
+{
+  "name": "Honoraires MG",
+  "short_name": "Honoraires",
+  "description": "Calcul rapide d'honoraires pour médecins généralistes",
+  "start_url": "/honoraire-like/",
+  "scope": "/honoraire-like/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2c3e6b",
+  "theme_color": "#2c3e6b",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/honoraire-like/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/honoraire-like/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
