@@ -16,6 +16,7 @@ const App = (() => {
     Consultation.init();
     Visite.init();
     CCAM.init();
+    await Account.init();
 
     // Navigation
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -181,6 +182,7 @@ const App = (() => {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
+      if (tabName === 'compte') Account.onShow();
     }
   }
 
