@@ -1103,7 +1103,6 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 .result-total {
   font-size: 22px;
   font-weight: 700;
-  font-family: var(--font-mono);
   white-space: nowrap;
 }
 
