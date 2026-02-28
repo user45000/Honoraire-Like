@@ -117,9 +117,9 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 
 .app-header h1 {
   font-family: var(--font-display);
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 300;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 /* === Barre période horaire === */
@@ -1103,7 +1103,7 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 
 .result-total {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 300;
   white-space: nowrap;
 }
 
