@@ -24,6 +24,11 @@
 
   <div class="header-spacer"></div>
 
+  <button class="mode-upgrade-btn" id="mode-upgrade-btn" aria-label="Passer en mode Complet">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+    Complet
+  </button>
+
   <div class="section-card periode-bar">
     <h3>Période</h3>
     <div class="toggle-group" id="periode-shared">
@@ -525,6 +530,10 @@
         selectedPlan = plan.dataset.plan;
         subscribeBtn.textContent = 'S\'abonner — ' + plan.dataset.price;
       });
+    });
+
+    document.getElementById('mode-upgrade-btn').addEventListener('click', function () {
+      document.querySelector('.vmt-btn[data-mode="complet"]').click();
     });
 
     document.getElementById('paywall-skip').addEventListener('click', function () {

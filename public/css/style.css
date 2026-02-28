@@ -113,6 +113,37 @@ body {
 /* Masquage des éléments avancés en mode simple */
 body.mode-simple [data-advanced="true"] { display: none !important; }
 
+/* Bouton upgrade flottant — visible uniquement en mode Simple */
+.mode-upgrade-btn {
+  position: fixed;
+  top: calc(var(--header-height) + var(--safe-top) + 8px);
+  right: 12px;
+  display: none;
+  align-items: center;
+  gap: 5px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 5px 11px 5px 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 99;
+  box-shadow: 0 2px 10px rgba(37,99,235,0.4);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.mode-upgrade-btn:active {
+  transform: scale(0.94);
+  box-shadow: 0 1px 4px rgba(37,99,235,0.3);
+}
+
+body.mode-simple .mode-upgrade-btn {
+  display: flex;
+}
+
 /* Icône mode sur "Type d'acte" */
 .view-mode-badge {
   display: inline-flex;
