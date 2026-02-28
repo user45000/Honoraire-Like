@@ -328,7 +328,7 @@ const App = (() => {
 
   // === Mode simple / complet ===
   function initViewMode() {
-    const toggle = document.getElementById('view-mode-toggle');
+    const toggle = document.querySelector('.app-header');
     const saved = localStorage.getItem('hon_view_mode') || 'complet';
     applyViewMode(saved);
     toggle.addEventListener('click', (e) => {
