@@ -398,11 +398,11 @@ const App = (() => {
   // === Auto-détection période selon jour + heure (NGAP) ===
   function computePeriodeFromJourHeure(jour, heure) {
     // jour: 0=Lun..4=Ven, 5=Sam, 6=Dim, 7=Férié
-    if (jour >= 6) return 'dimferie';           // Dimanche ou Jour férié
-    if (heure < 6) return 'nuitprofonde';       // 0h-6h → Nuit profonde (MM)
-    if (heure >= 20 || heure < 8) return 'nuit'; // 6h-8h et 20h-24h → Nuit (MN)
-    if (jour === 5 && heure >= 12) return 'nuit'; // Samedi 12h-20h → Nuit (MN)
-    return 'jour';                               // Reste → Jour
+    if (heure < 6) return 'nuitprofonde';             // 0h-6h → Nuit profonde (MM), tous les jours
+    if (heure < 8 || heure >= 20) return 'nuit';      // 6h-8h ou 20h-24h → Nuit (MN), tous les jours
+    if (jour >= 6) return 'dimferie';                 // Dimanche ou Jour férié (8h-20h)
+    if (jour === 5 && heure >= 12) return 'dimferie'; // Samedi 12h-20h → PDSA (assimilé Dim/Férié)
+    return 'jour';                                    // Reste → Jour
   }
 
   function applyAutoPeriode() {
