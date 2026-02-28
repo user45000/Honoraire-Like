@@ -1304,54 +1304,98 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 .paywall-plans {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
-/* Plan annuel — carte blanche, mise en avant */
-.paywall-plan-year {
+.paywall-plan {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: rgba(255,255,255,0.07);
+  border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.paywall-plan.active {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.55);
+}
+
+.plan-radio {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.paywall-plan.active .plan-radio {
+  border-color: white;
   background: white;
-  border-radius: 18px;
-  padding: 20px 20px 18px;
-  position: relative;
+  box-shadow: inset 0 0 0 4px var(--primary-dark);
+}
+
+.plan-info {
+  flex: 1;
+  text-align: left;
+}
+
+.plan-name {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.paywall-plan.active .plan-name {
+  color: rgba(255,255,255,0.9);
 }
 
 .plan-badge {
-  position: absolute;
-  top: -11px;
-  left: 50%;
-  transform: translateX(-50%);
   background: var(--primary);
   color: white;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  padding: 3px 14px;
+  padding: 2px 8px;
   border-radius: 20px;
   white-space: nowrap;
 }
 
-.plan-price-main {
+.plan-price {
   font-family: var(--font-display);
-  font-size: 38px;
+  font-size: 26px;
   font-weight: 300;
-  color: var(--text);
-  letter-spacing: -0.03em;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: -0.02em;
   line-height: 1;
-  margin-bottom: 4px;
 }
 
-.plan-price-main span {
-  font-size: 16px;
+.paywall-plan.active .plan-price {
+  color: white;
+}
+
+.plan-price span {
+  font-size: 13px;
   font-weight: 300;
-  color: var(--text-secondary);
 }
 
 .plan-detail {
-  font-size: 12px;
-  color: var(--text-secondary);
-  margin-bottom: 16px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
 }
 
 .plan-btn-primary {
@@ -1360,52 +1404,16 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 14px;
+  padding: 15px;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
+  margin-bottom: 4px;
 }
 
 .plan-btn-primary:active { opacity: 0.82; }
-
-/* Plan mensuel — carte sombre, secondaire */
-.paywall-plan-month {
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 16px;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.plan-price-secondary {
-  font-size: 20px;
-  font-weight: 300;
-  color: white;
-}
-
-.plan-price-secondary span {
-  font-size: 13px;
-  color: rgba(255,255,255,0.5);
-}
-
-.plan-btn-secondary {
-  background: rgba(255,255,255,0.1);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 10px;
-  padding: 8px 18px;
-  font-family: var(--font-body);
-  font-size: 13px;
-  font-weight: 400;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.plan-btn-secondary:active { background: rgba(255,255,255,0.18); }
 
 .paywall-skip {
   background: none;

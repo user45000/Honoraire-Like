@@ -463,17 +463,23 @@
       <h2 class="paywall-title">Honoraires <strong>MG</strong></h2>
       <p class="paywall-subtitle">Votre période d'essai gratuite est terminée</p>
       <div class="paywall-plans">
-        <div class="paywall-plan paywall-plan-year">
-          <span class="plan-badge">Meilleur prix</span>
-          <div class="plan-price-main">9,99€ <span>/ an</span></div>
-          <div class="plan-detail">soit 0,83€ / mois &nbsp;·&nbsp; 2 mois offerts</div>
-          <button class="plan-btn plan-btn-primary" id="paywall-yearly">S'abonner à l'année</button>
+        <div class="paywall-plan active" id="plan-month" data-plan="month" data-price="1€/mois">
+          <div class="plan-radio"></div>
+          <div class="plan-info">
+            <div class="plan-name">Mensuel</div>
+            <div class="plan-price">1€ <span>/ mois</span></div>
+          </div>
         </div>
-        <div class="paywall-plan paywall-plan-month">
-          <div class="plan-price-secondary">0,99€ <span>/ mois</span></div>
-          <button class="plan-btn plan-btn-secondary" id="paywall-monthly">Mensuel</button>
+        <div class="paywall-plan" id="plan-year" data-plan="year" data-price="10€/an">
+          <div class="plan-radio"></div>
+          <div class="plan-info">
+            <div class="plan-name">Annuel <span class="plan-badge">2 mois offerts</span></div>
+            <div class="plan-price">10€ <span>/ an</span></div>
+            <div class="plan-detail">soit 0,83€ / mois</div>
+          </div>
         </div>
       </div>
+      <button class="plan-btn-primary" id="paywall-subscribe">S'abonner — 1€/mois</button>
       <button class="paywall-skip" id="paywall-skip">Continuer sans s'abonner →</button>
     </div>
   </div>
@@ -491,15 +497,27 @@
     if (count >= 2) {
       document.getElementById('paywall-overlay').style.display = 'flex';
     }
+    // Sélection du plan
+    var selectedPlan = 'month';
+    var plans = document.querySelectorAll('.paywall-plan');
+    var subscribeBtn = document.getElementById('paywall-subscribe');
+
+    plans.forEach(function(plan) {
+      plan.addEventListener('click', function() {
+        plans.forEach(function(p) { p.classList.remove('active'); });
+        plan.classList.add('active');
+        selectedPlan = plan.dataset.plan;
+        subscribeBtn.textContent = 'S\'abonner — ' + plan.dataset.price;
+      });
+    });
+
     document.getElementById('paywall-skip').addEventListener('click', function () {
       document.getElementById('paywall-overlay').style.display = 'none';
     });
-    // Boutons abonnement — Stripe à connecter
-    document.getElementById('paywall-yearly').addEventListener('click', function () {
-      alert('Paiement bientôt disponible — abonnement annuel 9,99€');
-    });
-    document.getElementById('paywall-monthly').addEventListener('click', function () {
-      alert('Paiement bientôt disponible — abonnement mensuel 0,99€');
+
+    // Bouton abonnement — Stripe à connecter
+    subscribeBtn.addEventListener('click', function () {
+      alert('Paiement bientôt disponible — ' + (selectedPlan === 'year' ? '10€/an' : '1€/mois'));
     });
   })();
   </script>
