@@ -485,12 +485,10 @@
   <script src="js/app.js"></script>
   <script>
   (function () {
-    const KEY_VISIT = 'hon_first_visit';
-    if (!localStorage.getItem(KEY_VISIT)) {
-      localStorage.setItem(KEY_VISIT, Date.now().toString());
-    }
-    const days = (Date.now() - parseInt(localStorage.getItem(KEY_VISIT))) / 86400000;
-    if (days >= 3) {
+    const KEY_COUNT = 'hon_visit_count';
+    const count = parseInt(localStorage.getItem(KEY_COUNT) || '0') + 1;
+    localStorage.setItem(KEY_COUNT, count.toString());
+    if (count >= 2) {
       document.getElementById('paywall-overlay').style.display = 'flex';
     }
     document.getElementById('paywall-skip').addEventListener('click', function () {
