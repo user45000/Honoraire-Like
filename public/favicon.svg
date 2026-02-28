@@ -1,0 +1,17 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1B2D4F"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#grad)"/>
+  <!-- Croix médicale -->
+  <rect x="25.6" y="12.8" width="12.8" height="29.44" rx="2.56" fill="white"/>
+  <rect x="17.28" y="21.12" width="29.44" height="12.8" rx="2.56" fill="white"/>
+  <!-- Arc stéthoscope -->
+  <path d="M32 42.24 C32 51.2 44.8 51.2 44.8 46.08"
+    stroke="white" stroke-width="2.88" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <!-- Embout stéthoscope -->
+  <circle cx="44.8" cy="45.12" r="3.52" fill="white" opacity="0.75"/>
+</svg>

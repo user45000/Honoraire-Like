@@ -1,129 +1,58 @@
 /**
- * Icône PWA Honoraires MG — stéthoscope, vue frontale épurée
- *
- *    ╭────────╮   ← arc du binaural (ressort)
- *   ●          ●  ← embouts auriculaires
- *    \        /   ← tubes auriculaires
- *     \      /
- *      ╲    ╱
- *        \/
- *        |        ← tube principal
- *        |
- *      ( ● )      ← pavillon / diaphragme
+ * Génère les icônes PWA et favicon — logo brand Honoraires MG
+ * Croix médicale + stéthoscope sur fond dégradé bleu
  */
-const zlib = require('zlib');
-const fs   = require('fs');
+const sharp = require('sharp');
+const fs = require('fs');
 const path = require('path');
 
-// ── PNG utils ──────────────────────────────────────────────────────────────
-const crcTable = new Uint32Array(256);
-for (let n = 0; n < 256; n++) {
-  let c = n; for (let k = 0; k < 8; k++) c = (c & 1) ? 0xEDB88320 ^ (c >>> 1) : c >>> 1;
-  crcTable[n] = c;
-}
-function crc32(buf) {
-  let c = 0xFFFFFFFF; for (const b of buf) c = crcTable[(c ^ b) & 0xFF] ^ (c >>> 8);
-  return (c ^ 0xFFFFFFFF) >>> 0;
-}
-function u32(n) { const b = Buffer.alloc(4); b.writeUInt32BE(n); return b; }
-function chunk(type, data) {
-  const t = Buffer.from(type, 'ascii'), crc = Buffer.alloc(4);
-  crc.writeUInt32BE(crc32(Buffer.concat([t, data])));
-  return Buffer.concat([u32(data.length), t, data, crc]);
-}
-
-// ── Math ───────────────────────────────────────────────────────────────────
-const clamp  = (x, lo=0, hi=1) => Math.max(lo, Math.min(hi, x));
-const lerp   = (a, b, t) => a + (b - a) * clamp(t);
-const smooth = (lo, hi, x) => { const t = clamp((x-lo)/(hi-lo)); return t*t*(3-2*t); };
-function sdSeg(px, py, ax, ay, bx, by) {
-  const dx = bx-ax, dy = by-ay, d2 = dx*dx+dy*dy;
-  const t = d2 > 0 ? clamp(((px-ax)*dx+(py-ay)*dy)/d2) : 0;
-  return Math.hypot(ax+t*dx-px, ay+t*dy-py);
-}
-
-// ── SDF stéthoscope ────────────────────────────────────────────────────────
-function sdfStethoscope(x, y) {
-  const sw    = 0.055; // demi-épaisseur tube
-  const tipR  = 0.065; // rayon embouts
-
-  // Positions clés
-  const EX = 0.36, EY = -0.42;   // embouts (±EX, EY)
-  const JY = -0.18;               // jonction (convergence des tubes)
-  const BRY = EY - 0.01;         // centre de l'arc binaural (même hauteur que les embouts)
-
-  // Arc binaural : relie les deux embouts par le dessus (∩)
-  // Centre (0, BRY), rayon EX, visible uniquement pour la moitié supérieure (angle < 0)
-  const bx = x, by = y - BRY;
-  const bd = Math.hypot(bx, by);
-  const ba = Math.atan2(by, bx);
-  const binauralD = (ba < 0 || ba > Math.PI) // moitié haute = angles négatifs
-    ? Math.abs(bd - EX) - sw
-    : Infinity;
-
-  // Embouts auriculaires (petites sphères aux extrémités de l'arc)
-  const lTip = Math.hypot(x + EX, y - EY) - tipR;
-  const rTip = Math.hypot(x - EX, y - EY) - tipR;
-
-  // Tubes auriculaires : des embouts vers la jonction centrale
-  const lTube = sdSeg(x, y, -EX, EY, 0, JY) - sw;
-  const rTube = sdSeg(x, y,  EX, EY, 0, JY) - sw;
-
-  // Jonction (adoucit le raccord)
-  const jDot = Math.hypot(x, y - JY) - sw * 1.15;
-
-  // Tube principal
-  const mainTube = sdSeg(x, y, 0, JY, 0, 0.22) - sw * 0.85;
-
-  // Pavillon / diaphragme
-  const cpD = Math.hypot(x, y - 0.54) - 0.27;
-
-  return Math.min(binauralD, lTip, rTip, lTube, rTube, jDot, mainTube, cpD);
-}
-
-// ── Fond : couleur de l'app (#3d5a99 → #1e2d4f) ───────────────────────────
-function bgColor(nx, ny) {
-  const t = clamp(((nx + 1) + (ny + 1)) / 4);
-  return [
-    Math.round(lerp(0x3d, 0x1e, t)),
-    Math.round(lerp(0x5a, 0x2d, t)),
-    Math.round(lerp(0x99, 0x4f, t)),
-  ];
-}
-
-// ── Rendu ──────────────────────────────────────────────────────────────────
-function renderPixel(px, py, size) {
-  const nx = (px / size) * 2 - 1;
-  const ny = (py / size) * 2 - 1;
-  const [bgR, bgG, bgB] = bgColor(nx, ny);
-  const d = sdfStethoscope(nx, ny);
-  const aa = (2.0 / size) * 1.8;
-  const alpha = 1 - smooth(-aa, aa, d);
-  return [
-    Math.round(lerp(bgR, 255, alpha)),
-    Math.round(lerp(bgG, 255, alpha)),
-    Math.round(lerp(bgB, 255, alpha)),
-  ];
-}
-
-function makePNG(size) {
-  const rows = [];
-  for (let y = 0; y < size; y++) {
-    rows.push(0);
-    for (let x = 0; x < size; x++) rows.push(...renderPixel(x, y, size));
-  }
-  const raw = Buffer.from(rows);
-  const sig  = Buffer.from([137,80,78,71,13,10,26,10]);
-  const ihdr = chunk('IHDR', Buffer.concat([u32(size), u32(size), Buffer.from([8,2,0,0,0])]));
-  const idat = chunk('IDAT', zlib.deflateSync(raw));
-  const iend = chunk('IEND', Buffer.alloc(0));
-  return Buffer.concat([sig, ihdr, idat, iend]);
+function makeSvg(size) {
+  const r = Math.round(size * 0.222); // border-radius proportionnel
+  const s = size;
+  return `<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="${s}" y2="${s}" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1B2D4F"/>
+    </linearGradient>
+  </defs>
+  <rect width="${s}" height="${s}" rx="${r}" fill="url(#grad)"/>
+  <!-- Croix médicale -->
+  <rect x="${s*0.40}" y="${s*0.20}" width="${s*0.20}" height="${s*0.46}" rx="${s*0.04}" fill="white"/>
+  <rect x="${s*0.27}" y="${s*0.33}" width="${s*0.46}" height="${s*0.20}" rx="${s*0.04}" fill="white"/>
+  <!-- Arc stéthoscope -->
+  <path d="M${s*0.50} ${s*0.66} C${s*0.50} ${s*0.80} ${s*0.70} ${s*0.80} ${s*0.70} ${s*0.72}"
+    stroke="white" stroke-width="${s*0.045}" stroke-linecap="round" fill="none" opacity="0.75"/>
+  <!-- Embout stéthoscope -->
+  <circle cx="${s*0.70}" cy="${s*0.705}" r="${s*0.055}" fill="white" opacity="0.75"/>
+</svg>`;
 }
 
 const iconsDir = path.join(__dirname, 'public', 'icons');
-fs.mkdirSync(iconsDir, { recursive: true });
-for (const size of [180, 192, 512]) {
-  fs.writeFileSync(path.join(iconsDir, `icon-${size}.png`), makePNG(size));
-  console.log(`✓ icon-${size}.png`);
+const publicDir = path.join(__dirname, 'public');
+
+async function generate() {
+  fs.mkdirSync(iconsDir, { recursive: true });
+
+  const icons = [
+    { file: 'icon-180.png', size: 180, dir: iconsDir },
+    { file: 'icon-192.png', size: 192, dir: iconsDir },
+    { file: 'icon-512.png', size: 512, dir: iconsDir },
+    { file: 'favicon-32.png', size: 32,  dir: publicDir },
+    { file: 'favicon-16.png', size: 16,  dir: publicDir },
+  ];
+
+  for (const { file, size, dir } of icons) {
+    const svg = Buffer.from(makeSvg(size));
+    await sharp(svg).png().toFile(path.join(dir, file));
+    console.log(`✓ ${file} (${size}x${size})`);
+  }
+
+  // Favicon SVG pour navigateurs modernes (Chrome, Firefox, Safari)
+  fs.writeFileSync(path.join(publicDir, 'favicon.svg'), makeSvg(64));
+  console.log('✓ favicon.svg');
+
+  console.log('Done.');
 }
-console.log('Done.');
+
+generate().catch(console.error);
