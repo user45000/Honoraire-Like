@@ -85,12 +85,6 @@ body {
   padding-right: 14px;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  border-bottom: 3px solid var(--primary-light);
-  transition: border-color 0.3s;
-}
-
-body.mode-simple .app-header {
-  border-bottom-color: var(--amber);
 }
 
 .vmt-btn {
@@ -118,6 +112,24 @@ body.mode-simple .app-header {
 
 /* Masquage des éléments avancés en mode simple */
 body.mode-simple [data-advanced="true"] { display: none !important; }
+
+/* Icône mode sur "Type d'acte" */
+.view-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 5px;
+  vertical-align: middle;
+  color: var(--primary);
+  opacity: 0.5;
+}
+.view-mode-badge svg { display: block; }
+.view-mode-badge .badge-simple { display: none; }
+body.mode-simple .view-mode-badge {
+  color: var(--amber);
+  opacity: 0.75;
+}
+body.mode-simple .view-mode-badge .badge-complet { display: none; }
+body.mode-simple .view-mode-badge .badge-simple { display: block; }
 
 .app-header h1 {
   font-family: var(--font-display);
