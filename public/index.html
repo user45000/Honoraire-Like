@@ -444,10 +444,66 @@
     </div>
   </div>
 
+  <!-- Paywall abonnement -->
+  <div class="paywall-overlay" id="paywall-overlay">
+    <div class="paywall-content">
+      <svg class="paywall-logo" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="64" height="64" rx="16" fill="url(#pwGrad)"/>
+        <rect x="30" y="18" width="12" height="28" rx="2.5" fill="white"/>
+        <rect x="22" y="26" width="28" height="12" rx="2.5" fill="white"/>
+        <path d="M36 46V50C36 54.418 39.582 58 44 58H46C48.209 58 50 56.209 50 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="50" cy="52" r="3" fill="white" opacity="0.6"/>
+        <defs>
+          <linearGradient id="pwGrad" x1="4" y1="4" x2="68" y2="68">
+            <stop stop-color="#60A5FA"/>
+            <stop offset="1" stop-color="#2563EB"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h2 class="paywall-title">Honoraires <strong>MG</strong></h2>
+      <p class="paywall-subtitle">Votre période d'essai gratuite est terminée</p>
+      <div class="paywall-plans">
+        <div class="paywall-plan paywall-plan-year">
+          <span class="plan-badge">Meilleur prix</span>
+          <div class="plan-price-main">9,99€ <span>/ an</span></div>
+          <div class="plan-detail">soit 0,83€ / mois &nbsp;·&nbsp; 2 mois offerts</div>
+          <button class="plan-btn plan-btn-primary" id="paywall-yearly">S'abonner à l'année</button>
+        </div>
+        <div class="paywall-plan paywall-plan-month">
+          <div class="plan-price-secondary">0,99€ <span>/ mois</span></div>
+          <button class="plan-btn plan-btn-secondary" id="paywall-monthly">Mensuel</button>
+        </div>
+      </div>
+      <button class="paywall-skip" id="paywall-skip">Continuer sans s'abonner →</button>
+    </div>
+  </div>
+
   <script src="js/engine.js"></script>
   <script src="js/consultation.js"></script>
   <script src="js/visite.js"></script>
   <script src="js/ccam.js"></script>
   <script src="js/app.js"></script>
+  <script>
+  (function () {
+    const KEY_VISIT = 'hon_first_visit';
+    if (!localStorage.getItem(KEY_VISIT)) {
+      localStorage.setItem(KEY_VISIT, Date.now().toString());
+    }
+    const days = (Date.now() - parseInt(localStorage.getItem(KEY_VISIT))) / 86400000;
+    if (days >= 3) {
+      document.getElementById('paywall-overlay').style.display = 'flex';
+    }
+    document.getElementById('paywall-skip').addEventListener('click', function () {
+      document.getElementById('paywall-overlay').style.display = 'none';
+    });
+    // Boutons abonnement — Stripe à connecter
+    document.getElementById('paywall-yearly').addEventListener('click', function () {
+      alert('Paiement bientôt disponible — abonnement annuel 9,99€');
+    });
+    document.getElementById('paywall-monthly').addEventListener('click', function () {
+      alert('Paiement bientôt disponible — abonnement mensuel 0,99€');
+    });
+  })();
+  </script>
 </body>
 </html>
