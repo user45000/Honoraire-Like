@@ -22,6 +22,7 @@ input, select, textarea {
   --text-secondary: #64748B;
   --border: #E2E8F0;
   --success: #059669;        /* emerald */
+  --amber: #D97706;
   --danger: #DC2626;
   --shadow: 0 1px 3px rgba(15,26,46,0.08);
   --radius: 10px;
@@ -84,6 +85,12 @@ body {
   padding-right: 14px;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  border-bottom: 3px solid var(--primary-light);
+  transition: border-color 0.3s;
+}
+
+body.mode-simple .app-header {
+  border-bottom-color: var(--amber);
 }
 
 .vmt-btn {
@@ -1241,18 +1248,18 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 }
 
 .paywall-logo {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 14px;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 8px;
 }
 
 .paywall-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 300;
   color: white;
   letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .paywall-title strong {
@@ -1261,17 +1268,17 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 }
 
 .paywall-subtitle {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 300;
   color: rgba(255,255,255,0.5);
-  margin-bottom: 28px;
+  margin-bottom: 16px;
 }
 
 .paywall-plans {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 16px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .paywall-plan {
@@ -1281,7 +1288,7 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   background: rgba(255,255,255,0.07);
   border: 1.5px solid rgba(255,255,255,0.12);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 10px 14px;
   cursor: pointer;
   transition: all 0.18s;
 }
@@ -1342,7 +1349,7 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
 
 .plan-price {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 300;
   color: rgba(255,255,255,0.5);
   letter-spacing: -0.02em;
@@ -1370,13 +1377,13 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   color: white;
   border: none;
   border-radius: 12px;
-  padding: 15px;
+  padding: 12px;
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition: opacity 0.2s;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .plan-btn-primary:active { opacity: 0.82; }
@@ -1389,7 +1396,7 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   font-size: 13px;
   font-weight: 300;
   cursor: pointer;
-  padding: 10px;
+  padding: 6px;
   display: block;
   margin: 0 auto;
 }
