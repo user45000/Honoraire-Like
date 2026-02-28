@@ -1571,6 +1571,88 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   color: var(--danger);
 }
 
+/* === Sélecteur de plan abonnement === */
+.subscribe-plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.subscribe-plan-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 8px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: all 0.18s;
+  gap: 4px;
+}
+
+.subscribe-plan-btn.active {
+  border-color: var(--primary);
+  background: rgba(37,99,235,0.06);
+}
+
+.subscribe-plan-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.subscribe-plan-btn.active .subscribe-plan-name {
+  color: var(--primary);
+}
+
+.subscribe-plan-price {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.subscribe-plan-price small {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.subscribe-plan-badge {
+  font-size: 9px;
+  font-weight: 600;
+  background: var(--success);
+  color: white;
+  padding: 1px 5px;
+  border-radius: 10px;
+  letter-spacing: 0.02em;
+}
+
+/* Bannière compte (succès / erreur) */
+.account-banner {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.account-banner.banner-success {
+  background: rgba(5,150,105,0.1);
+  color: var(--success);
+}
+
+.account-banner.banner-error {
+  background: rgba(220,38,38,0.08);
+  color: var(--danger);
+}
+
 /* === Desktop (> 768px) === */
 @media (min-width: 769px) {
   .app-main {

@@ -422,7 +422,20 @@
               <span id="account-end-val" class="account-value"></span>
             </div>
           </div>
-          <button id="subscribe-btn" class="auth-btn-primary" style="margin-top:14px">S'abonner</button>
+          <!-- Sélecteur plan (masqué si déjà abonné) -->
+          <div id="subscribe-plan-picker" style="margin-top:14px">
+            <div class="subscribe-plans">
+              <button class="subscribe-plan-btn active" data-plan="month">
+                <span class="subscribe-plan-name">Mensuel</span>
+                <span class="subscribe-plan-price">0,99€<small>/mois</small></span>
+              </button>
+              <button class="subscribe-plan-btn" data-plan="year">
+                <span class="subscribe-plan-name">Annuel <span class="subscribe-plan-badge">−16%</span></span>
+                <span class="subscribe-plan-price">9,99€<small>/an</small></span>
+              </button>
+            </div>
+          </div>
+          <button id="subscribe-btn" class="auth-btn-primary" style="margin-top:10px">S'abonner</button>
           <button id="logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
         </div>
       </div>

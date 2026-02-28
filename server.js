@@ -23,13 +23,65 @@ db.exec(`
   )
 `);
 
+// === Stripe (webhook DOIT être avant express.json) ===
+const stripeKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeKey ? require('stripe')(stripeKey) : null;
+
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!stripe || !webhookSecret) return res.status(500).json({ error: 'Stripe non configuré' });
+
+  let event;
+  try {
+    event = stripe.webhooks.constructEvent(req.body, req.headers['stripe-signature'], webhookSecret);
+  } catch (e) {
+    console.error('Webhook signature error:', e.message);
+    return res.status(400).send(`Webhook Error: ${e.message}`);
+  }
+
+  switch (event.type) {
+    case 'checkout.session.completed': {
+      const session = event.data.object;
+      const userId = parseInt(session.metadata.userId);
+      db.prepare(`UPDATE users SET
+        stripe_customer_id = ?,
+        stripe_subscription_id = ?,
+        subscription_status = 'active'
+        WHERE id = ?`
+      ).run(session.customer, session.subscription, userId);
+      break;
+    }
+    case 'customer.subscription.updated': {
+      const sub = event.data.object;
+      const user = db.prepare('SELECT id FROM users WHERE stripe_customer_id = ?').get(sub.customer);
+      if (user) {
+        const status = sub.status === 'active' ? 'active' : 'expired';
+        const end = new Date(sub.current_period_end * 1000).toISOString();
+        db.prepare('UPDATE users SET subscription_status = ?, subscription_end = ? WHERE id = ?')
+          .run(status, end, user.id);
+      }
+      break;
+    }
+    case 'customer.subscription.deleted': {
+      const sub = event.data.object;
+      const user = db.prepare('SELECT id FROM users WHERE stripe_customer_id = ?').get(sub.customer);
+      if (user) {
+        db.prepare('UPDATE users SET subscription_status = ?, subscription_end = NULL WHERE id = ?')
+          .run('expired', user.id);
+      }
+      break;
+    }
+  }
+  res.json({ received: true });
+});
+
 // === Middleware ===
 app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'hon-secret-2026',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 } // 30 jours
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
 }));
 
 // === Tarifs ===
@@ -97,6 +149,66 @@ app.get('/api/auth/me', (req, res) => {
   res.json({ user: safeUser(user) });
 });
 
+// === API Stripe ===
+app.post('/api/stripe/create-checkout-session', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  if (!stripe) return res.status(500).json({ error: 'Stripe non configuré' });
+
+  const { plan } = req.body;
+  const priceId = plan === 'year'
+    ? process.env.STRIPE_PRICE_YEAR
+    : process.env.STRIPE_PRICE_MONTH;
+  if (!priceId) return res.status(500).json({ error: 'Price ID Stripe manquant' });
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return res.status(401).json({ error: 'Utilisateur introuvable' });
+
+  const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+
+  try {
+    const params = {
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      metadata: { userId: user.id.toString() },
+      success_url: `${appUrl}/?payment=success`,
+      cancel_url: `${appUrl}/?payment=cancel`,
+    };
+    // Réutiliser le customer Stripe existant si possible
+    if (user.stripe_customer_id) {
+      params.customer = user.stripe_customer_id;
+    } else {
+      params.customer_email = user.email;
+    }
+    const session = await stripe.checkout.sessions.create(params);
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('Stripe checkout error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Portail client Stripe (gérer / annuler l'abonnement)
+app.post('/api/stripe/customer-portal', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  if (!stripe) return res.status(500).json({ error: 'Stripe non configuré' });
+
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!user?.stripe_customer_id) return res.status(400).json({ error: 'Aucun abonnement actif' });
+
+  const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+  try {
+    const portal = await stripe.billingPortal.sessions.create({
+      customer: user.stripe_customer_id,
+      return_url: appUrl,
+    });
+    res.json({ url: portal.url });
+  } catch (e) {
+    console.error('Stripe portal error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
 // === SPA fallback ===
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -104,4 +216,5 @@ app.get('*', (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Honoraire Like running on http://localhost:${PORT}`);
+  if (!stripe) console.warn('⚠ Stripe non configuré (STRIPE_SECRET_KEY manquant)');
 });
