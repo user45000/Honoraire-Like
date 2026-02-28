@@ -113,19 +113,16 @@ body {
 /* Masquage des éléments avancés en mode simple */
 body.mode-simple [data-advanced="true"] { display: none !important; }
 
-/* Hint "↑ Complet" inline dans les titres de section — Simple mode uniquement */
+/* Toggle Simple/Complet inline dans les titres de section */
 .complet-hint {
-  display: none;
+  display: inline-flex;
   align-items: center;
-  gap: 3px;
+  justify-content: center;
   background: rgba(37,99,235,0.08);
   color: var(--primary);
   border: 1px solid rgba(37,99,235,0.18);
   border-radius: 10px;
-  padding: 2px 7px 2px 5px;
-  font-family: var(--font-body);
-  font-size: 10px;
-  font-weight: 500;
+  padding: 2px 6px;
   cursor: pointer;
   margin-left: 6px;
   vertical-align: middle;
@@ -137,8 +134,9 @@ body.mode-simple [data-advanced="true"] { display: none !important; }
   background: rgba(37,99,235,0.15);
 }
 
-body.mode-simple .complet-hint {
-  display: inline-flex;
+/* En mode Complet, flèche vers le bas (retour Simple) */
+body:not(.mode-simple) .complet-hint svg {
+  transform: rotate(180deg);
 }
 
 /* Icône mode sur "Type d'acte" */
