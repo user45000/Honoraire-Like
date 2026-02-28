@@ -81,35 +81,66 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 7px;
+  gap: 4px;
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
+/* Ligne connectrice Simple–Complet passant sous le titre */
 .vmt-group {
-  display: flex;
-  background: rgba(255,255,255,0.12);
-  border-radius: 20px;
-  padding: 2px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  padding: 0 20px;
+}
+
+.vmt-group::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  right: 20px;
+  height: 1px;
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .vmt-btn {
   background: transparent;
   border: none;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255,255,255,0.4);
   font-family: var(--font-body);
   font-size: 11px;
   font-weight: 400;
-  padding: 4px 16px;
-  border-radius: 18px;
+  padding: 4px 0;
   cursor: pointer;
-  transition: all 0.18s;
+  transition: color 0.2s;
   white-space: nowrap;
+  text-align: center;
+  position: relative;
+  z-index: 1;
 }
+
+.vmt-btn::after {
+  content: '';
+  display: block;
+  margin: 3px auto 0;
+  height: 1.5px;
+  width: 0;
+  background: rgba(255,255,255,0.8);
+  border-radius: 1px;
+  transition: width 0.2s;
+}
+
 .vmt-btn.active {
-  background: white;
-  color: var(--primary-dark);
+  color: white;
   font-weight: 500;
+}
+
+.vmt-btn.active::after {
+  width: 22px;
 }
 
 /* Masquage des éléments avancés en mode simple */
