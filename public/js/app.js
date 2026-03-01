@@ -417,8 +417,8 @@ const App = (() => {
   }
 
   function applyPDSAMode(periode) {
-    if (periode !== 'dimferie') return;
-    // WE/Férié → Régulé PDSA + Hors patientèle
+    if (!['dimferie', 'nuit', 'nuitprofonde'].includes(periode)) return;
+    // WE/Férié, Nuit, Nuit profonde → Régulé PDSA + Hors patientèle
     const modeBarGroup = document.getElementById('mode-bar-group');
     if (modeBarGroup) {
       modeBarGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
