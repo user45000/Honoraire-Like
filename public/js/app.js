@@ -342,6 +342,14 @@ const App = (() => {
       if (!btn) return;
       applyViewMode(btn.dataset.mode);
     });
+    // Boutons fléchés dans les sections (bascule simple ↔ complet)
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.js-switch-complet');
+      if (!btn) return;
+      e.stopPropagation();
+      const targetMode = document.body.classList.contains('mode-simple') ? 'complet' : 'simple';
+      applyViewMode(targetMode);
+    });
   }
 
   function applyViewMode(mode) {

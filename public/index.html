@@ -546,92 +546,11 @@
     </div>
   </div>
 
-  <!-- Paywall abonnement -->
-  <div class="paywall-overlay" id="paywall-overlay">
-    <div class="paywall-content">
-      <svg class="paywall-logo" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="4" width="64" height="64" rx="16" fill="url(#pwGrad)"/>
-        <rect x="30" y="18" width="12" height="28" rx="2.5" fill="white"/>
-        <rect x="22" y="26" width="28" height="12" rx="2.5" fill="white"/>
-        <path d="M36 46V50C36 54.418 39.582 58 44 58H46C48.209 58 50 56.209 50 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-        <circle cx="50" cy="52" r="3" fill="white" opacity="0.6"/>
-        <defs>
-          <linearGradient id="pwGrad" x1="4" y1="4" x2="68" y2="68">
-            <stop stop-color="#60A5FA"/>
-            <stop offset="1" stop-color="#2563EB"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <h2 class="paywall-title">Honoraires <strong>MG</strong></h2>
-      <p class="paywall-subtitle">Votre période d'essai gratuite est terminée</p>
-      <div class="paywall-plans">
-        <div class="paywall-plan active" id="plan-month" data-plan="month" data-price="0,99€/mois">
-          <div class="plan-radio"></div>
-          <div class="plan-info">
-            <div class="plan-name">Mensuel</div>
-            <div class="plan-price">0,99€ <span>/ mois</span></div>
-          </div>
-        </div>
-        <div class="paywall-plan" id="plan-year" data-plan="year" data-price="9,99€/an">
-          <div class="plan-radio"></div>
-          <div class="plan-info">
-            <div class="plan-name">Annuel <span class="plan-badge">2 mois offerts</span></div>
-            <div class="plan-price">9,99€ <span>/ an</span></div>
-            <div class="plan-detail">soit 0,83€ / mois</div>
-          </div>
-        </div>
-      </div>
-      <button class="plan-btn-primary" id="paywall-subscribe">S'abonner — 0,99€/mois</button>
-      <button class="paywall-skip" id="paywall-skip">Continuer sans s'abonner →</button>
-    </div>
-  </div>
-
   <script src="js/engine.js"></script>
   <script src="js/consultation.js"></script>
   <script src="js/visite.js"></script>
   <script src="js/ccam.js"></script>
   <script src="js/account.js"></script>
   <script src="js/app.js"></script>
-  <script>
-  (function () {
-    const KEY_COUNT = 'hon_visit_count';
-    const count = parseInt(localStorage.getItem(KEY_COUNT) || '0') + 1;
-    localStorage.setItem(KEY_COUNT, count.toString());
-    if (count >= 2) {
-      document.getElementById('paywall-overlay').style.display = 'flex';
-    }
-    // Sélection du plan
-    var selectedPlan = 'month';
-    var plans = document.querySelectorAll('.paywall-plan');
-    var subscribeBtn = document.getElementById('paywall-subscribe');
-
-    plans.forEach(function(plan) {
-      plan.addEventListener('click', function() {
-        plans.forEach(function(p) { p.classList.remove('active'); });
-        plan.classList.add('active');
-        selectedPlan = plan.dataset.plan;
-        subscribeBtn.textContent = 'S\'abonner — ' + plan.dataset.price;
-      });
-    });
-
-    document.querySelectorAll('.js-switch-complet').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var isSimple = document.body.classList.contains('mode-simple');
-        var targetMode = isSimple ? 'complet' : 'simple';
-        document.querySelector('.vmt-btn[data-mode="' + targetMode + '"]').click();
-      });
-    });
-
-    document.getElementById('paywall-skip').addEventListener('click', function () {
-      document.getElementById('paywall-overlay').style.display = 'none';
-    });
-
-    // Bouton abonnement — Stripe à connecter
-    subscribeBtn.addEventListener('click', function () {
-      alert('Paiement bientôt disponible — ' + (selectedPlan === 'year' ? '9,99€/an' : '0,99€/mois'));
-    });
-  })();
-  </script>
 </body>
 </html>
