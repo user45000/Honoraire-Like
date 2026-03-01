@@ -113,6 +113,10 @@ body {
 /* Masquage des éléments avancés en mode simple */
 body.mode-simple [data-advanced="true"] { display: none !important; }
 
+/* En mode simple, cacher les actes/majos grisés (non disponibles) */
+body.mode-simple .acte-btn.disabled,
+body.mode-simple .majo-btn.disabled { display: none !important; }
+
 /* Toggle Simple/Complet inline dans les titres de section */
 .complet-hint {
   display: inline-flex;
