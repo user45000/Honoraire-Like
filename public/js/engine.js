@@ -392,7 +392,7 @@ const Engine = (() => {
     for (const d of details) {
       if (d.montant === 0) continue;
       const code = d.code.replace(/[()]/g, '');
-      const isAMO100 = CODES_AMO100.includes(code) || (hasRDV && code === 'G');
+      const isAMO100 = CODES_AMO100.includes(code) || (hasRDV && code === 'G') || code.endsWith('IK');
       if (isAMO100) {
         amo += d.montant;
       } else {
