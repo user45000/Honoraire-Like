@@ -211,6 +211,14 @@ const Consultation = (() => {
       if (!btn) continue;
       btn.style.display = (state.age === 'senior' && state.relation === 'mt') ? '' : 'none';
     }
+
+    // Actes non disponibles en PDSA / nuit (COE, COD, APC)
+    const isHorsJour = state.periode !== 'jour';
+    for (const code of ['COE', 'COD', 'APC']) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      btn.classList.toggle('disabled', isHorsJour);
+    }
   }
 
   function updateModeVisibility() {
@@ -279,6 +287,7 @@ const Consultation = (() => {
   function setPeriode(value) {
     state.periode = value;
     updateModeVisibility();
+    updateActeStates();
     updateAllMajoStates();
     recalculate();
   }

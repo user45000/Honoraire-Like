@@ -129,6 +129,18 @@ const Engine = (() => {
         reason = `Non cumulable avec ${acte} (consultation complexe)`;
       }
 
+      // 3b. MCG : non applicable en PDSA / nuit (hors horaires de jour)
+      if (available && code === 'MCG' && isHorsJour) {
+        available = false;
+        reason = 'Non applicable hors horaires de jour';
+      }
+
+      // 3c. RDV (bilan de prévention) : non applicable en PDSA / nuit
+      if (available && code === 'RDV' && isHorsJour) {
+        available = false;
+        reason = 'Non applicable hors horaires de jour';
+      }
+
       // 4. MEG : non cumulable avec consultations complexes (art. 15.8, 15.9)
       //    et non cumulable avec COE/COB/COD (art. 14.9)
       if (available && code === 'MEG') {
