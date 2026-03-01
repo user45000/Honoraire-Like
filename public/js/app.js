@@ -222,6 +222,8 @@ const App = (() => {
     initToggleParam('zone', 'hon_zone', 'metro', onZoneChange);
     // Géo
     initToggleParam('geo', 'hon_geo', 'plaine', onGeoChange);
+    // Mode à l'ouverture
+    initToggleParam('startup_mode', 'hon_startup_mode', 'simple');
   }
 
   function initToggleParam(field, storageKey, defaultVal, onChange) {
@@ -331,8 +333,9 @@ const App = (() => {
   // === Mode simple / complet ===
   function initViewMode() {
     const toggle = document.querySelector('.app-header');
-    const saved = localStorage.getItem('hon_view_mode') || 'complet';
-    applyViewMode(saved);
+    // Toujours démarrer avec le mode configuré dans les paramètres (défaut : simple)
+    const startMode = localStorage.getItem('hon_startup_mode') || 'simple';
+    applyViewMode(startMode);
     toggle.addEventListener('click', (e) => {
       const btn = e.target.closest('.vmt-btn');
       if (!btn) return;
@@ -346,7 +349,6 @@ const App = (() => {
     document.querySelectorAll('.vmt-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.mode === mode);
     });
-    localStorage.setItem('hon_view_mode', mode);
     // Si un acte avancé était sélectionné et qu'on passe en mode simple → reset sur G
     if (isSimple) {
       const activeActe = document.querySelector('#consult-acte-grid .acte-btn.active');
