@@ -16,6 +16,64 @@ const Account = (() => {
     }
     attachListeners();
     handlePaymentReturn();
+    initPaywall();
+  }
+
+  // === Paywall ===
+  const PAYWALL_KEY = 'hon_visit_count';
+  const PAYWALL_THRESHOLD = 3;
+  let paywallPlan = 'month';
+
+  function initPaywall() {
+    // Abonné actif → pas de paywall
+    if (currentUser && currentUser.subscription_status === 'active') return;
+
+    const count = parseInt(localStorage.getItem(PAYWALL_KEY) || '0') + 1;
+    localStorage.setItem(PAYWALL_KEY, count.toString());
+    if (count < PAYWALL_THRESHOLD) return;
+
+    const overlay = document.getElementById('paywall-overlay');
+    if (!overlay) return;
+    overlay.style.display = 'flex';
+
+    // Sélection du plan
+    overlay.querySelectorAll('.paywall-plan').forEach(btn => {
+      btn.addEventListener('click', () => {
+        overlay.querySelectorAll('.paywall-plan').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        paywallPlan = btn.dataset.plan;
+        const subBtn = document.getElementById('paywall-subscribe-btn');
+        if (subBtn) subBtn.textContent = 'S\'abonner — ' + btn.dataset.price;
+      });
+    });
+
+    document.getElementById('paywall-skip-btn')?.addEventListener('click', () => {
+      overlay.style.display = 'none';
+    });
+
+    document.getElementById('paywall-subscribe-btn')?.addEventListener('click', async () => {
+      const btn = document.getElementById('paywall-subscribe-btn');
+      btn.textContent = 'Chargement…';
+      btn.disabled = true;
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/stripe/create-checkout-session`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan: paywallPlan })
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          btn.textContent = 'S\'abonner';
+          btn.disabled = false;
+        }
+      } catch (e) {
+        btn.textContent = 'S\'abonner';
+        btn.disabled = false;
+      }
+    });
   }
 
   function onShow() {
