@@ -35,6 +35,7 @@ const App = (() => {
       const value = btn.dataset.value;
       Consultation.setPeriode(value);
       Visite.setPeriode(value);
+      applyPDSAMode(value);
     });
 
     // Mode de garde partagé
@@ -407,6 +408,20 @@ const App = (() => {
     return 'jour';                                    // Reste → Jour
   }
 
+  function applyPDSAMode(periode) {
+    if (periode !== 'dimferie') return;
+    // WE/Férié → Régulé PDSA + Hors patientèle
+    const modeBarGroup = document.getElementById('mode-bar-group');
+    if (modeBarGroup) {
+      modeBarGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+      const reguleBtn = modeBarGroup.querySelector('.toggle-btn[data-value="regule"]');
+      if (reguleBtn) reguleBtn.classList.add('active');
+    }
+    Consultation.setMode('regule');
+    Visite.setMode('regule');
+    applyRelation('hors', true);
+  }
+
   function applyAutoPeriode() {
     const periodeEl = document.getElementById('periode-shared');
     const jourEl = document.getElementById('jour-input');
@@ -419,6 +434,7 @@ const App = (() => {
     });
     Consultation.setPeriode(periode);
     Visite.setPeriode(periode);
+    applyPDSAMode(periode);
   }
 
   return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar, getRelation };
