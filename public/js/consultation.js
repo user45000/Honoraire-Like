@@ -6,6 +6,7 @@ const Consultation = (() => {
     age: 'adulte',
     acte: 'G',
     majorations: [],
+    actesCourants: [],
     periode: 'jour',
     mode: 'nonregule',
     heure: null,
@@ -86,6 +87,34 @@ const Consultation = (() => {
         updateAllMajoStates();
         recalculate();
       }
+    });
+
+    // Actes courants (ECG, Frottis)
+    const courantsGrid = document.getElementById('consult-courants-grid');
+    courantsGrid.addEventListener('click', (e) => {
+      const infoBtn = e.target.closest('[data-courant-info]');
+      if (infoBtn) {
+        e.stopPropagation();
+        const acte = CCAM.getActe(infoBtn.dataset.courantInfo);
+        if (acte) {
+          document.getElementById('modal-title').textContent = `${acte.code} — ${acte.label}`;
+          document.getElementById('modal-body').innerHTML = `<p class="majo-detail-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</p><p>${acte.note || ''}</p>`;
+          document.getElementById('modal-overlay').classList.add('active');
+        }
+        return;
+      }
+      const btn = e.target.closest('.majo-btn[data-courant]');
+      if (!btn || btn.classList.contains('disabled')) return;
+      const code = btn.dataset.courant;
+      const idx = state.actesCourants.indexOf(code);
+      if (idx >= 0) {
+        state.actesCourants.splice(idx, 1);
+        btn.classList.remove('active');
+      } else {
+        state.actesCourants.push(code);
+        btn.classList.add('active');
+      }
+      recalculate();
     });
 
     updateActePrices();
@@ -219,6 +248,16 @@ const Consultation = (() => {
       if (!btn) continue;
       btn.classList.toggle('disabled', isHorsJour);
     }
+
+    // Frottis : non disponible en PDSA / nuit
+    const frottisBtn = document.querySelector('#consult-courants-grid [data-courant="JKHD001"]');
+    if (frottisBtn) {
+      frottisBtn.classList.toggle('disabled', isHorsJour);
+      if (isHorsJour) {
+        state.actesCourants = state.actesCourants.filter(c => c !== 'JKHD001');
+        frottisBtn.classList.remove('active');
+      }
+    }
   }
 
   function updateModeVisibility() {
@@ -240,6 +279,7 @@ const Consultation = (() => {
   }
 
   function recalculate() {
+    const courantObjects = state.actesCourants.map(c => CCAM.getActe(c)).filter(Boolean);
     const result = Engine.calculate({
       acte: state.acte,
       age: state.age,
@@ -248,7 +288,7 @@ const Consultation = (() => {
       mode: state.mode,
       isVisite: false,
       heure: state.heure,
-      ccamActes: CCAM.getSelectedActes()
+      ccamActes: [...CCAM.getSelectedActes(), ...courantObjects]
     });
     App.updateResult(result);
   }

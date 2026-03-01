@@ -223,5 +223,9 @@ const CCAM = (() => {
     render(document.getElementById('ccam-search').value.trim());
   }
 
-  return { init, setActes, onShow, getSelectedActes, clearSelection };
+  function getActe(code) {
+    return allActes.find(a => a.code === code) || null;
+  }
+
+  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe };
 })();
