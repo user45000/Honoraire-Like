@@ -396,7 +396,7 @@
     { "code": "ALQP003", "label": "Tympanométrie", "tarif": 26.40, "cumulG": "non", "note": "Acte isolé" },
     { "code": "QZHA001", "label": "Biopsie dermo-épidermique", "tarif": 10.50, "cumulG": "50%", "note": "Cumulable à 50% avec G/VG (biopsie)" },
     { "code": "FSD", "label": "Forfait Sécurité Dermatologie", "tarif": 45.00, "cumulG": "non", "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire." },
-    { "code": "YYYY490", "label": "Supplément ECG en visite à domicile", "tarif": 9.60, "cumulG": "non", "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile." },
+    { "code": "YYYY490", "label": "Supplément ECG en visite à domicile", "tarif": 9.60, "cumulG": "oui", "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile. Toujours cumulable à 100% avec VG + DEQP003." },
 
     { "code": "GLQP007", "label": "Polygraphie respiratoire nocturne", "tarif": 151.68, "cumulG": "non", "note": "Dépistage SAHOS. Acte isolé." },
     { "code": "YYYY010", "label": "Traitement de premier recours (actes techniques)", "tarif": 48.00, "cumulG": "non", "note": "Traitement nécessitant actes techniques et présence prolongée." },
