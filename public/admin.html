@@ -27,15 +27,13 @@
     .logout-btn { margin-left: auto; background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
     .logout-btn:hover { background: rgba(255,255,255,0.2); }
 
-    /* Login form */
-    #login-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 52px); }
-    .login-card { background: white; border-radius: 12px; padding: 32px; width: 100%; max-width: 360px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); }
-    .login-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--primary-dark); }
-    .login-card input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
-    .login-card input:focus { outline: none; border-color: var(--primary); }
-    .login-card button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .login-card button:hover { background: #1d4ed8; }
-    .login-error { color: var(--danger); font-size: 13px; margin-bottom: 10px; }
+    /* Accès non autorisé */
+    #unauth-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 52px); }
+    .unauth-card { background: white; border-radius: 12px; padding: 32px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+    .unauth-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-dark); }
+    .unauth-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+    .unauth-card a { display: inline-block; background: var(--primary); color: white; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+    .unauth-card a:hover { background: #1d4ed8; }
 
     /* Dashboard */
     #dashboard { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
@@ -89,16 +87,15 @@
       <circle cx="14" cy="14" r="1.1" fill="white" opacity="0.8"/>
     </svg>
     <h1>Honoraires MG <span class="header-badge">Admin</span></h1>
-    <button class="logout-btn" id="logout-btn">Déconnexion</button>
+    <a href="/" style="margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none">← Application</a>
   </header>
 
-  <!-- Login -->
-  <div id="login-screen">
-    <div class="login-card">
-      <h2>Accès Administration</h2>
-      <div id="login-error" class="login-error"></div>
-      <input type="password" id="admin-password" placeholder="Mot de passe admin" autocomplete="current-password">
-      <button id="login-submit">Se connecter</button>
+  <!-- Accès non autorisé -->
+  <div id="unauth-screen" style="display:none">
+    <div class="unauth-card">
+      <h2>Accès réservé</h2>
+      <p>Connectez-vous avec votre compte admin depuis l'application, puis revenez ici.</p>
+      <a href="/">Aller à l'application</a>
     </div>
   </div>
 
@@ -153,23 +150,22 @@
     async function tryLoadDashboard() {
       try {
         const res = await fetch('/api/admin/stats');
-        if (res.status === 401) return showLogin();
-        if (!res.ok) return showLogin();
+        if (!res.ok) return showUnauth();
         showDashboard();
         await loadStats();
         await loadUsers();
       } catch (e) {
-        showLogin();
+        showUnauth();
       }
     }
 
-    function showLogin() {
-      document.getElementById('login-screen').style.display = 'flex';
+    function showUnauth() {
+      document.getElementById('unauth-screen').style.display = 'flex';
       document.getElementById('dashboard').style.display = 'none';
     }
 
     function showDashboard() {
-      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('unauth-screen').style.display = 'none';
       document.getElementById('dashboard').style.display = 'block';
     }
 
@@ -243,35 +239,6 @@
       const q = document.getElementById('search-input').value.toLowerCase();
       return q ? allUsers.filter(u => u.email.toLowerCase().includes(q)) : allUsers;
     }
-
-    document.getElementById('login-submit').addEventListener('click', async () => {
-      const password = document.getElementById('admin-password').value;
-      const errEl = document.getElementById('login-error');
-      errEl.textContent = '';
-      try {
-        const res = await fetch('/api/admin/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ password })
-        });
-        const data = await res.json();
-        if (!res.ok) { errEl.textContent = data.error; return; }
-        showDashboard();
-        await loadStats();
-        await loadUsers();
-      } catch (e) {
-        errEl.textContent = 'Erreur de connexion';
-      }
-    });
-
-    document.getElementById('admin-password').addEventListener('keydown', e => {
-      if (e.key === 'Enter') document.getElementById('login-submit').click();
-    });
-
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      await fetch('/api/admin/logout', { method: 'POST' });
-      showLogin();
-    });
 
     document.getElementById('refresh-btn').addEventListener('click', async () => {
       await loadStats();

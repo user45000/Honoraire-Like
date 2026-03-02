@@ -317,26 +317,14 @@ app.post('/api/stripe/guest-checkout', async (req, res) => {
 });
 
 // === Admin ===
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'francois.ribollet@gmail.com').toLowerCase();
 
 function requireAdmin(req, res, next) {
-  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin non configuré' });
-  if (!req.session.isAdmin) return res.status(401).json({ error: 'Non autorisé' });
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const user = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
+  if (!user || user.email.toLowerCase() !== ADMIN_EMAIL) return res.status(403).json({ error: 'Accès non autorisé' });
   next();
 }
-
-app.post('/api/admin/login', (req, res) => {
-  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin non configuré' });
-  const { password } = req.body || {};
-  if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Mot de passe incorrect' });
-  req.session.isAdmin = true;
-  res.json({ ok: true });
-});
-
-app.post('/api/admin/logout', (req, res) => {
-  req.session.isAdmin = false;
-  res.json({ ok: true });
-});
 
 app.get('/api/admin/stats', requireAdmin, (req, res) => {
   const total = db.prepare('SELECT COUNT(*) as n FROM users').get().n;

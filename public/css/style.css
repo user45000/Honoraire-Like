@@ -1166,6 +1166,25 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   color: var(--danger);
 }
 
+.credits-contact {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+.credits-contact a { color: var(--primary); }
+
+.credits-legal {
+  margin-top: 10px;
+  text-align: center;
+}
+.credits-legal a {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+.credits-legal a:hover { text-decoration: underline; }
+
 .credits-footer {
   margin-top: 16px;
 }
