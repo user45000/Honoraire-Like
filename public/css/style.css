@@ -167,6 +167,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-size: 20px;
   font-weight: 300;
   letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-mark {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
 }
 
 /* === Barre période horaire === */
