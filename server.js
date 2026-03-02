@@ -4,6 +4,7 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const Database = require('better-sqlite3');
+const nodemailer = require('nodemailer');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -22,6 +23,27 @@ db.exec(`
     stripe_subscription_id TEXT
   )
 `);
+
+// === Email (Gmail SMTP) ===
+const emailTransporter = process.env.GMAIL_APP_PASSWORD
+  ? nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }
+    })
+  : null;
+
+async function sendEmail(to, subject, html) {
+  if (!emailTransporter) return;
+  try {
+    await emailTransporter.sendMail({
+      from: '"Honoraires MG" <dev.francois.ribollet@gmail.com>',
+      replyTo: 'contact@honorairesmg.fr',
+      to, subject, html
+    });
+  } catch (e) {
+    console.error('Email error:', e.message);
+  }
+}
 
 // === Stripe (webhook DOIT être avant express.json) ===
 const stripeKey = process.env.STRIPE_SECRET_KEY;
@@ -49,6 +71,17 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
         subscription_status = 'active'
         WHERE id = ?`
       ).run(session.customer, session.subscription, userId);
+      const paidUser = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
+      if (paidUser) sendEmail(paidUser.email, 'Abonnement Honoraires MG activé', `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+          <h2 style="color:#1B2D4F">Merci pour votre abonnement !</h2>
+          <p>Votre accès illimité à Honoraires MG est maintenant actif.</p>
+          <p>Pour gérer ou annuler votre abonnement, rendez-vous dans l'onglet <strong>Compte</strong> de l'application.</p>
+          <p style="margin-top:24px;color:#64748B;font-size:12px">
+            Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
+            Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
+          </p>
+        </div>`);
       break;
     }
     case 'customer.subscription.updated': {
@@ -119,6 +152,16 @@ app.post('/api/auth/register', (req, res) => {
     const result = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)').run(emailClean, hash);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
     req.session.userId = user.id;
+    sendEmail(emailClean, 'Bienvenue sur Honoraires MG', `
+      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+        <h2 style="color:#1B2D4F">Bienvenue sur Honoraires MG</h2>
+        <p>Votre compte a été créé avec succès.</p>
+        <p>Vous bénéficiez de 3 utilisations gratuites. Pour un accès illimité, abonnez-vous depuis l'onglet <strong>Compte</strong> de l'application.</p>
+        <p style="margin-top:24px;color:#64748B;font-size:12px">
+          Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
+          Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
+        </p>
+      </div>`);
     res.json({ user: safeUser(user) });
   } catch (e) {
     if (e.code === 'SQLITE_CONSTRAINT_UNIQUE') return res.status(409).json({ error: 'Email déjà utilisé' });
