@@ -201,11 +201,24 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 /* === Toggle période + bouton info === */
 .periode-toggle-row {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: stretch;
+  gap: 0;
 }
 .periode-toggle-row .toggle-group {
   flex: 1;
+  border-radius: 8px 0 0 8px;
+}
+.periode-toggle-row .info-icon {
+  width: 32px;
+  height: auto;
+  min-width: 32px;
+  margin: 0;
+  border-radius: 0 8px 8px 0;
+  border-left: 1px solid rgba(15,26,46,0.1);
+  background: var(--bg);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
 }
 .pinfo-row {
   display: flex;
