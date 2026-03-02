@@ -37,6 +37,14 @@ db.exec(`CREATE TABLE IF NOT EXISTS sessions (
 // Nettoyage des sessions expirées au démarrage
 db.prepare('DELETE FROM sessions WHERE expired < ?').run(Date.now());
 
+// === Tokens de réinitialisation de mot de passe ===
+db.exec(`CREATE TABLE IF NOT EXISTS password_resets (
+  token TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  expires INTEGER NOT NULL
+)`);
+db.prepare('DELETE FROM password_resets WHERE expires < ?').run(Date.now());
+
 class SQLiteSessionStore extends session.Store {
   get(sid, cb) {
     const row = db.prepare('SELECT sess FROM sessions WHERE sid = ? AND expired > ?').get(sid, Date.now());
@@ -441,6 +449,50 @@ app.get('/api/auth/me', (req, res) => {
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.json({ user: null });
   res.json({ user: safeUser(user) });
+});
+
+// Mot de passe oublié — envoie un lien de réinitialisation
+app.post('/api/auth/forgot-password', rateLimit(5, 15 * 60 * 1000), (req, res) => {
+  const { email } = req.body || {};
+  if (!email) return res.status(400).json({ error: 'Email requis' });
+  const emailClean = email.toLowerCase().trim();
+  const user = db.prepare('SELECT id FROM users WHERE email = ?').get(emailClean);
+  res.json({ ok: true }); // toujours succès (ne pas révéler si l'email existe)
+  if (!user) return;
+  const token = crypto.randomBytes(32).toString('hex');
+  db.prepare('INSERT OR REPLACE INTO password_resets (token, user_id, expires) VALUES (?, ?, ?)').run(token, user.id, Date.now() + 15 * 60 * 1000);
+  const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+  sendEmail(emailClean, 'Réinitialisation de votre mot de passe — Honoraires MG', buildEmail(`
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em">Réinitialiser votre mot de passe</h1>
+    <p style="margin:0 0 24px;font-size:15px;color:#64748b">Vous avez demandé la réinitialisation de votre mot de passe Honoraires MG. Ce lien est valable <strong>15 minutes</strong>.</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:24px">
+      <tr><td align="center">
+        <a href="${appUrl}/?reset=${token}" style="display:inline-block;background:#2563EB;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:14px 32px;border-radius:8px">Réinitialiser mon mot de passe</a>
+      </td></tr>
+    </table>
+    <p style="margin:0;font-size:13px;color:#94a3b8">Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.</p>
+  `));
+});
+
+// Réinitialisation du mot de passe avec token
+app.post('/api/auth/reset-password', rateLimit(10, 15 * 60 * 1000), (req, res) => {
+  const { token, password } = req.body || {};
+  if (!token || !password) return res.status(400).json({ error: 'Données manquantes' });
+  if (password.length < 6) return res.status(400).json({ error: 'Mot de passe minimum 6 caractères' });
+  const reset = db.prepare('SELECT * FROM password_resets WHERE token = ? AND expires > ?').get(token, Date.now());
+  if (!reset) return res.status(400).json({ error: 'Lien invalide ou expiré' });
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), reset.user_id);
+  db.prepare('DELETE FROM password_resets WHERE token = ?').run(token);
+  res.json({ ok: true });
+});
+
+// Changement de mot de passe (connecté)
+app.post('/api/auth/change-password', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const { password } = req.body || {};
+  if (!password || password.length < 6) return res.status(400).json({ error: 'Mot de passe minimum 6 caractères' });
+  db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), req.session.userId);
+  res.json({ ok: true });
 });
 
 // Suppression de compte (RGPD)

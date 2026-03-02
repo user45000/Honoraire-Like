@@ -26,6 +26,17 @@ const Account = (() => {
     attachListeners();
     handlePaymentReturn();
     initPaywall();
+
+    // Détection token de reset dans l'URL (?reset=TOKEN)
+    const resetToken = new URLSearchParams(window.location.search).get('reset');
+    if (resetToken) {
+      App.switchTab('compte');
+      showResetForm();
+      document.getElementById('reset-submit')?._setToken?.(resetToken);
+      window._resetToken = resetToken;
+      // Nettoyer l'URL
+      history.replaceState(null, '', window.location.pathname);
+    }
   }
 
   // === Paywall ===
@@ -184,23 +195,46 @@ const Account = (() => {
       accountPanel.style.display = 'none';
       showLoginForm();
     }
+    renderParamsAccount();
+  }
+
+  function hideAllAuthForms() {
+    ['auth-login', 'auth-register', 'auth-forgot', 'auth-reset'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
   }
 
   function showLoginForm() {
+    hideAllAuthForms();
     const loginEl = document.getElementById('auth-login');
-    const registerEl = document.getElementById('auth-register');
     if (loginEl) loginEl.style.display = 'block';
-    if (registerEl) registerEl.style.display = 'none';
     const errEl = document.getElementById('login-error');
     if (errEl) errEl.textContent = '';
   }
 
   function showRegisterForm() {
-    const loginEl = document.getElementById('auth-login');
+    hideAllAuthForms();
     const registerEl = document.getElementById('auth-register');
-    if (loginEl) loginEl.style.display = 'none';
     if (registerEl) registerEl.style.display = 'block';
     const errEl = document.getElementById('register-error');
+    if (errEl) errEl.textContent = '';
+  }
+
+  function showForgotForm() {
+    hideAllAuthForms();
+    const el = document.getElementById('auth-forgot');
+    if (el) el.style.display = 'block';
+    const errEl = document.getElementById('forgot-error');
+    if (errEl) errEl.textContent = '';
+    document.getElementById('forgot-success')?.style.setProperty('display', 'none');
+  }
+
+  function showResetForm() {
+    hideAllAuthForms();
+    const el = document.getElementById('auth-reset');
+    if (el) el.style.display = 'block';
+    const errEl = document.getElementById('reset-error');
     if (errEl) errEl.textContent = '';
   }
 
@@ -219,6 +253,56 @@ const Account = (() => {
   function attachListeners() {
     document.getElementById('show-register')?.addEventListener('click', showRegisterForm);
     document.getElementById('show-login')?.addEventListener('click', showLoginForm);
+    document.getElementById('show-forgot')?.addEventListener('click', showForgotForm);
+    document.getElementById('back-to-login')?.addEventListener('click', showLoginForm);
+
+    // Mot de passe oublié
+    document.getElementById('forgot-submit')?.addEventListener('click', async () => {
+      const email = document.getElementById('forgot-email').value.trim();
+      const errEl = document.getElementById('forgot-error');
+      const successEl = document.getElementById('forgot-success');
+      errEl.textContent = '';
+      successEl.style.display = 'none';
+      if (!email) { errEl.textContent = 'Email requis'; return; }
+      try {
+        const basePath = App.getBasePath();
+        await fetch(`${basePath}api/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        successEl.style.display = 'block';
+        document.getElementById('forgot-submit').style.display = 'none';
+      } catch (e) {
+        errEl.textContent = 'Erreur de connexion';
+      }
+    });
+
+    // Réinitialisation mot de passe (token URL)
+    document.getElementById('reset-submit')?.addEventListener('click', async () => {
+      const password = document.getElementById('reset-password').value;
+      const errEl = document.getElementById('reset-error');
+      errEl.textContent = '';
+      if (!password) { errEl.textContent = 'Mot de passe requis'; return; }
+      const token = window._resetToken;
+      if (!token) { errEl.textContent = 'Token manquant'; return; }
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/auth/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, password })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; return; }
+        window._resetToken = null;
+        showLoginForm();
+        const loginErrEl = document.getElementById('login-error');
+        if (loginErrEl) { loginErrEl.style.color = 'var(--success)'; loginErrEl.textContent = 'Mot de passe modifié. Connectez-vous.'; }
+      } catch (e) {
+        errEl.textContent = 'Erreur de connexion';
+      }
+    });
 
     // Sélection du plan
     document.querySelectorAll('.subscribe-plan-btn').forEach(btn => {
@@ -341,6 +425,89 @@ const Account = (() => {
         btn.disabled = false;
       }
     });
+  }
+
+    // Params — changer mot de passe
+    document.getElementById('params-change-pw-btn')?.addEventListener('click', () => {
+      document.getElementById('params-change-pw-form').style.display = 'block';
+      document.getElementById('params-change-pw-btn').style.display = 'none';
+      document.getElementById('params-pw-success')?.style.setProperty('display', 'none');
+    });
+    document.getElementById('params-pw-cancel')?.addEventListener('click', () => {
+      document.getElementById('params-change-pw-form').style.display = 'none';
+      document.getElementById('params-change-pw-btn').style.display = 'block';
+      document.getElementById('params-new-password').value = '';
+      document.getElementById('params-pw-error').textContent = '';
+    });
+    document.getElementById('params-pw-save')?.addEventListener('click', async () => {
+      const password = document.getElementById('params-new-password').value;
+      const errEl = document.getElementById('params-pw-error');
+      const successEl = document.getElementById('params-pw-success');
+      errEl.textContent = '';
+      if (!password) { errEl.textContent = 'Mot de passe requis'; return; }
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/auth/change-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; return; }
+        document.getElementById('params-new-password').value = '';
+        document.getElementById('params-change-pw-form').style.display = 'none';
+        document.getElementById('params-change-pw-btn').style.display = 'block';
+        successEl.style.display = 'block';
+        setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+      } catch (e) {
+        errEl.textContent = 'Erreur de connexion';
+      }
+    });
+
+    // Params — déconnexion
+    document.getElementById('params-logout-btn')?.addEventListener('click', async () => {
+      try {
+        const basePath = App.getBasePath();
+        await fetch(`${basePath}api/auth/logout`, { method: 'POST' });
+      } catch (e) {}
+      currentUser = null;
+      render();
+    });
+
+    // Params — supprimer compte
+    document.getElementById('params-delete-btn')?.addEventListener('click', async () => {
+      if (!confirm('Supprimer définitivement votre compte ?\nToutes vos données seront effacées. Cette action est irréversible.')) return;
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/auth/account`, { method: 'DELETE' });
+        if (res.ok) { currentUser = null; render(); }
+      } catch (e) {}
+    });
+
+    // Params — lien "Connectez-vous"
+    document.getElementById('params-go-compte')?.addEventListener('click', (e) => {
+      e.preventDefault();
+      App.switchTab('compte');
+    });
+  }
+
+  function renderParamsAccount() {
+    const section = document.getElementById('params-account-section');
+    const hint = document.getElementById('params-account-hint');
+    if (!section || !hint) return;
+    if (currentUser) {
+      section.style.display = 'block';
+      hint.style.display = 'none';
+      document.getElementById('params-account-email').textContent = currentUser.email;
+      const status = currentUser.subscription_status || 'trial';
+      const labels = { active: 'Abonné', trial: 'Essai gratuit', expired: 'Expiré' };
+      const statusEl = document.getElementById('params-account-status');
+      statusEl.textContent = labels[status] || status;
+      statusEl.className = 'account-status-badge status-' + status;
+    } else {
+      section.style.display = 'none';
+      hint.style.display = 'block';
+    }
   }
 
   function getUser() { return currentUser; }

@@ -478,6 +478,36 @@
           <span id="cabinet-saved" class="cabinet-saved-status"></span>
         </div>
       </div>
+
+      <!-- Mon compte -->
+      <div id="params-account-section" class="section-card" style="display:none">
+        <h3>Mon compte</h3>
+        <div class="account-info" style="margin-bottom:14px">
+          <div class="account-row">
+            <span class="account-label">Email</span>
+            <span id="params-account-email" class="account-value"></span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Abonnement</span>
+            <span id="params-account-status" class="account-status-badge">—</span>
+          </div>
+        </div>
+        <div id="params-change-pw-form" style="display:none">
+          <input type="password" id="params-new-password" class="auth-input" placeholder="Nouveau mot de passe (6 car. min)" autocomplete="new-password">
+          <div id="params-pw-error" class="auth-error"></div>
+          <div id="params-pw-success" class="auth-success" style="display:none">Mot de passe modifié.</div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button type="button" id="params-pw-save" class="auth-btn-primary" style="flex:1">Enregistrer</button>
+            <button type="button" id="params-pw-cancel" class="auth-btn-secondary" style="flex:1">Annuler</button>
+          </div>
+        </div>
+        <button type="button" id="params-change-pw-btn" class="auth-btn-secondary">Changer le mot de passe</button>
+        <button type="button" id="params-logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
+        <button type="button" id="params-delete-btn" class="auth-btn-danger" style="margin-top:8px">Supprimer mon compte</button>
+      </div>
+      <div id="params-account-hint" class="section-card" style="display:none">
+        <p style="text-align:center;font-size:14px;color:var(--text-secondary)"><button class="auth-link" id="params-go-compte">Connectez-vous</button> pour gérer votre compte</p>
+      </div>
     </section>
 
     <!-- Onglet Compte -->
@@ -499,6 +529,27 @@
             <button type="button" id="login-submit" class="auth-btn-primary">Se connecter</button>
           </div>
           <p class="auth-switch">Pas encore de compte ? <button class="auth-link" id="show-register">Créer un compte</button></p>
+          <p class="auth-switch"><button class="auth-link" id="show-forgot">Mot de passe oublié ?</button></p>
+        </div>
+        <!-- Mot de passe oublié -->
+        <div id="auth-forgot" class="section-card" style="display:none">
+          <h3>Mot de passe oublié</h3>
+          <div class="auth-form">
+            <input type="email" id="forgot-email" class="auth-input" placeholder="Votre email" autocomplete="email" inputmode="email">
+            <div id="forgot-error" class="auth-error"></div>
+            <div id="forgot-success" class="auth-success" style="display:none">Un lien de réinitialisation vous a été envoyé (valable 15 min).</div>
+            <button type="button" id="forgot-submit" class="auth-btn-primary">Envoyer le lien</button>
+          </div>
+          <p class="auth-switch"><button class="auth-link" id="back-to-login">← Retour à la connexion</button></p>
+        </div>
+        <!-- Réinitialisation mot de passe (token URL) -->
+        <div id="auth-reset" class="section-card" style="display:none">
+          <h3>Nouveau mot de passe</h3>
+          <div class="auth-form">
+            <input type="password" id="reset-password" class="auth-input" placeholder="Nouveau mot de passe (6 car. min)" autocomplete="new-password">
+            <div id="reset-error" class="auth-error"></div>
+            <button type="button" id="reset-submit" class="auth-btn-primary">Enregistrer le mot de passe</button>
+          </div>
         </div>
         <!-- Inscription -->
         <div id="auth-register" class="section-card" style="display:none">
