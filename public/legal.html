@@ -186,12 +186,33 @@
       <p>Vous pouvez également introduire une réclamation auprès de la <strong>CNIL</strong> (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</p>
 
       <h3 id="cookies">Cookies et stockage local</h3>
-      <p>L'application utilise :</p>
+      <p>L'application utilise uniquement des cookies <strong>strictement nécessaires</strong> à son fonctionnement. Aucun accord préalable n'est requis pour ces cookies (Article 82 de la loi Informatique et Libertés, Directive ePrivacy 2002/58/CE).</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+        <thead>
+          <tr style="background:#f0f5ff">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Nom</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Type</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Finalité</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Durée</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0"><code>connect.sid</code></td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Cookie HTTP, HttpOnly</td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Maintien de la session d'authentification</td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Session (fermeture du navigateur) ou 30 jours si « Rester connecté » coché</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Stockage local (localStorage)</strong> — données conservées uniquement sur votre appareil, jamais transmises :</p>
       <ul>
-        <li><strong>Cookies de session</strong> — strictement nécessaires pour maintenir votre connexion (durée : 30 jours). Aucun accord requis pour ces cookies.</li>
-        <li><strong>localStorage</strong> — pour mémoriser vos préférences (mode d'affichage, secteur, zone géographique) et compter vos visites gratuites. Ces données restent sur votre appareil et ne nous sont jamais transmises.</li>
+        <li>Préférences d'affichage (mode simple/complet, secteur, zone géographique)</li>
+        <li>Compteur de visites gratuites</li>
+        <li>Statut d'abonnement en cache (pour éviter un appel réseau à chaque ouverture)</li>
+        <li>Mémorisation du consentement à l'information cookie</li>
       </ul>
-      <p>Nous n'utilisons <strong>aucun cookie de tracking ou publicitaire</strong>.</p>
+      <p>Nous n'utilisons <strong>aucun cookie de tracking, analytique ou publicitaire</strong>.</p>
     </div>
 
     <!-- Mentions légales -->

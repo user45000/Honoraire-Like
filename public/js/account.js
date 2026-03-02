@@ -227,6 +227,7 @@ const Account = (() => {
     document.getElementById('login-submit')?.addEventListener('click', async () => {
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
+      const rememberMe = document.getElementById('login-remember')?.checked || false;
       const errEl = document.getElementById('login-error');
       errEl.textContent = '';
       if (!email || !password) { errEl.textContent = 'Remplissez tous les champs'; return; }
@@ -235,7 +236,7 @@ const Account = (() => {
         const res = await fetch(`${basePath}api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, rememberMe })
         });
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error; return; }

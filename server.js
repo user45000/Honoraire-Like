@@ -28,6 +28,37 @@ db.exec(`
 // Migration : ajouter les colonnes si elles n'existent pas
 try { db.exec('ALTER TABLE users ADD COLUMN accepted_terms INTEGER DEFAULT 0'); } catch (e) {}
 
+// === Store de session SQLite (persist across restarts) ===
+db.exec(`CREATE TABLE IF NOT EXISTS sessions (
+  sid TEXT PRIMARY KEY,
+  sess TEXT NOT NULL,
+  expired INTEGER NOT NULL
+)`);
+// Nettoyage des sessions expirées au démarrage
+db.prepare('DELETE FROM sessions WHERE expired < ?').run(Date.now());
+
+class SQLiteSessionStore extends session.Store {
+  get(sid, cb) {
+    const row = db.prepare('SELECT sess FROM sessions WHERE sid = ? AND expired > ?').get(sid, Date.now());
+    cb(null, row ? JSON.parse(row.sess) : null);
+  }
+  set(sid, sess, cb) {
+    const maxAge = sess.cookie && sess.cookie.maxAge ? sess.cookie.maxAge : 24 * 60 * 60 * 1000;
+    const expired = Date.now() + maxAge;
+    db.prepare('INSERT OR REPLACE INTO sessions (sid, sess, expired) VALUES (?, ?, ?)').run(sid, JSON.stringify(sess), expired);
+    cb(null);
+  }
+  destroy(sid, cb) {
+    db.prepare('DELETE FROM sessions WHERE sid = ?').run(sid);
+    cb(null);
+  }
+  touch(sid, sess, cb) {
+    const maxAge = sess.cookie && sess.cookie.maxAge ? sess.cookie.maxAge : 24 * 60 * 60 * 1000;
+    db.prepare('UPDATE sessions SET expired = ? WHERE sid = ?').run(Date.now() + maxAge, sid);
+    if (cb) cb(null);
+  }
+}
+
 // === Email (Gmail SMTP — affiché comme contact@honorairesmg.fr) ===
 const emailTransporter = process.env.GMAIL_APP_PASSWORD
   ? nodemailer.createTransport({
@@ -304,7 +335,8 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'hon-secret-2026',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' }
+  store: new SQLiteSessionStore(),
+  cookie: { httpOnly: true, sameSite: 'lax' }  // maxAge défini au login selon "rester connecté"
 }));
 
 // === Tarifs ===
@@ -383,13 +415,17 @@ app.post('/api/auth/register', rateLimit(10, 15 * 60 * 1000), (req, res) => {
 });
 
 app.post('/api/auth/login', rateLimit(10, 15 * 60 * 1000), (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password, rememberMe } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase().trim());
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
     return res.status(401).json({ error: 'Identifiants invalides' });
   }
   req.session.userId = user.id;
+  if (rememberMe) {
+    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 jours
+  }
+  // else : cookie de session (expire à la fermeture du navigateur)
   res.json({ user: safeUser(user) });
 });
 
