@@ -12,7 +12,8 @@ const Visite = (() => {
     ikEnabled: false,
     ikKm: 5,
     heure: null,
-    relation: 'mt'
+    relation: 'mt',
+    actesCourants: []
   };
 
   function init() {
@@ -123,6 +124,26 @@ const Visite = (() => {
       updateIKInfo();
       recalculate();
     });
+
+    // Actes courants visite (ECG + YYYY490 auto)
+    const courantsGrid = document.getElementById('visite-courants-grid');
+    if (courantsGrid) {
+      courantsGrid.addEventListener('click', (e) => {
+        const btn = e.target.closest('.majo-btn');
+        if (!btn || btn.classList.contains('disabled')) return;
+        const code = btn.dataset.courant;
+        if (!code) return;
+        const idx = state.actesCourants.indexOf(code);
+        if (idx >= 0) {
+          state.actesCourants.splice(idx, 1);
+          btn.classList.remove('active');
+        } else {
+          state.actesCourants.push(code);
+          btn.classList.add('active');
+        }
+        recalculate();
+      });
+    }
 
     // IK géolocalisation
     document.getElementById('ik-geolocate').addEventListener('click', handleGeolocate);
@@ -242,7 +263,7 @@ const Visite = (() => {
     const depGroup = document.querySelector('#tab-visite .toggle-group[data-field="deplacement"]');
     let targetDep = 'MD';
 
-    if (state.periode === 'dimferie') targetDep = 'MDD';
+    if (state.periode === 'dimferie' || state.periode === 'samediAM') targetDep = 'MDD';
     else if (state.periode === 'nuit') targetDep = 'MDN';
     else if (state.periode === 'nuitprofonde') targetDep = 'MDI';
     else {
@@ -295,6 +316,12 @@ const Visite = (() => {
   }
 
   function recalculate() {
+    // Actes courants visite : ECG (DEQP003) entraîne YYYY490 automatiquement
+    const courantObjects = state.actesCourants.map(c => CCAM.getActe(c)).filter(Boolean);
+    if (state.actesCourants.includes('DEQP003')) {
+      const yyyy490 = CCAM.getActe('YYYY490');
+      if (yyyy490) courantObjects.push(yyyy490);
+    }
     const result = Engine.calculate({
       acte: state.acte,
       age: state.age,
@@ -306,7 +333,7 @@ const Visite = (() => {
       ikEnabled: state.ikEnabled,
       ikKm: state.ikKm,
       heure: state.heure,
-      ccamActes: CCAM.getSelectedActes()
+      ccamActes: [...CCAM.getSelectedActes(), ...courantObjects]
     });
     App.updateResult(result);
   }

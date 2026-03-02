@@ -472,7 +472,8 @@
 
     { "code": "MZHB002", "label": "Ponction articulaire membre supérieur", "tarif": 30.10, "cumulG": "non", "note": "Sans guidage. Acte isolé." },
     { "code": "NZHB002", "label": "Ponction articulaire membre inférieur", "tarif": 30.10, "cumulG": "non", "note": "Sans guidage. Acte isolé." },
-    { "code": "NZJB001", "label": "Évacuation collection articulaire membre inférieur", "tarif": 63.00, "cumulG": "non", "note": "Par voie transcutanée sans guidage." },
+    { "code": "NZJB001", "label": "Évacuation collection articulaire membre inférieur", "tarif": 63.00, "cumulG": "oui", "baseOnly": true, "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement." },
+    { "code": "MZJB001", "label": "Évacuation collection articulaire membre supérieur", "tarif": 83.60, "cumulG": "oui", "baseOnly": true, "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement." },
 
     { "code": "MZMP001", "label": "Contention souple articulation membre supérieur", "tarif": 31.35, "cumulG": "non", "note": "Acte isolé." },
     { "code": "MZMP004", "label": "Attelle rigide poignet/main (fracture sans réduction)", "tarif": 30.30, "cumulG": "non", "note": "Acte isolé." },

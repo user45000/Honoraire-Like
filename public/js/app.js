@@ -412,12 +412,12 @@ const App = (() => {
     if (heure < 6) return 'nuitprofonde';             // 0h-6h → Nuit profonde (MM), tous les jours
     if (heure < 8 || heure >= 20) return 'nuit';      // 6h-8h ou 20h-24h → Nuit (MN), tous les jours
     if (jour >= 6) return 'dimferie';                 // Dimanche ou Jour férié (8h-20h)
-    if (jour === 5 && heure >= 12) return 'dimferie'; // Samedi 12h-20h → PDSA (assimilé Dim/Férié)
+    if (jour === 5 && heure >= 12) return 'samediAM';  // Samedi 12h-20h → PDSA (CRS/VRS)
     return 'jour';                                    // Reste → Jour
   }
 
   function applyPDSAMode(periode) {
-    if (!['dimferie', 'nuit', 'nuitprofonde'].includes(periode)) return;
+    if (!['dimferie', 'samediAM', 'nuit', 'nuitprofonde'].includes(periode)) return;
     // WE/Férié, Nuit, Nuit profonde → Régulé PDSA + Hors patientèle
     const modeBarGroup = document.getElementById('mode-bar-group');
     if (modeBarGroup) {
@@ -437,8 +437,10 @@ const App = (() => {
     const jour = parseInt(jourEl.value, 10);
     const h = parseInt((heureEl.value || '8').split(':')[0], 10);
     const periode = computePeriodeFromJourHeure(jour, h);
+    // samediAM : bouton "WE/Fé" s'active mais période interne distincte pour CRS/VRS
+    const displayPeriode = (periode === 'samediAM') ? 'dimferie' : periode;
     periodeEl.querySelectorAll('.toggle-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.value === periode);
+      b.classList.toggle('active', b.dataset.value === displayPeriode);
     });
     Consultation.setPeriode(periode);
     Visite.setPeriode(periode);
