@@ -184,6 +184,10 @@
       renderUsers(allUsers);
     }
 
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
     function renderUsers(users) {
       const tbody = document.getElementById('users-tbody');
       tbody.innerHTML = '';
@@ -192,23 +196,25 @@
         return;
       }
       users.forEach(u => {
+        const safeId = parseInt(u.id, 10);
+        const safeEmail = escHtml(u.email);
         const badge = {
           active: '<span class="badge badge-active">Abonné</span>',
           trial: '<span class="badge badge-trial">Essai</span>',
           expired: '<span class="badge badge-expired">Expiré</span>'
-        }[u.subscription_status] || `<span class="badge">${u.subscription_status}</span>`;
+        }[u.subscription_status] || '<span class="badge">Inconnu</span>';
         const end = u.subscription_end
           ? new Date(u.subscription_end).toLocaleDateString('fr-FR')
           : '—';
         const created = new Date(u.created_at).toLocaleDateString('fr-FR');
         const tr = document.createElement('tr');
         tr.innerHTML = `
-          <td style="color:#94a3b8">${u.id}</td>
-          <td>${u.email}</td>
+          <td style="color:#94a3b8">${safeId}</td>
+          <td>${safeEmail}</td>
           <td>${badge}</td>
           <td>${created}</td>
           <td>${end}</td>
-          <td><button class="del-btn" data-id="${u.id}">Supprimer</button></td>
+          <td><button class="del-btn" data-id="${safeId}">Supprimer</button></td>
         `;
         tbody.appendChild(tr);
       });

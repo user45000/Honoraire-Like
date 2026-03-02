@@ -1,4 +1,12 @@
 node_modules/
 .env
+.env.*
 *.log
 .DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+honoraire-like.db
+honoraire-like.db-shm
+honoraire-like.db-wal
