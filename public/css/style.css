@@ -166,11 +166,25 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 9px;
 }
 
-.logo-header {
+.logo-icon {
+  width: 26px;
   height: 26px;
-  display: block;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  color: white;
+}
+
+.logo-text strong {
+  font-weight: 600;
 }
 
 /* === Barre période horaire === */
