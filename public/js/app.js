@@ -228,10 +228,14 @@ const App = (() => {
     codesEl.textContent = result.codes.join(' + ');
     totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
 
-    if (amoAmcEl && result.amo !== undefined) {
-      const amoStr = result.amo.toFixed(2).replace('.', ',');
-      const amcStr = result.amc.toFixed(2).replace('.', ',');
-      amoAmcEl.textContent = `AMO ${amoStr}€ | AMC ${amcStr}€`;
+    if (amoAmcEl) {
+      if (result.amo !== undefined) {
+        const amoStr = result.amo.toFixed(2).replace('.', ',');
+        const amcStr = result.amc.toFixed(2).replace('.', ',');
+        amoAmcEl.textContent = `AMO ${amoStr}€ | AMC ${amcStr}€`;
+      } else {
+        amoAmcEl.textContent = '';  // efface les valeurs stales (ex: CCAM seul)
+      }
     }
   }
 
