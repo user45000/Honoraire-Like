@@ -57,7 +57,11 @@ const Account = (() => {
       btn.disabled = true;
       try {
         const basePath = App.getBasePath();
-        const res = await fetch(`${basePath}api/stripe/create-checkout-session`, {
+        // Guest checkout si non connecté, sinon checkout authentifié
+        const route = currentUser
+          ? `${basePath}api/stripe/create-checkout-session`
+          : `${basePath}api/stripe/guest-checkout`;
+        const res = await fetch(route, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ plan: paywallPlan })

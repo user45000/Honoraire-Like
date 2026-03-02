@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const Database = require('better-sqlite3');
@@ -63,7 +64,34 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
   switch (event.type) {
     case 'checkout.session.completed': {
       const session = event.data.object;
-      const userId = parseInt(session.metadata.userId);
+      let userId = session.metadata?.userId ? parseInt(session.metadata.userId) : null;
+
+      // Guest checkout : créer le compte automatiquement
+      if (!userId && session.customer_details?.email) {
+        const guestEmail = session.customer_details.email.toLowerCase().trim();
+        let existing = db.prepare('SELECT id FROM users WHERE email = ?').get(guestEmail);
+        if (!existing) {
+          const tempPass = crypto.randomBytes(12).toString('hex');
+          const hash = bcrypt.hashSync(tempPass, 10);
+          const r = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)').run(guestEmail, hash);
+          existing = { id: r.lastInsertRowid };
+          sendEmail(guestEmail, 'Votre compte Honoraires MG', `
+            <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
+              <h2 style="color:#1B2D4F">Bienvenue sur Honoraires MG !</h2>
+              <p>Votre abonnement est actif. Un compte a été créé automatiquement :</p>
+              <p><strong>Email :</strong> ${guestEmail}<br>
+              <strong>Mot de passe temporaire :</strong> ${tempPass}</p>
+              <p>Connectez-vous depuis l'onglet <strong>Compte</strong> et changez votre mot de passe.</p>
+              <p style="margin-top:24px;color:#64748B;font-size:12px">
+                Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
+                Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
+              </p>
+            </div>`);
+        }
+        userId = existing.id;
+      }
+
+      if (!userId) break;
       db.prepare(`UPDATE users SET
         stripe_customer_id = ?,
         stripe_subscription_id = ?,
@@ -247,6 +275,28 @@ app.post('/api/stripe/customer-portal', async (req, res) => {
     res.json({ url: portal.url });
   } catch (e) {
     console.error('Stripe portal error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Guest checkout — pas d'auth requise, Stripe collecte l'email
+app.post('/api/stripe/guest-checkout', async (req, res) => {
+  if (!stripe) return res.status(500).json({ error: 'Stripe non configuré' });
+  const { plan } = req.body;
+  const priceId = plan === 'year' ? process.env.STRIPE_PRICE_YEAR : process.env.STRIPE_PRICE_MONTH;
+  if (!priceId) return res.status(500).json({ error: 'Price ID Stripe manquant' });
+  const appUrl = process.env.APP_URL || `http://localhost:${PORT}`;
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: priceId, quantity: 1 }],
+      success_url: `${appUrl}/?payment=success`,
+      cancel_url: `${appUrl}/?payment=cancel`,
+    });
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('Guest checkout error:', e);
     res.status(500).json({ error: e.message });
   }
 });
