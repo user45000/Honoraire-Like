@@ -56,13 +56,25 @@ const App = (() => {
     // Heure et jour partagés (auto-détection période + SHE)
     const heureInput = document.getElementById('heure-input');
     const jourInput = document.getElementById('jour-input');
-    const now = new Date();
-    heureInput.value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
-    // JS getDay(): 0=dim,1=lun..6=sam → notre: 0=lun..5=sam,6=dim
-    jourInput.value = (now.getDay() === 0 ? 6 : now.getDay() - 1).toString();
-    Consultation.setHeure(now.getHours());
-    Visite.setHeure(now.getHours());
-    applyAutoPeriode();
+    const nowBadge = document.getElementById('now-badge');
+    const resetNowBtn = document.getElementById('reset-now-btn');
+
+    function setNow() {
+      const now = new Date();
+      heureInput.value = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      // JS getDay(): 0=dim,1=lun..6=sam → notre: 0=lun..5=sam,6=dim
+      jourInput.value = (now.getDay() === 0 ? 6 : now.getDay() - 1).toString();
+      Consultation.setHeure(now.getHours());
+      Visite.setHeure(now.getHours());
+      applyAutoPeriode();
+    }
+
+    function setManual() {
+      nowBadge.style.display = 'none';
+      resetNowBtn.style.display = '';
+    }
+
+    setNow();
 
     heureInput.addEventListener('change', () => {
       const parts = heureInput.value.split(':');
@@ -70,8 +82,18 @@ const App = (() => {
       Consultation.setHeure(h);
       Visite.setHeure(h);
       applyAutoPeriode();
+      setManual();
     });
-    jourInput.addEventListener('change', applyAutoPeriode);
+    jourInput.addEventListener('change', () => {
+      applyAutoPeriode();
+      setManual();
+    });
+
+    resetNowBtn.addEventListener('click', () => {
+      setNow();
+      resetNowBtn.style.display = 'none';
+      nowBadge.style.display = '';
+    });
 
     // Adresse cabinet
     const cabinetInput = document.getElementById('cabinet-address');

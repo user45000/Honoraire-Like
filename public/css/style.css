@@ -199,6 +199,59 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 /* === Saisie heure (pour SHE) === */
+.heure-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  min-height: 24px;
+}
+.heure-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.now-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--success);
+  cursor: default;
+  font-family: var(--font-body);
+}
+.now-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse-dot 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+.reset-now-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--primary);
+  cursor: pointer;
+  font-family: var(--font-body);
+}
+.reset-now-btn:active {
+  opacity: 0.7;
+}
 .heure-row {
   display: flex;
   align-items: center;
