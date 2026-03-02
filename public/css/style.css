@@ -1907,9 +1907,9 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
    Ref : Linear / Notion / Stripe Dashboard pattern
    ================================================================ */
 @media (min-width: 1024px) {
-  /* Fond brand navy — unifié avec la sidebar */
+  /* Fond split : sidebar navy / contenu cloud */
   body {
-    background: var(--primary-dark);
+    background: linear-gradient(90deg, var(--primary-dark) 240px, var(--bg) 240px);
     min-height: 100vh;
   }
 
@@ -2007,28 +2007,29 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     flex-shrink: 0;
   }
 
-  /* ── Zone de contenu : fond cloud, décalée de la sidebar ── */
+  /* ── Zone de contenu : décalée de la sidebar, padding uniforme ── */
   .periode-bar,
   .mode-bar {
-    margin-left: calc(240px + 12px);
-    margin-right: 12px;
+    margin-left: calc(240px + 28px);
+    margin-right: 28px;
+    margin-top: 14px;
   }
 
   .app-main {
     margin-left: 240px;
     max-width: none;
-    background: var(--bg); /* #F0F5FF cloud */
+    background: var(--bg);
     box-shadow: none;
     border-radius: 0;
     min-height: calc(100vh - var(--header-height) - var(--safe-top));
-    padding-bottom: calc(var(--result-height) + 24px);
+    padding: 0 28px calc(var(--result-height) + 24px);
   }
 
-  /* Contenu interne : max-width pour confort lecture */
+  /* Contenu : pas de max-width, s'aligne avec periode-bar */
   .tab-content {
-    max-width: 880px;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   /* ── Result bar : band brand au bas de la zone principale ── */
