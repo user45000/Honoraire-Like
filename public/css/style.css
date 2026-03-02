@@ -1087,35 +1087,97 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ccam-context-bar {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 8px 14px;
+  gap: 8px;
+  padding: 9px 14px;
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--border);
   border-radius: var(--radius);
   font-size: 13px;
   margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.15s;
+  user-select: none;
+}
+
+.ccam-context-bar:hover {
+  background: var(--bg);
+}
+
+.ccam-context-bar.ctx-cabinet {
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+.ccam-context-bar.ctx-visite {
+  border-color: rgba(217, 119, 6, 0.35);
 }
 
 .ccam-ctx-dot {
-  width: 8px;
-  height: 8px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
-  background: var(--primary-light);
   flex-shrink: 0;
+  transition: background 0.2s;
 }
 
-.ccam-ctx-lbl {
-  color: var(--text-secondary);
-  font-weight: 400;
+.ccam-ctx-dot.ctx-cabinet {
+  background: var(--primary);
 }
 
-.ccam-ctx-sep {
-  color: var(--border);
+.ccam-ctx-dot.ctx-visite {
+  background: var(--amber);
 }
 
 .ccam-context-bar strong {
-  color: var(--primary);
   font-weight: 600;
+  white-space: nowrap;
+  transition: color 0.2s;
+}
+
+.ccam-context-bar.ctx-visite strong {
+  color: var(--amber);
+}
+
+.ccam-context-bar.ctx-cabinet strong {
+  color: var(--primary);
+}
+
+.ccam-ctx-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  align-items: center;
+}
+
+.ccam-ctx-chip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.ccam-ctx-chip.chip-acte {
+  background: var(--primary);
+  color: white;
+}
+
+.ccam-ctx-chip.chip-acte.chip-visite {
+  background: var(--amber);
+}
+
+.ccam-ctx-chip.chip-majo {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+}
+
+.ccam-ctx-switch-icon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  opacity: 0.6;
 }
 
 /* === CCAM selection banner === */

@@ -481,5 +481,7 @@ const Visite = (() => {
     return data.routes[0].distance / 1000;
   }
 
-  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation };
+  function getState() { return state; }
+
+  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation };
 })();

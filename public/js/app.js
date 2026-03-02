@@ -144,6 +144,13 @@ const App = (() => {
     // Patientèle (MT / hors patientèle)
     initRelation();
 
+    // Barre contexte CCAM — clic pour basculer entre cabinet et visite
+    document.getElementById('ccam-context-bar')?.addEventListener('click', () => {
+      ccamContext = ccamContext === 'visite' ? 'consultation' : 'visite';
+      updateCCAMContextBar();
+      onCCAMChanged();
+    });
+
     // Afficher l'onglet initial
     Consultation.onShow();
   }
@@ -196,10 +203,7 @@ const App = (() => {
       if (prevTab === 'consultation' || prevTab === 'visite') {
         ccamContext = prevTab;
       }
-      const ctxBar = document.getElementById('ccam-context-bar');
-      const ctxLabel = document.getElementById('ccam-context-label');
-      if (ctxBar) ctxBar.style.display = '';
-      if (ctxLabel) ctxLabel.textContent = ccamContext === 'visite' ? 'En visite' : 'Au cabinet';
+      updateCCAMContextBar();
     }
     updateInstallBanner(tabName);
 
@@ -508,9 +512,41 @@ const App = (() => {
     applyPDSAMode(periode);
   }
 
+  function updateCCAMContextBar() {
+    const bar = document.getElementById('ccam-context-bar');
+    if (!bar) return;
+    bar.style.display = '';
+
+    const isVisite = ccamContext === 'visite';
+    const state = isVisite ? Visite.getState() : Consultation.getState();
+
+    // Classes couleur sur la barre
+    bar.classList.toggle('ctx-visite', isVisite);
+    bar.classList.toggle('ctx-cabinet', !isVisite);
+
+    // Dot
+    const dot = document.getElementById('ccam-ctx-dot');
+    if (dot) dot.className = 'ccam-ctx-dot ' + (isVisite ? 'ctx-visite' : 'ctx-cabinet');
+
+    // Label
+    const label = document.getElementById('ccam-context-label');
+    if (label) label.textContent = isVisite ? 'En visite' : 'Au cabinet';
+
+    // Chips : acte + majorations actives
+    const chips = document.getElementById('ccam-ctx-chips');
+    if (chips) {
+      const acteClass = 'ccam-ctx-chip chip-acte' + (isVisite ? ' chip-visite' : '');
+      let html = `<span class="${acteClass}">${state.acte}</span>`;
+      (state.majorations || []).forEach(m => {
+        html += `<span class="ccam-ctx-chip chip-majo">${m}</span>`;
+      });
+      chips.innerHTML = html;
+    }
+  }
+
   function getCCAMContext() { return ccamContext; }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateModeBar, getRelation };
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation };
 })();
 
 /**

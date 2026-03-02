@@ -398,11 +398,13 @@
 
     <!-- Onglet CCAM -->
     <section id="tab-ccam" class="tab-content">
-      <div id="ccam-context-bar" class="ccam-context-bar" style="display:none">
-        <span class="ccam-ctx-dot"></span>
-        <span class="ccam-ctx-lbl">Contexte</span>
-        <span class="ccam-ctx-sep">·</span>
+      <div id="ccam-context-bar" class="ccam-context-bar ctx-cabinet" style="display:none" role="button" tabindex="0" aria-label="Changer le contexte de calcul">
+        <span class="ccam-ctx-dot ctx-cabinet" id="ccam-ctx-dot"></span>
         <strong id="ccam-context-label">Au cabinet</strong>
+        <div id="ccam-ctx-chips" class="ccam-ctx-chips"></div>
+        <svg class="ccam-ctx-switch-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path d="M3 6h12M13 4l2 2-2 2M15 12H3M5 10l-2 2 2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
       <div class="section-card">
         <div class="ccam-search-wrap">
