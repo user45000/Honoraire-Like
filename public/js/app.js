@@ -421,12 +421,23 @@ const App = (() => {
    */
   function onCCAMChanged() {
     const sel = CCAM.getSelectedActes();
-    const resultBar = document.getElementById('result-bar');
 
-    // result-bar toujours visible en CCAM
+    if (currentTab === 'ccam') {
+      // Afficher uniquement les codes CCAM sélectionnés (sans le code de consultation)
+      if (sel.length === 0) {
+        updateResult({ codes: [], total: 0 });
+      } else {
+        const ccamResult = Engine.calculateCCAM(sel, '', 0, []);
+        updateResult({
+          codes: ccamResult.items.map(i => i.code),
+          total: ccamResult.items.reduce((s, i) => s + i.montant, 0)
+        });
+      }
+      return;
+    }
 
-    // Toujours recalculer la consultation ou visite active
-    if (currentTab === 'consultation' || currentTab === 'ccam') {
+    // Sur consultation ou visite : recalcul complet (inclut les CCAM en association)
+    if (currentTab === 'consultation') {
       Consultation.recalculate();
     } else if (currentTab === 'visite') {
       Visite.recalculate();
