@@ -1083,6 +1083,41 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-size: 14px;
 }
 
+/* === CCAM context bar === */
+.ccam-context-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.ccam-ctx-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  flex-shrink: 0;
+}
+
+.ccam-ctx-lbl {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.ccam-ctx-sep {
+  color: var(--border);
+}
+
+.ccam-context-bar strong {
+  color: var(--primary);
+  font-weight: 600;
+}
+
 /* === CCAM selection banner === */
 .ccam-selection-banner {
   background: var(--card);

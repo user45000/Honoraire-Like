@@ -4,6 +4,7 @@
 const App = (() => {
   let currentTab = 'consultation';
   let currentRelation = 'mt';
+  let ccamContext = 'consultation'; // dernier onglet consultation/visite avant CCAM
 
   async function init() {
     // Charger les paramètres
@@ -186,8 +187,20 @@ const App = (() => {
   });
 
   function switchTab(tabName) {
+    const prevTab = currentTab;
     currentTab = tabName;
     window.scrollTo(0, 0);
+
+    // Mémoriser le contexte consultation/visite quand on entre dans CCAM
+    if (tabName === 'ccam') {
+      if (prevTab === 'consultation' || prevTab === 'visite') {
+        ccamContext = prevTab;
+      }
+      const ctxBar = document.getElementById('ccam-context-bar');
+      const ctxLabel = document.getElementById('ccam-context-label');
+      if (ctxBar) ctxBar.style.display = '';
+      if (ctxLabel) ctxLabel.textContent = ccamContext === 'visite' ? 'En visite' : 'Au cabinet';
+    }
     updateInstallBanner(tabName);
 
     // Update tab content
@@ -225,14 +238,15 @@ const App = (() => {
     const totalEl = document.getElementById('result-total');
     const amoAmcEl = document.getElementById('result-amo-amc');
 
-    // En onglet CCAM : n'afficher que les codes CCAM sélectionnés
+    // En onglet CCAM : afficher tous les codes du résultat (G + DEQP003, ou acte isolé seul)
     if (currentTab === 'ccam') {
-      const ccamCodes = CCAM.getSelectedActes().map(a => a.code);
-      codesEl.textContent = ccamCodes.join(' + ');
-      if (ccamCodes.length === 0) {
+      const ccamSel = CCAM.getSelectedActes();
+      if (ccamSel.length === 0) {
+        codesEl.textContent = '';
         totalEl.textContent = '0,00€';
         if (amoAmcEl) amoAmcEl.textContent = '';
       } else {
+        codesEl.textContent = result.codes.join(' + ');
         totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
         if (amoAmcEl) {
           amoAmcEl.textContent = result.amo !== undefined
@@ -441,13 +455,11 @@ const App = (() => {
    * Recalcule sur l'onglet consultation ou visite actif
    */
   function onCCAMChanged() {
-    const sel = CCAM.getSelectedActes();
-
-    // Recalcul complet avec contexte consultation/visite (règles d'association CCAM correctes)
-    if (currentTab === 'consultation' || currentTab === 'ccam') {
-      Consultation.recalculate();
-    } else if (currentTab === 'visite') {
+    // Recalcul avec le contexte mémorisé (consultation ou visite)
+    if (ccamContext === 'visite') {
       Visite.recalculate();
+    } else {
+      Consultation.recalculate();
     }
   }
 
@@ -496,7 +508,9 @@ const App = (() => {
     applyPDSAMode(periode);
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, updateModeBar, getRelation };
+  function getCCAMContext() { return ccamContext; }
+
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateModeBar, getRelation };
 })();
 
 /**
