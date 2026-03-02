@@ -24,11 +24,13 @@ db.exec(`
   )
 `);
 
-// === Email (Gmail SMTP) ===
-const emailTransporter = process.env.GMAIL_APP_PASSWORD
+// === Email (OVH SMTP — contact@honorairesmg.fr) ===
+const emailTransporter = process.env.EMAIL_PASSWORD
   ? nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }
+      host: 'ssl0.ovh.net',
+      port: 465,
+      secure: true,
+      auth: { user: 'contact@honorairesmg.fr', pass: process.env.EMAIL_PASSWORD }
     })
   : null;
 
@@ -36,8 +38,7 @@ async function sendEmail(to, subject, html) {
   if (!emailTransporter) return;
   try {
     await emailTransporter.sendMail({
-      from: '"Honoraires MG" <dev.francois.ribollet@gmail.com>',
-      replyTo: 'contact@honorairesmg.fr',
+      from: '"Honoraires MG" <contact@honorairesmg.fr>',
       to, subject, html
     });
   } catch (e) {
