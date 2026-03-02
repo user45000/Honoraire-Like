@@ -1,32 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1e40af"/>
-      <stop offset="100%" stop-color="#2563EB"/>
+      <stop offset="0%" stop-color="#60A5FA"/>
+      <stop offset="100%" stop-color="#1B2D4F"/>
     </linearGradient>
-    <radialGradient id="shine" cx="30%" cy="25%" r="60%">
-      <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
-      <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
-    </radialGradient>
   </defs>
-
-  <!-- Fond bleu arrondi + reflet doux -->
-  <rect width="512" height="512" rx="115" fill="url(#bg)"/>
-  <rect width="512" height="512" rx="115" fill="url(#shine)"/>
-
-  <!-- ═══ H — double barre (Lorraine / style médical) ═══ -->
-  <!-- Pilier gauche -->
-  <rect x="102" y="90" width="61" height="333" rx="18" fill="white"/>
-  <!-- Pilier droit -->
-  <rect x="348" y="90" width="61" height="333" rx="18" fill="white"/>
-  <!-- Barre haute -->
-  <rect x="143" y="215" width="225" height="41" rx="13" fill="white"/>
-  <!-- Barre basse -->
-  <rect x="143" y="277" width="189" height="41" rx="13" fill="white"/>
-
-  <!-- ═══ Croix médicale accent — coin supérieur droit ═══ -->
-  <g transform="translate(312, 77)" opacity="0.9">
-    <rect x="10" y="0"  width="28" height="72" rx="8" fill="#60A5FA"/>
-    <rect x="0"  y="22" width="49" height="28" rx="8" fill="#60A5FA"/>
-  </g>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Croix médicale -->
+  <rect x="205" y="102" width="102" height="236" rx="20" fill="white"/>
+  <rect x="138" y="169" width="236" height="102" rx="20" fill="white"/>
+  <!-- Arc stéthoscope -->
+  <path d="M256 338 C256 410 358 410 358 369"
+    stroke="white" stroke-width="23" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <!-- Embout stéthoscope -->
+  <circle cx="358" cy="361" r="28" fill="white" opacity="0.8"/>
 </svg>

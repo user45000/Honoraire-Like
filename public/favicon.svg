@@ -1,21 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1e40af"/>
-      <stop offset="100%" stop-color="#2563EB"/>
+    <linearGradient id="grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#60A5FA"/>
+      <stop offset="1" stop-color="#1B2D4F"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
-
-  <!-- H — double barre -->
-  <rect x="13" y="11" width="8"  height="42" rx="2" fill="white"/>
-  <rect x="44" y="11" width="8"  height="42" rx="2" fill="white"/>
-  <rect x="18" y="27" width="29" height="5"  rx="1.5" fill="white"/>
-  <rect x="18" y="35" width="24" height="5"  rx="1.5" fill="white"/>
-
-  <!-- Croix médicale accent -->
-  <g transform="translate(39, 10)" opacity="0.9">
-    <rect x="1"  y="0" width="4"  height="9" rx="1" fill="#60A5FA"/>
-    <rect x="0"  y="3" width="6"  height="4" rx="1" fill="#60A5FA"/>
-  </g>
+  <rect width="64" height="64" rx="14" fill="url(#grad)"/>
+  <!-- Croix médicale -->
+  <rect x="25.6" y="12.8" width="12.8" height="29.44" rx="2.56" fill="white"/>
+  <rect x="17.28" y="21.12" width="29.44" height="12.8" rx="2.56" fill="white"/>
+  <!-- Arc stéthoscope -->
+  <path d="M32 42.24 C32 51.2 44.8 51.2 44.8 46.08"
+    stroke="white" stroke-width="2.88" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <!-- Embout stéthoscope -->
+  <circle cx="44.8" cy="45.12" r="3.52" fill="white" opacity="0.8"/>
 </svg>

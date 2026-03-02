@@ -8,22 +8,19 @@
        [icon-mark 20×20]  gap  ["Honoraires" stroked]  gap  ["MG" bold stroked]
        ============================================================ -->
 
-  <!-- ═══ ICON MARK — mini version of PWA icon ═══
+  <!-- ═══ ICON MARK — croix médicale + stéthoscope (même design PWA) ═══
        20×20, vertically centered at y=6 -->
   <g transform="translate(0, 6)">
-    <!-- Rounded square background -->
-    <rect width="20" height="20" rx="4.5" fill="#2563EB"/>
-    <!-- Mini H with double crossbar + medical cross -->
-    <g fill="white">
-      <rect x="4" y="3.5" width="2.4" height="13" rx="0.7"/>
-      <rect x="13.6" y="3.5" width="2.4" height="13" rx="0.7"/>
-      <rect x="5.6" y="8.4" width="8.8" height="1.6" rx="0.5"/>
-      <rect x="5.6" y="10.8" width="7.4" height="1.6" rx="0.5"/>
-      <g transform="translate(12.2, 3)" opacity="0.85">
-        <rect x="0.4" y="0" width="1.1" height="2.8" rx="0.3"/>
-        <rect x="0" y="0.85" width="1.9" height="1.1" rx="0.3"/>
-      </g>
-    </g>
+    <!-- Fond bleu ciel arrondi -->
+    <rect width="20" height="20" rx="4.5" fill="#60A5FA"/>
+    <!-- Croix médicale -->
+    <rect x="8"   y="4"   width="4"   height="9" rx="0.8" fill="white"/>
+    <rect x="5.4" y="6.6" width="9.2" height="4" rx="0.8" fill="white"/>
+    <!-- Arc stéthoscope -->
+    <path d="M10 13.2 C10 16 14 16 14 14.4"
+      stroke="white" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <!-- Embout stéthoscope -->
+    <circle cx="14" cy="14" r="1.1" fill="white" opacity="0.8"/>
   </g>
 
   <!-- ═══ "Honoraires" — regular weight geometric letters ═══
