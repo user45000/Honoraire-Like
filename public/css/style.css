@@ -176,7 +176,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .logo-text {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 17px;
   font-weight: 300;
   letter-spacing: -0.01em;
@@ -1078,7 +1078,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .credits-card h2 {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 500;
   color: var(--primary);
@@ -1360,7 +1360,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 .paywall-logo { width: 44px; height: 44px; margin: 0 auto 8px; }
 .paywall-title {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 22px;
   font-weight: 300;
   color: white;
@@ -1394,7 +1394,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .plan-name { font-size: 13px; font-weight: 400; color: rgba(255,255,255,0.6); margin-bottom: 2px; display: flex; align-items: center; gap: 8px; }
 .paywall-plan.active .plan-name { color: rgba(255,255,255,0.9); }
 .plan-badge { background: var(--primary); color: white; font-size: 9px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; white-space: nowrap; }
-.plan-price { font-family: var(--font-body); font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.5); letter-spacing: -0.02em; line-height: 1; }
+.plan-price { font-family: var(--font-display); font-size: 22px; font-weight: 300; color: rgba(255,255,255,0.5); letter-spacing: -0.02em; line-height: 1; }
 .paywall-plan.active .plan-price { color: white; }
 .plan-price span { font-size: 13px; font-weight: 300; }
 .plan-detail { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
@@ -1587,7 +1587,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .subscribe-plan-price {
-  font-family: var(--font-body);
+  font-family: var(--font-display);
   font-size: 18px;
   font-weight: 300;
   color: var(--text);
