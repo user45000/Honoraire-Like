@@ -95,6 +95,22 @@ const App = (() => {
       nowBadge.style.display = '';
     });
 
+    // Info popup périodes
+    const periodeInfoBtn = document.getElementById('periode-info-btn');
+    const periodeInfoPopup = document.getElementById('periode-info-popup');
+    periodeInfoBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = !periodeInfoPopup.hidden;
+      periodeInfoPopup.hidden = open;
+      periodeInfoBtn.setAttribute('aria-expanded', String(!open));
+    });
+    document.addEventListener('click', () => {
+      if (!periodeInfoPopup.hidden) {
+        periodeInfoPopup.hidden = true;
+        periodeInfoBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+
     // Adresse cabinet
     const cabinetInput = document.getElementById('cabinet-address');
     const cabinetSuggestions = document.getElementById('cabinet-suggestions');

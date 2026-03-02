@@ -60,21 +60,21 @@
   <div class="header-spacer"></div>
 
   <div class="section-card periode-bar">
-    <h3>Période</h3>
+    <div class="periode-header">
+      <h3>Période</h3>
+      <button class="info-btn" id="periode-info-btn" aria-label="Infos sur les périodes" aria-expanded="false">i</button>
+    </div>
+    <div class="periode-info-popup" id="periode-info-popup" hidden>
+      <div class="periode-info-row"><span class="pinfo-icon">☀</span><span class="pinfo-label">Jour</span><span class="pinfo-detail">Lun–Ven 8h–20h &nbsp;·&nbsp; Sam 8h–12h</span></div>
+      <div class="periode-info-row"><span class="pinfo-icon">🌅</span><span class="pinfo-label">WE/Férié</span><span class="pinfo-detail">Sam 12h–20h &nbsp;·&nbsp; Dim &amp; fériés 8h–20h</span></div>
+      <div class="periode-info-row"><span class="pinfo-icon">🌙</span><span class="pinfo-label">Nuit</span><span class="pinfo-detail">Tous jours 6h–8h et 20h–0h</span></div>
+      <div class="periode-info-row"><span class="pinfo-icon">🌑</span><span class="pinfo-label">Nuit prof.</span><span class="pinfo-detail">Tous jours 0h–6h</span></div>
+    </div>
     <div class="toggle-group" id="periode-shared">
       <button class="toggle-btn active" data-value="jour">Jour</button>
       <button class="toggle-btn" data-value="dimferie">WE/Férié</button>
       <button class="toggle-btn" data-value="nuit">Nuit</button>
       <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
-    </div>
-    <div class="heure-meta">
-      <span class="heure-label">Heure de l'acte</span>
-      <button id="now-badge" class="now-badge" aria-label="Heure actuelle" title="Heure actuelle">
-        <span class="now-dot"></span>Maintenant
-      </button>
-      <button id="reset-now-btn" class="reset-now-btn" style="display:none" aria-label="Revenir à l'heure actuelle">
-        ↺ Maintenant
-      </button>
     </div>
     <div class="heure-row">
       <select id="jour-input">
@@ -88,6 +88,12 @@
         <option value="7">Jour férié</option>
       </select>
       <input type="time" id="heure-input">
+      <button id="now-badge" class="now-badge" aria-label="Heure actuelle">
+        <span class="now-dot"></span>Maintenant
+      </button>
+      <button id="reset-now-btn" class="reset-now-btn" style="display:none" aria-label="Revenir à l'heure actuelle">
+        ↺ Maintenant
+      </button>
     </div>
   </div>
 
