@@ -1,16 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#1B2D4F"/>
+      <stop offset="0%" stop-color="#1e40af"/>
       <stop offset="100%" stop-color="#2563EB"/>
     </linearGradient>
   </defs>
-  <rect width="64" height="64" rx="12" fill="url(#bg)"/>
-  <!-- H letterform -->
-  <rect x="12"  y="12"  width="11" height="40" rx="3" fill="white"/>
-  <rect x="41"  y="12"  width="11" height="40" rx="3" fill="white"/>
-  <rect x="12"  y="27"  width="40" height="10" rx="3" fill="white"/>
-  <!-- Croix médicale accent en haut du H -->
-  <rect x="27"  y="15"  width="10" height="3"  rx="1.5" fill="#60A5FA"/>
-  <rect x="30"  y="12"  width="3"  height="10" rx="1.5" fill="#60A5FA"/>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+
+  <!-- H — double barre -->
+  <rect x="13" y="11" width="8"  height="42" rx="2" fill="white"/>
+  <rect x="44" y="11" width="8"  height="42" rx="2" fill="white"/>
+  <rect x="18" y="27" width="29" height="5"  rx="1.5" fill="white"/>
+  <rect x="18" y="35" width="24" height="5"  rx="1.5" fill="white"/>
+
+  <!-- Croix médicale accent -->
+  <g transform="translate(39, 10)" opacity="0.9">
+    <rect x="1"  y="0" width="4"  height="9" rx="1" fill="#60A5FA"/>
+    <rect x="0"  y="3" width="6"  height="4" rx="1" fill="#60A5FA"/>
+  </g>
 </svg>

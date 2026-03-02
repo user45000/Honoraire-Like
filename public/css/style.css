@@ -163,19 +163,14 @@ body.mode-simple .view-mode-badge .badge-complet { display: none; }
 body.mode-simple .view-mode-badge .badge-simple { display: block; }
 
 .app-header h1 {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 300;
-  letter-spacing: -0.02em;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
 
-.logo-mark {
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
+.logo-header {
+  height: 26px;
+  display: block;
 }
 
 /* === Barre période horaire === */
