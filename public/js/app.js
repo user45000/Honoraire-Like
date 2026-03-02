@@ -225,16 +225,33 @@ const App = (() => {
     const totalEl = document.getElementById('result-total');
     const amoAmcEl = document.getElementById('result-amo-amc');
 
+    // En onglet CCAM : n'afficher que les codes CCAM sélectionnés
+    if (currentTab === 'ccam') {
+      const ccamCodes = CCAM.getSelectedActes().map(a => a.code);
+      codesEl.textContent = ccamCodes.join(' + ');
+      if (ccamCodes.length === 0) {
+        totalEl.textContent = '0,00€';
+        if (amoAmcEl) amoAmcEl.textContent = '';
+      } else {
+        totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
+        if (amoAmcEl) {
+          amoAmcEl.textContent = result.amo !== undefined
+            ? `AMO ${result.amo.toFixed(2).replace('.', ',')}€ | AMC ${result.amc.toFixed(2).replace('.', ',')}€`
+            : '';
+        }
+      }
+      return;
+    }
+
     codesEl.textContent = result.codes.join(' + ');
     totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
-
     if (amoAmcEl) {
       if (result.amo !== undefined) {
         const amoStr = result.amo.toFixed(2).replace('.', ',');
         const amcStr = result.amc.toFixed(2).replace('.', ',');
         amoAmcEl.textContent = `AMO ${amoStr}€ | AMC ${amcStr}€`;
       } else {
-        amoAmcEl.textContent = '';  // efface les valeurs stales (ex: CCAM seul)
+        amoAmcEl.textContent = '';
       }
     }
   }
@@ -426,22 +443,8 @@ const App = (() => {
   function onCCAMChanged() {
     const sel = CCAM.getSelectedActes();
 
-    if (currentTab === 'ccam') {
-      // Afficher uniquement les codes CCAM sélectionnés (sans le code de consultation)
-      if (sel.length === 0) {
-        updateResult({ codes: [], total: 0 });
-      } else {
-        const ccamResult = Engine.calculateCCAM(sel, '', 0, []);
-        updateResult({
-          codes: ccamResult.items.map(i => i.code),
-          total: ccamResult.items.reduce((s, i) => s + i.montant, 0)
-        });
-      }
-      return;
-    }
-
-    // Sur consultation ou visite : recalcul complet (inclut les CCAM en association)
-    if (currentTab === 'consultation') {
+    // Recalcul complet avec contexte consultation/visite (règles d'association CCAM correctes)
+    if (currentTab === 'consultation' || currentTab === 'ccam') {
       Consultation.recalculate();
     } else if (currentTab === 'visite') {
       Visite.recalculate();
