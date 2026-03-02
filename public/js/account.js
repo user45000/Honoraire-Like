@@ -425,7 +425,6 @@ const Account = (() => {
         btn.disabled = false;
       }
     });
-  }
 
     // Params — changer mot de passe
     document.getElementById('params-change-pw-btn')?.addEventListener('click', () => {
@@ -489,7 +488,7 @@ const Account = (() => {
       e.preventDefault();
       App.switchTab('compte');
     });
-  }
+  } // fin attachListeners
 
   function renderParamsAccount() {
     const section = document.getElementById('params-account-section');
