@@ -59,11 +59,13 @@ class SQLiteSessionStore extends session.Store {
   }
 }
 
-// === Email (Gmail SMTP — affiché comme contact@honorairesmg.fr) ===
-const emailTransporter = process.env.GMAIL_APP_PASSWORD
+// === Email (OVH SMTP — contact@honorairesmg.fr) ===
+const emailTransporter = process.env.SMTP_PASS
   ? nodemailer.createTransport({
-      service: 'gmail',
-      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }
+      host: 'ssl0.ovh.net',
+      port: 465,
+      secure: true,
+      auth: { user: 'contact@honorairesmg.fr', pass: process.env.SMTP_PASS }
     })
   : null;
 
