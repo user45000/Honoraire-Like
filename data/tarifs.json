@@ -362,8 +362,8 @@
     }
   },
   "ccam": [
-    { "code": "DEQP003", "label": "ECG 12 dérivations", "tarif": 14.52, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
-    { "code": "JKHD001", "label": "Frottis cervico-vaginal", "tarif": 12.73, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG depuis 2017" },
+    { "code": "DEQP003", "label": "ECG 12 dérivations", "tarif": 14.77, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
+    { "code": "JKHD001", "label": "Frottis cervico-vaginal", "tarif": 13.00, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG depuis 2017" },
     { "code": "GLQP012", "label": "Spirométrie", "tarif": 41.87, "cumulG": "oui", "baseOnly": true, "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes (VL, APC, GL…) ni avec MSH/MIC actifs." },
     { "code": "JKLD001", "label": "Pose de DIU", "tarif": 38.40, "cumulG": "oui", "baseOnly": true, "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs." },
     { "code": "JKKD001", "label": "Changement de DIU", "tarif": 38.40, "cumulG": "oui", "baseOnly": true, "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs." },
