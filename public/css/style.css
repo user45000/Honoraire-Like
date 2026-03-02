@@ -1609,17 +1609,38 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   color: var(--danger);
 }
 
-/* === Desktop (> 768px) === */
+/* === Tablette / Desktop (> 768px) === */
 @media (min-width: 769px) {
+  /* Fond gradient navy derrière la colonne de l'app */
+  body {
+    background: linear-gradient(150deg, #0a1628 0%, #1B2D4F 55%, #1e3a6e 100%);
+    min-height: 100vh;
+  }
+
+  /* Header contraint à la largeur de la colonne */
+  .app-header {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    width: 480px;
+    border-radius: 0 0 14px 14px;
+  }
+
+  /* Colonne principale : fond clair, ombre portée */
   .app-main {
     max-width: 480px;
     margin: 0 auto;
+    background: var(--bg);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 48px rgba(0,0,0,0.35);
+    min-height: calc(100vh - var(--header-height));
+    border-radius: 0 0 16px 16px;
   }
 
   .periode-bar {
     border-radius: 0 0 10px 10px;
   }
 
+  /* Barre résultat et nav centrées */
   .result-bar {
     max-width: 480px;
     left: 50%;
@@ -1631,6 +1652,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     max-width: 480px;
     left: 50%;
     transform: translateX(-50%);
+    border-radius: 12px 12px 0 0;
   }
 
   .modal-content {
@@ -1640,5 +1662,37 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 
   .modal-overlay {
     align-items: center;
+  }
+}
+
+/* === Grand écran (≥ 960px) === */
+@media (min-width: 960px) {
+  .app-header {
+    width: 700px;
+  }
+
+  .app-main {
+    max-width: 700px;
+  }
+
+  .result-bar,
+  .bottom-nav {
+    max-width: 700px;
+  }
+
+  /* Grille majorations : 3 colonnes */
+  .majo-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* Cartes un peu plus aérées */
+  .section-card {
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+
+  /* Labels nav légèrement plus grands */
+  .nav-btn span {
+    font-size: 11px;
   }
 }
