@@ -1199,12 +1199,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-weight: 400;
   opacity: 0.7;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .result-total {
   font-size: 22px;
   font-weight: 300;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
 }
 
 /* === Bottom nav === */
@@ -1613,10 +1616,12 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   color: var(--danger);
 }
 
-/* === Tablette (768–959px) : colonne centrée sur gradient === */
-@media (min-width: 769px) and (max-width: 959px) {
+/* ================================================================
+   TABLETTE (769–1023px) : colonne centrée sur fond brand navy
+   ================================================================ */
+@media (min-width: 769px) and (max-width: 1023px) {
   body {
-    background: linear-gradient(150deg, #0a1628 0%, #1B2D4F 55%, #1e3a6e 100%);
+    background: var(--primary-dark);
     min-height: 100vh;
   }
 
@@ -1624,28 +1629,29 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     left: 50%;
     right: auto;
     transform: translateX(-50%);
-    width: 560px;
-    border-radius: 0 0 14px 14px;
+    width: min(580px, 100%);
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
   }
 
   .app-main {
-    max-width: 560px;
+    max-width: 580px;
     margin: 0 auto;
     background: var(--bg);
-    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 8px 48px rgba(0,0,0,0.35);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 12px 40px rgba(0,0,0,0.3);
     min-height: calc(100vh - var(--header-height));
     border-radius: 0 0 16px 16px;
   }
 
   .result-bar {
-    max-width: 560px;
+    max-width: 580px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 10px 10px 0 0;
   }
 
   .bottom-nav {
-    max-width: 560px;
+    max-width: 580px;
     left: 50%;
     transform: translateX(-50%);
     border-radius: 12px 12px 0 0;
@@ -1654,6 +1660,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   .modal-content {
     border-radius: 16px;
     margin-bottom: 20px;
+    max-width: 540px;
   }
 
   .modal-overlay {
@@ -1661,78 +1668,99 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   }
 }
 
-/* === Desktop (≥ 960px) : sidebar + contenu pleine largeur === */
-@media (min-width: 960px) {
+/* ================================================================
+   DESKTOP (≥ 1024px) : App Shell — sidebar fixe + contenu
+   Brand identity : navy sidebar, cloud content, ocean blue active
+   Ref : Linear / Notion / Stripe Dashboard pattern
+   ================================================================ */
+@media (min-width: 1024px) {
+  /* Fond brand navy — unifié avec la sidebar */
   body {
-    background: linear-gradient(150deg, #0a1628 0%, #1B2D4F 55%, #1e3a6e 100%);
+    background: var(--primary-dark);
     min-height: 100vh;
   }
 
-  /* Header pleine largeur */
+  /* ── Header pleine largeur ── */
   .app-header {
     left: 0;
     right: 0;
     width: 100%;
     transform: none;
     border-radius: 0;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
+    box-shadow: none;
+    border-bottom: 1px solid rgba(96, 165, 250, 0.15); /* sky-blue subtil */
   }
 
-  /* Nav → sidebar gauche fixe */
+  /* ── Sidebar : navigation verticale brand navy ── */
   .bottom-nav {
     position: fixed;
     left: 0;
     top: calc(var(--header-height) + var(--safe-top));
     bottom: 0;
     right: auto;
-    width: 220px;
+    width: 240px;
     flex-direction: column;
     justify-content: flex-start;
     align-items: stretch;
     height: auto;
     gap: 2px;
-    padding: 20px 10px;
+    padding: 20px 12px;
     border-top: none;
-    border-right: 1px solid rgba(255,255,255,0.1);
+    border-right: 1px solid rgba(255,255,255,0.07);
     border-radius: 0;
-    background: rgba(10, 22, 40, 0.92);
-    backdrop-filter: blur(16px);
+    background: var(--primary-dark); /* brand navy exact */
     overflow-y: auto;
   }
 
-  /* Branding discret en bas de la sidebar */
+  /* Ligne décorative sky-blue en haut de la sidebar */
+  .bottom-nav::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary-light) 0%, transparent 80%);
+    margin: -20px -12px 18px;
+    opacity: 0.4;
+  }
+
+  /* Domaine en bas de la sidebar */
   .bottom-nav::after {
     content: 'honorairesmg.fr';
     display: block;
     margin-top: auto;
-    padding: 24px 16px 8px;
+    padding: 20px 4px 4px;
     font-size: 10px;
-    color: rgba(255,255,255,0.2);
-    letter-spacing: 0.5px;
+    font-family: var(--font-body);
+    color: rgba(255,255,255,0.18);
+    letter-spacing: 0.6px;
   }
 
-  /* Boutons nav horizontaux (icône + label) */
+  /* Boutons nav : icône + label horizontal */
   .nav-btn {
     flex: none;
     flex-direction: row;
     justify-content: flex-start;
     align-items: center;
-    gap: 12px;
-    padding: 11px 16px;
-    border-radius: 10px;
+    gap: 11px;
+    padding: 10px 12px;
+    border-radius: 8px;
     height: auto;
     min-height: 0;
-    color: rgba(255,255,255,0.55);
+    color: rgba(255,255,255,0.5);
+    border-left: 2px solid transparent;
+    transition: background 0.15s, color 0.15s;
   }
 
   .nav-btn:hover {
-    color: rgba(255,255,255,0.85);
-    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.88);
+    background: rgba(255,255,255,0.07);
   }
 
+  /* Active : ocean blue + accent sky-blue sur le bord gauche */
   .nav-btn.active {
     color: #fff;
-    background: rgba(37,99,235,0.35);
+    background: var(--primary); /* #2563EB ocean */
+    border-left-color: var(--primary-light); /* #60A5FA sky */
+    font-weight: 500;
   }
 
   .nav-btn span {
@@ -1741,37 +1769,44 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   }
 
   .nav-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     flex-shrink: 0;
   }
 
-  /* Contenu décalé de la sidebar */
+  /* ── Zone de contenu : fond cloud, décalée de la sidebar ── */
   .periode-bar,
   .mode-bar {
-    margin-left: calc(220px + 12px);
+    margin-left: calc(240px + 12px);
     margin-right: 12px;
   }
 
   .app-main {
-    margin-left: 220px;
+    margin-left: 240px;
     max-width: none;
-    background: var(--bg);
+    background: var(--bg); /* #F0F5FF cloud */
     box-shadow: none;
     border-radius: 0;
     min-height: calc(100vh - var(--header-height) - var(--safe-top));
     padding-bottom: calc(var(--result-height) + 24px);
   }
 
-  /* Result-bar couvre la zone principale uniquement */
+  /* Contenu interne : max-width pour confort lecture */
+  .tab-content {
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* ── Result bar : band brand au bas de la zone principale ── */
   .result-bar {
-    left: 220px;
+    left: 240px;
     right: 0;
     max-width: none;
     width: auto;
     transform: none;
     border-radius: 0;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(96, 165, 250, 0.2); /* sky-blue */
   }
 
   /* Grilles 3 colonnes */
@@ -1781,7 +1816,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 
   /* Cartes plus aérées */
   .section-card {
-    padding: 16px 20px;
+    padding: 18px 22px;
     margin-bottom: 12px;
   }
 
@@ -1789,6 +1824,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   .modal-content {
     border-radius: 16px;
     margin-bottom: 20px;
+    max-width: 540px;
   }
 
   .modal-overlay {
