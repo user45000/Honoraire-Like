@@ -67,13 +67,13 @@ class SQLiteSessionStore extends session.Store {
   }
 }
 
-// === Email (OVH SMTP — contact@honorairesmg.fr) ===
-const emailTransporter = process.env.SMTP_PASS
+// === Email (Gmail SMTP — temporaire en attendant Brevo) ===
+const emailTransporter = process.env.GMAIL_APP_PASSWORD
   ? nodemailer.createTransport({
-      host: 'ssl0.ovh.net',
-      port: 465,
-      secure: true,
-      auth: { user: 'contact@honorairesmg.fr', pass: process.env.SMTP_PASS }
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }
     })
   : null;
 
@@ -81,7 +81,7 @@ async function sendEmail(to, subject, html) {
   if (!emailTransporter) return;
   try {
     await emailTransporter.sendMail({
-      from: '"Honoraires MG" <contact@honorairesmg.fr>',
+      from: `"Honoraires MG" <${process.env.GMAIL_USER}>`,
       to, subject, html
     });
   } catch (e) {
