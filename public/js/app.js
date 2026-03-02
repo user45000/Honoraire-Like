@@ -211,9 +211,7 @@ const App = (() => {
       CCAM.onShow();
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      // Afficher la barre si des actes sont sélectionnés
-      const sel = CCAM.getSelectedActes();
-      resultBar.style.display = sel.length > 0 ? '' : 'none';
+      resultBar.style.display = '';
     } else {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
@@ -425,9 +423,7 @@ const App = (() => {
     const sel = CCAM.getSelectedActes();
     const resultBar = document.getElementById('result-bar');
 
-    if (currentTab === 'ccam') {
-      resultBar.style.display = sel.length > 0 ? '' : 'none';
-    }
+    // result-bar toujours visible en CCAM
 
     // Toujours recalculer la consultation ou visite active
     if (currentTab === 'consultation' || currentTab === 'ccam') {

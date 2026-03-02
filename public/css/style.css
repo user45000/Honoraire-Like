@@ -2031,7 +2031,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     box-shadow: none;
     border-radius: 0;
     min-height: calc(100vh - var(--header-height) - var(--safe-top));
-    padding: 0 28px calc(var(--result-height) + 24px);
+    padding: 0 28px calc(var(--result-height) + 32px);
   }
 
   /* Contenu : pas de max-width, s'aligne avec periode-bar */
@@ -2041,10 +2041,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     margin-right: 0;
   }
 
-  /* ── Result bar : band brand au bas de la zone principale ── */
+  /* ── Result bar : flush en bas (pas de bottom-nav sur desktop) ── */
   .result-bar {
     left: 240px;
     right: 0;
+    bottom: 0;
     max-width: none;
     width: auto;
     transform: none;
