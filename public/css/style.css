@@ -219,7 +219,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   margin: 0;
   border-radius: 0;
   border-left: 1px solid var(--border);
-  background: var(--bg);
+  background: #FAFAFA;
   font-size: 10px;
   font-weight: 600;
   font-style: italic;
