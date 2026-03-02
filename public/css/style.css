@@ -207,15 +207,6 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .periode-toggle-row .toggle-group {
   flex: 1;
 }
-.periode-info-popup {
-  background: var(--bg);
-  border-radius: 8px;
-  padding: 8px;
-  margin-bottom: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
 .pinfo-row {
   display: flex;
   align-items: center;

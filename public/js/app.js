@@ -95,20 +95,17 @@ const App = (() => {
       nowBadge.style.display = '';
     });
 
-    // Info popup périodes
-    const periodeInfoBtn = document.getElementById('periode-info-btn');
-    const periodeInfoPopup = document.getElementById('periode-info-popup');
-    periodeInfoBtn.addEventListener('click', (e) => {
+    // Info périodes → modal bottom-sheet (même pattern que les autres i)
+    document.getElementById('periode-info-btn').addEventListener('click', (e) => {
       e.stopPropagation();
-      const open = !periodeInfoPopup.hidden;
-      periodeInfoPopup.hidden = open;
-      periodeInfoBtn.setAttribute('aria-expanded', String(!open));
-    });
-    document.addEventListener('click', () => {
-      if (!periodeInfoPopup.hidden) {
-        periodeInfoPopup.hidden = true;
-        periodeInfoBtn.setAttribute('aria-expanded', 'false');
-      }
+      document.getElementById('modal-title').textContent = 'Périodes de garde';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Jour</span><span class="pinfo-detail">Lun–Ven 8h–20h · Sam 8h–12h</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">WE/Férié</span><span class="pinfo-detail">Sam 12h–20h · Dim &amp; fériés 8h–20h</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Nuit</span><span class="pinfo-detail">Tous jours 6h–8h et 20h–0h</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Nuit prof.</span><span class="pinfo-detail">Tous jours 0h–6h</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
     });
 
     // Adresse cabinet
