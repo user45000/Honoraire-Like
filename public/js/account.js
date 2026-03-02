@@ -21,7 +21,7 @@ const Account = (() => {
 
   // === Paywall ===
   const PAYWALL_KEY = 'hon_visit_count';
-  const PAYWALL_THRESHOLD = 3;
+  const PAYWALL_THRESHOLD = 1;
   let paywallPlan = 'month';
 
   function initPaywall() {
