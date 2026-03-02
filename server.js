@@ -21,9 +21,12 @@ db.exec(`
     subscription_status TEXT DEFAULT 'trial',
     subscription_end TEXT,
     stripe_customer_id TEXT,
-    stripe_subscription_id TEXT
+    stripe_subscription_id TEXT,
+    accepted_terms INTEGER DEFAULT 0
   )
 `);
+// Migration : ajouter les colonnes si elles n'existent pas
+try { db.exec('ALTER TABLE users ADD COLUMN accepted_terms INTEGER DEFAULT 0'); } catch (e) {}
 
 // === Email (Gmail SMTP — affiché comme contact@honorairesmg.fr) ===
 const emailTransporter = process.env.GMAIL_APP_PASSWORD
@@ -170,13 +173,14 @@ function safeUser(user) {
 
 // === API Auth ===
 app.post('/api/auth/register', (req, res) => {
-  const { email, password } = req.body || {};
+  const { email, password, acceptedTerms } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
   if (password.length < 6) return res.status(400).json({ error: 'Mot de passe minimum 6 caractères' });
+  if (!acceptedTerms) return res.status(400).json({ error: 'Vous devez accepter les CGU/CGV' });
   const emailClean = email.toLowerCase().trim();
   try {
     const hash = bcrypt.hashSync(password, 10);
-    const result = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)').run(emailClean, hash);
+    const result = db.prepare('INSERT INTO users (email, password_hash, accepted_terms) VALUES (?, ?, 1)').run(emailClean, hash);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
     req.session.userId = user.id;
     sendEmail(emailClean, 'Bienvenue sur Honoraires MG', `
@@ -217,6 +221,17 @@ app.get('/api/auth/me', (req, res) => {
   const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.json({ user: null });
   res.json({ user: safeUser(user) });
+});
+
+// Suppression de compte (RGPD)
+app.delete('/api/auth/account', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  try {
+    db.prepare('DELETE FROM users WHERE id = ?').run(req.session.userId);
+    req.session.destroy(() => res.json({ ok: true }));
+  } catch (e) {
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
 });
 
 // === API Stripe ===
@@ -299,6 +314,52 @@ app.post('/api/stripe/guest-checkout', async (req, res) => {
     console.error('Guest checkout error:', e);
     res.status(500).json({ error: e.message });
   }
+});
+
+// === Admin ===
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+
+function requireAdmin(req, res, next) {
+  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin non configuré' });
+  if (!req.session.isAdmin) return res.status(401).json({ error: 'Non autorisé' });
+  next();
+}
+
+app.post('/api/admin/login', (req, res) => {
+  if (!ADMIN_PASSWORD) return res.status(503).json({ error: 'Admin non configuré' });
+  const { password } = req.body || {};
+  if (password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Mot de passe incorrect' });
+  req.session.isAdmin = true;
+  res.json({ ok: true });
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  req.session.isAdmin = false;
+  res.json({ ok: true });
+});
+
+app.get('/api/admin/stats', requireAdmin, (req, res) => {
+  const total = db.prepare('SELECT COUNT(*) as n FROM users').get().n;
+  const active = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'active'").get().n;
+  const trial = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'trial'").get().n;
+  const expired = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'expired'").get().n;
+  res.json({ total, active, trial, expired });
+});
+
+app.get('/api/admin/users', requireAdmin, (req, res) => {
+  const users = db.prepare(
+    'SELECT id, email, created_at, subscription_status, subscription_end, stripe_customer_id FROM users ORDER BY created_at DESC'
+  ).all();
+  res.json(users);
+});
+
+app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
+  db.prepare('DELETE FROM users WHERE id = ?').run(parseInt(req.params.id));
+  res.json({ ok: true });
+});
+
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
 // === SPA fallback ===

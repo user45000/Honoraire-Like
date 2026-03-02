@@ -116,6 +116,12 @@ const Account = (() => {
     const accountPanel = document.getElementById('account-panel');
     if (!authPanel || !accountPanel) return;
 
+    // Badge abonné sur le bouton nav
+    const navCompte = document.querySelector('.nav-btn[data-tab="compte"]');
+    if (navCompte) {
+      navCompte.classList.toggle('nav-subscribed', !!(currentUser && currentUser.subscription_status === 'active'));
+    }
+
     if (currentUser) {
       authPanel.style.display = 'none';
       accountPanel.style.display = 'block';
@@ -222,15 +228,17 @@ const Account = (() => {
     document.getElementById('register-submit')?.addEventListener('click', async () => {
       const email = document.getElementById('register-email').value.trim();
       const password = document.getElementById('register-password').value;
+      const acceptedTerms = document.getElementById('register-terms')?.checked;
       const errEl = document.getElementById('register-error');
       errEl.textContent = '';
       if (!email || !password) { errEl.textContent = 'Remplissez tous les champs'; return; }
+      if (!acceptedTerms) { errEl.textContent = 'Vous devez accepter les CGU/CGV'; return; }
       try {
         const basePath = App.getBasePath();
         const res = await fetch(`${basePath}api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password })
+          body: JSON.stringify({ email, password, acceptedTerms: true })
         });
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error; return; }
@@ -239,6 +247,18 @@ const Account = (() => {
       } catch (e) {
         errEl.textContent = 'Erreur lors de la création du compte';
       }
+    });
+
+    document.getElementById('delete-account-btn')?.addEventListener('click', async () => {
+      if (!confirm('Supprimer définitivement votre compte ?\nToutes vos données seront effacées. Cette action est irréversible.')) return;
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/auth/account`, { method: 'DELETE' });
+        if (res.ok) {
+          currentUser = null;
+          render();
+        }
+      } catch (e) {}
     });
 
     document.getElementById('logout-btn')?.addEventListener('click', async () => {

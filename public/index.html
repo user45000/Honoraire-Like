@@ -470,6 +470,10 @@
           <div class="auth-form">
             <input type="email" id="register-email" class="auth-input" placeholder="Email" autocomplete="email" inputmode="email">
             <input type="password" id="register-password" class="auth-input" placeholder="Mot de passe (6 car. min)" autocomplete="new-password">
+            <label class="auth-check">
+              <input type="checkbox" id="register-terms">
+              J'accepte les <a href="/legal" target="_blank" rel="noopener">CGU et CGV</a>
+            </label>
             <div id="register-error" class="auth-error"></div>
             <button type="button" id="register-submit" class="auth-btn-primary">Créer mon compte</button>
           </div>
@@ -510,6 +514,7 @@
           </div>
           <button id="subscribe-btn" class="auth-btn-primary" style="margin-top:10px">S'abonner</button>
           <button id="logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
+          <button id="delete-account-btn" class="auth-btn-danger" style="margin-top:8px">Supprimer mon compte</button>
         </div>
       </div>
 
@@ -533,6 +538,7 @@
         </div>
         <div class="credits-disclaimer">
           <p>Cette application est fournie à titre indicatif. Vérifiez toujours les tarifs officiels sur ameli.fr.</p>
+          <p style="margin-top:8px"><a href="/legal" target="_blank" rel="noopener" style="font-size:12px;color:var(--text-secondary)">CGU · CGV · Données personnelles · Mentions légales</a></p>
         </div>
       </div>
     </section>
@@ -621,6 +627,21 @@
       <button class="paywall-skip" id="paywall-skip-btn">Continuer sans s'abonner →</button>
     </div>
   </div>
+
+  <!-- Bannière cookies RGPD -->
+  <div id="cookie-banner" class="cookie-banner" style="display:none" role="alert">
+    <p>Cette app utilise des cookies de session nécessaires à votre connexion et le localStorage pour vos préférences. Aucun cookie publicitaire. <a href="/legal#cookies" target="_blank" rel="noopener">En savoir plus</a></p>
+    <button id="cookie-ok" class="cookie-ok-btn">J'ai compris</button>
+  </div>
+  <script>
+    if (!localStorage.getItem('hon_cookies_ok')) {
+      document.getElementById('cookie-banner').style.display = 'flex';
+    }
+    document.getElementById('cookie-ok')?.addEventListener('click', () => {
+      localStorage.setItem('hon_cookies_ok', '1');
+      document.getElementById('cookie-banner').style.display = 'none';
+    });
+  </script>
 
   <script src="js/engine.js"></script>
   <script src="js/consultation.js"></script>
