@@ -24,13 +24,11 @@ db.exec(`
   )
 `);
 
-// === Email (OVH SMTP — contact@honorairesmg.fr) ===
-const emailTransporter = process.env.EMAIL_PASSWORD
+// === Email (Gmail SMTP — affiché comme contact@honorairesmg.fr) ===
+const emailTransporter = process.env.GMAIL_APP_PASSWORD
   ? nodemailer.createTransport({
-      host: 'ssl0.ovh.net',
-      port: 465,
-      secure: true,
-      auth: { user: 'contact@honorairesmg.fr', pass: process.env.EMAIL_PASSWORD }
+      service: 'gmail',
+      auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }
     })
   : null;
 
