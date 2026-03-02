@@ -144,8 +144,13 @@ const Account = (() => {
     }
 
     if (currentUser) {
+      const wasLogin = authPanel.style.display !== 'none';
       authPanel.style.display = 'none';
       accountPanel.style.display = 'block';
+      if (wasLogin) {
+        accountPanel.classList.add('login-anim');
+        accountPanel.addEventListener('animationend', () => accountPanel.classList.remove('login-anim'), { once: true });
+      }
 
       document.getElementById('account-email-val').textContent = currentUser.email;
 
@@ -241,7 +246,10 @@ const Account = (() => {
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error; return; }
         currentUser = data.user;
-        render();
+        const btn = document.getElementById('login-submit');
+        btn.textContent = '✓';
+        btn.classList.add('login-success');
+        setTimeout(() => { btn.textContent = 'Se connecter'; btn.classList.remove('login-success'); render(); }, 500);
       } catch (e) {
         errEl.textContent = 'Erreur de connexion';
       }
