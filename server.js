@@ -48,6 +48,56 @@ async function sendEmail(to, subject, html) {
   }
 }
 
+// Enveloppe HTML email — compatible Gmail / Apple Mail / Outlook
+function buildEmail(content) {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+</head>
+<body style="margin:0;padding:0;background-color:#F0F5FF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color:#F0F5FF">
+  <tr><td align="center" style="padding:36px 16px">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="max-width:560px">
+
+      <!-- EN-TÊTE -->
+      <tr>
+        <td style="background-color:#1B2D4F;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center">
+          <img src="https://honorairesmg.fr/icons/icon-192.png" width="60" height="60" alt="" style="display:block;margin:0 auto 16px;border-radius:15px">
+          <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.025em">Honoraires MG</div>
+          <div style="color:#93c5fd;font-size:13px;margin-top:3px">Calcul d'honoraires pour médecins généralistes</div>
+        </td>
+      </tr>
+
+      <!-- CORPS -->
+      <tr>
+        <td style="background-color:#ffffff;padding:40px 40px 36px">
+          ${content}
+        </td>
+      </tr>
+
+      <!-- PIED DE PAGE -->
+      <tr>
+        <td style="background-color:#F0F5FF;border-radius:0 0 16px 16px;border-top:1px solid #e2e8f0;padding:20px 40px 32px;text-align:center">
+          <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.8">
+            RiBang Studio &nbsp;·&nbsp;
+            <a href="https://honorairesmg.fr" style="color:#60A5FA;text-decoration:none">honorairesmg.fr</a>
+            &nbsp;·&nbsp;
+            <a href="mailto:contact@honorairesmg.fr" style="color:#60A5FA;text-decoration:none">contact@honorairesmg.fr</a><br>
+            <span style="font-size:11px">Vous recevez cet email car vous avez créé un compte sur honorairesmg.fr</span>
+          </p>
+        </td>
+      </tr>
+
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`;
+}
+
 // === Stripe (webhook DOIT être avant express.json) ===
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? require('stripe')(stripeKey) : null;
@@ -78,18 +128,67 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
           const hash = bcrypt.hashSync(tempPass, 10);
           const r = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)').run(guestEmail, hash);
           existing = { id: r.lastInsertRowid };
-          sendEmail(guestEmail, 'Votre compte Honoraires MG', `
-            <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-              <h2 style="color:#1B2D4F">Bienvenue sur Honoraires MG !</h2>
-              <p>Votre abonnement est actif. Un compte a été créé automatiquement :</p>
-              <p><strong>Email :</strong> ${guestEmail}<br>
-              <strong>Mot de passe temporaire :</strong> ${tempPass}</p>
-              <p>Connectez-vous depuis l'onglet <strong>Compte</strong> et changez votre mot de passe.</p>
-              <p style="margin-top:24px;color:#64748B;font-size:12px">
-                Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
-                Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
-              </p>
-            </div>`);
+          sendEmail(guestEmail, 'Votre accès Honoraires MG est actif', buildEmail(`
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+              <tr><td align="center">
+                <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+                  <tr>
+                    <td width="68" height="68" style="background-color:#2563EB;border-radius:34px;text-align:center;vertical-align:middle">
+                      <span style="color:#ffffff;font-size:30px;line-height:68px;display:block">&#10003;</span>
+                    </td>
+                  </tr>
+                </table>
+              </td></tr>
+            </table>
+
+            <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em;text-align:center">Votre accès est actif !</h1>
+            <p style="margin:0 0 32px;font-size:15px;color:#64748b;text-align:center">Merci pour votre abonnement.</p>
+
+            <p style="margin:0 0 20px;font-size:15px;color:#334155;line-height:1.65">
+              Un compte a été créé automatiquement pour vous. Voici vos identifiants&nbsp;:
+            </p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
+              <tr>
+                <td style="background-color:#F0F5FF;border-radius:12px;padding:20px 24px">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding-bottom:10px;border-bottom:1px solid #e2e8f0">
+                        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Email</div>
+                        <div style="font-size:15px;font-weight:500;color:#1B2D4F">${guestEmail}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding-top:10px">
+                        <div style="font-size:11px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px">Mot de passe temporaire</div>
+                        <div style="font-size:15px;font-weight:500;color:#1B2D4F;font-family:monospace,Courier">${tempPass}</div>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+              <tr>
+                <td style="background-color:#fffbeb;border-radius:10px;border-left:4px solid #f59e0b;padding:14px 18px">
+                  <div style="font-size:13px;color:#92400e;line-height:1.5">
+                    <strong>Changez votre mot de passe</strong> dès votre premi&egrave;re connexion depuis l'onglet <strong>Compte</strong>.
+                  </div>
+                </td>
+              </tr>
+            </table>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
+              <tr>
+                <td align="center">
+                  <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Se connecter &rarr;</a>
+                </td>
+              </tr>
+            </table>
+
+            <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center">Une question&nbsp;? Écrivez-nous à <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB;text-decoration:none">contact@honorairesmg.fr</a></p>
+          `));
         }
         userId = existing.id;
       }
@@ -102,16 +201,49 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
         WHERE id = ?`
       ).run(session.customer, session.subscription, userId);
       const paidUser = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
-      if (paidUser) sendEmail(paidUser.email, 'Abonnement Honoraires MG activé', `
-        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-          <h2 style="color:#1B2D4F">Merci pour votre abonnement !</h2>
-          <p>Votre accès illimité à Honoraires MG est maintenant actif.</p>
-          <p>Pour gérer ou annuler votre abonnement, rendez-vous dans l'onglet <strong>Compte</strong> de l'application.</p>
-          <p style="margin-top:24px;color:#64748B;font-size:12px">
-            Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
-            Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
-          </p>
-        </div>`);
+      if (paidUser) sendEmail(paidUser.email, 'Votre abonnement Honoraires MG est actif', buildEmail(`
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+          <tr><td align="center">
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td width="68" height="68" style="background-color:#2563EB;border-radius:34px;text-align:center;vertical-align:middle">
+                  <span style="color:#ffffff;font-size:30px;line-height:68px;display:block">&#10003;</span>
+                </td>
+              </tr>
+            </table>
+          </td></tr>
+        </table>
+
+        <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em;text-align:center">Abonnement actif !</h1>
+        <p style="margin:0 0 32px;font-size:15px;color:#64748b;text-align:center">Merci pour votre confiance et votre soutien.</p>
+
+        <p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.65">
+          Votre accès illimité à Honoraires MG est maintenant actif. Calculez vos honoraires sans limite, à tout moment.
+        </p>
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background-color:#F0F5FF;border-radius:12px;margin-bottom:32px">
+          <tr>
+            <td style="padding:20px 24px">
+              <div style="font-size:13px;color:#334155;line-height:2.1">
+                <div>&#10003;&nbsp; <strong>Calcul illimité</strong> &mdash; consultations, visites, actes CCAM</div>
+                <div>&#10003;&nbsp; <strong>Tous secteurs</strong> &mdash; S1, S2 OPTAM, S2 hors OPTAM</div>
+                <div>&#10003;&nbsp; <strong>Toutes périodes</strong> &mdash; jour, nuit, week-end, jours fériés</div>
+                <div>&#10003;&nbsp; <strong>IK automatiques</strong> &mdash; calcul depuis votre adresse cabinet</div>
+              </div>
+            </td>
+          </tr>
+        </table>
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
+          <tr>
+            <td align="center">
+              <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Accéder à l'application &rarr;</a>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center">Pour gérer ou annuler votre abonnement&nbsp;: onglet&nbsp;<strong>Compte</strong>&nbsp;&rarr;&nbsp;<strong>Gérer mon abonnement</strong></p>
+      `));
       break;
     }
     case 'customer.subscription.updated': {
@@ -183,16 +315,33 @@ app.post('/api/auth/register', (req, res) => {
     const result = db.prepare('INSERT INTO users (email, password_hash, accepted_terms) VALUES (?, ?, 1)').run(emailClean, hash);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(result.lastInsertRowid);
     req.session.userId = user.id;
-    sendEmail(emailClean, 'Bienvenue sur Honoraires MG', `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
-        <h2 style="color:#1B2D4F">Bienvenue sur Honoraires MG</h2>
-        <p>Votre compte a été créé avec succès.</p>
-        <p>Vous bénéficiez de 3 utilisations gratuites. Pour un accès illimité, abonnez-vous depuis l'onglet <strong>Compte</strong> de l'application.</p>
-        <p style="margin-top:24px;color:#64748B;font-size:12px">
-          Honoraires MG — <a href="https://honorairesmg.fr" style="color:#2563EB">honorairesmg.fr</a><br>
-          Pour toute question : <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB">contact@honorairesmg.fr</a>
-        </p>
-      </div>`);
+    sendEmail(emailClean, 'Bienvenue sur Honoraires MG', buildEmail(`
+      <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em">Bienvenue !</h1>
+      <p style="margin:0 0 28px;font-size:15px;color:#64748b">Votre compte Honoraires MG est prêt.</p>
+
+      <p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.65">
+        Honoraires MG vous aide à calculer en quelques secondes vos honoraires de médecin généraliste — consultations, visites à domicile, actes CCAM — selon les tarifs de la convention médicale 2024-2029.
+      </p>
+
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:32px">
+        <tr>
+          <td style="background-color:#F0F5FF;border-radius:12px;border-left:4px solid #2563EB;padding:18px 22px">
+            <div style="font-size:14px;font-weight:600;color:#2563EB;margin-bottom:5px">3 utilisations gratuites incluses</div>
+            <div style="font-size:13px;color:#64748b;line-height:1.5">Pour un accès illimité, abonnez-vous depuis l'onglet <strong>Compte</strong> de l'application — à partir de 0,99&nbsp;€/mois.</div>
+          </td>
+        </tr>
+      </table>
+
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+        <tr>
+          <td align="center">
+            <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em">Ouvrir l'application &rarr;</a>
+          </td>
+        </tr>
+      </table>
+
+      <p style="margin:0;font-size:13px;color:#94a3b8;text-align:center">Une question&nbsp;? Répondez à cet email ou écrivez-nous à <a href="mailto:contact@honorairesmg.fr" style="color:#2563EB;text-decoration:none">contact@honorairesmg.fr</a></p>
+    `));
     res.json({ user: safeUser(user) });
   } catch (e) {
     if (e.code === 'SQLITE_CONSTRAINT_UNIQUE') return res.status(409).json({ error: 'Email déjà utilisé' });
