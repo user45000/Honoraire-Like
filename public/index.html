@@ -639,9 +639,12 @@
     <button id="cookie-ok" class="cookie-ok-btn">J'ai compris</button>
   </div>
   <script>
-    if (!localStorage.getItem('hon_cookies_ok')) {
-      document.getElementById('cookie-banner').style.display = 'flex';
-    }
+    // Appelé par account.js : immédiatement si pas de paywall, après fermeture du paywall sinon
+    window.showCookieBannerIfNeeded = function() {
+      if (!localStorage.getItem('hon_cookies_ok')) {
+        document.getElementById('cookie-banner').style.display = 'flex';
+      }
+    };
     document.getElementById('cookie-ok')?.addEventListener('click', () => {
       localStorage.setItem('hon_cookies_ok', '1');
       document.getElementById('cookie-banner').style.display = 'none';

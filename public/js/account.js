@@ -25,13 +25,21 @@ const Account = (() => {
   let paywallPlan = 'month';
 
   function initPaywall() {
-    // Abonné actif → pas de paywall
-    if (currentUser && currentUser.subscription_status === 'active') return;
+    // Abonné actif → pas de paywall, bannière cookies immédiate
+    if (currentUser && currentUser.subscription_status === 'active') {
+      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+      return;
+    }
 
     const count = parseInt(localStorage.getItem(PAYWALL_KEY) || '0') + 1;
     localStorage.setItem(PAYWALL_KEY, count.toString());
-    if (count < PAYWALL_THRESHOLD) return;
+    if (count < PAYWALL_THRESHOLD) {
+      // Pas de paywall → bannière cookies immédiate
+      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+      return;
+    }
 
+    // Paywall affiché → bannière cookies différée après fermeture
     const overlay = document.getElementById('paywall-overlay');
     if (!overlay) return;
     overlay.style.display = 'flex';
@@ -49,6 +57,7 @@ const Account = (() => {
 
     document.getElementById('paywall-skip-btn')?.addEventListener('click', () => {
       overlay.style.display = 'none';
+      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
     });
 
     document.getElementById('paywall-subscribe-btn')?.addEventListener('click', async () => {
