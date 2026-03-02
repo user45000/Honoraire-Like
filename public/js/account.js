@@ -6,11 +6,20 @@ const Account = (() => {
   let selectedPlan = 'month';
 
   async function init() {
+    // Cacher immédiatement le paywall si abonnement actif en cache (évite le flash)
+    if (localStorage.getItem('hon_sub_status') === 'active') {
+      const overlay = document.getElementById('paywall-overlay');
+      if (overlay) overlay.style.display = 'none';
+    }
+
     try {
       const basePath = App.getBasePath();
       const res = await fetch(`${basePath}api/auth/me`);
       const data = await res.json();
       currentUser = data.user;
+      // Mettre en cache le statut pour la prochaine visite
+      if (currentUser) localStorage.setItem('hon_sub_status', currentUser.subscription_status);
+      else localStorage.removeItem('hon_sub_status');
     } catch (e) {
       currentUser = null;
     }
@@ -25,8 +34,12 @@ const Account = (() => {
   let paywallPlan = 'month';
 
   function initPaywall() {
-    // Abonné actif → pas de paywall, bannière cookies immédiate
+    const overlay = document.getElementById('paywall-overlay');
+    if (!overlay) return;
+
+    // Abonné actif → cacher le paywall, bannière cookies immédiate
     if (currentUser && currentUser.subscription_status === 'active') {
+      overlay.style.display = 'none';
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
       return;
     }
@@ -34,14 +47,13 @@ const Account = (() => {
     const count = parseInt(localStorage.getItem(PAYWALL_KEY) || '0') + 1;
     localStorage.setItem(PAYWALL_KEY, count.toString());
     if (count < PAYWALL_THRESHOLD) {
-      // Pas de paywall → bannière cookies immédiate
+      // Pas de paywall → cacher, bannière cookies immédiate
+      overlay.style.display = 'none';
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
       return;
     }
 
-    // Paywall affiché → bannière cookies différée après fermeture
-    const overlay = document.getElementById('paywall-overlay');
-    if (!overlay) return;
+    // Paywall nécessaire → déjà visible par défaut dans le HTML, juste attacher les listeners
     overlay.style.display = 'flex';
 
     // Sélection du plan
