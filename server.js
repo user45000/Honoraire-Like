@@ -335,6 +335,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'hon-secret-2026',
   resave: false,
   saveUninitialized: false,
+  rolling: true,  // renouvelle le cookie à chaque visite (sliding session)
   store: new SQLiteSessionStore(),
   cookie: { httpOnly: true, sameSite: 'lax' }  // maxAge défini au login selon "rester connecté"
 }));
@@ -423,7 +424,7 @@ app.post('/api/auth/login', rateLimit(10, 15 * 60 * 1000), (req, res) => {
   }
   req.session.userId = user.id;
   if (rememberMe) {
-    req.session.cookie.maxAge = 30 * 24 * 60 * 60 * 1000; // 30 jours
+    req.session.cookie.maxAge = 180 * 24 * 60 * 60 * 1000; // 6 mois (renouvelé à chaque visite)
   }
   // else : cookie de session (expire à la fermeture du navigateur)
   res.json({ user: safeUser(user) });
