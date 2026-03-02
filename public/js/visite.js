@@ -249,10 +249,12 @@ const Visite = (() => {
       depSection.style.opacity = '0.4';
       depSection.style.pointerEvents = 'none';
       depSection.title = 'Non cumulable avec majorations PDSA régulées (art. 22-3)';
+      depSection.classList.add('pdsa-disabled');
     } else {
       depSection.style.opacity = '';
       depSection.style.pointerEvents = '';
       depSection.title = '';
+      depSection.classList.remove('pdsa-disabled');
     }
   }
 
