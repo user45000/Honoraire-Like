@@ -1365,7 +1365,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   inset: 0;
   background: var(--primary-dark);
   z-index: 1000;
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;

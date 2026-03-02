@@ -17,6 +17,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <!-- CSS critique : paywall visible immédiatement, caché si abonné -->
+  <style>
+    #paywall-overlay { position:fixed; inset:0; z-index:1000; background:#1B2D4F; display:flex; }
+    html.hmg-sub #paywall-overlay { display:none !important; }
+  </style>
+  <script>
+    if (localStorage.getItem('hon_sub_status') === 'active') {
+      document.documentElement.classList.add('hmg-sub');
+    }
+  </script>
 </head>
 <body>
   <header class="app-header">
