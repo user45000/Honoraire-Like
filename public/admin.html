@@ -59,6 +59,9 @@
     .badge-active { background: rgba(5,150,105,0.1); color: var(--success); }
     .badge-trial { background: rgba(217,119,6,0.1); color: var(--amber); }
     .badge-expired { background: rgba(220,38,38,0.08); color: var(--danger); }
+    .action-cell { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .ext-btn { background: none; border: 1px solid var(--success); color: var(--success); padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .ext-btn:hover { background: rgba(5,150,105,0.08); }
     .del-btn { background: none; border: 1px solid var(--border); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .del-btn:hover { background: rgba(220,38,38,0.06); border-color: var(--danger); }
 
@@ -213,27 +216,61 @@
           <td>${safeEmail}</td>
           <td>${badge}</td>
           <td>${created}</td>
-          <td>${end}</td>
-          <td><button class="del-btn" data-id="${safeId}">Supprimer</button></td>
+          <td id="end-${safeId}">${end}</td>
+          <td><div class="action-cell">
+            <button class="ext-btn" data-id="${safeId}" data-months="1">+1 mois</button>
+            <button class="ext-btn" data-id="${safeId}" data-months="3">+3 mois</button>
+            <button class="del-btn" data-id="${safeId}">Supprimer</button>
+          </div></td>
         `;
         tbody.appendChild(tr);
       });
     }
 
     document.getElementById('users-tbody').addEventListener('click', async (e) => {
-      const btn = e.target.closest('.del-btn');
-      if (!btn) return;
-      const id = btn.dataset.id;
-      const user = allUsers.find(u => u.id == id);
-      if (!user) return;
-      if (!confirm(`Supprimer le compte de ${user.email} ?\nCette action est irréversible.`)) return;
-      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        allUsers = allUsers.filter(u => u.id != id);
-        renderUsers(filterUsers());
-        await loadStats();
-      } else {
-        alert('Erreur lors de la suppression');
+      const delBtn = e.target.closest('.del-btn');
+      if (delBtn) {
+        const id = delBtn.dataset.id;
+        const user = allUsers.find(u => u.id == id);
+        if (!user) return;
+        if (!confirm(`Supprimer le compte de ${user.email} ?\nCette action est irréversible.`)) return;
+        const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          allUsers = allUsers.filter(u => u.id != id);
+          renderUsers(filterUsers());
+          await loadStats();
+        } else {
+          alert('Erreur lors de la suppression');
+        }
+        return;
+      }
+
+      const extBtn = e.target.closest('.ext-btn');
+      if (extBtn) {
+        const id = extBtn.dataset.id;
+        const months = parseInt(extBtn.dataset.months);
+        const user = allUsers.find(u => u.id == id);
+        if (!user) return;
+        extBtn.disabled = true;
+        extBtn.textContent = '…';
+        const res = await fetch(`/api/admin/users/${id}/extend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ months })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          user.subscription_status = 'active';
+          user.subscription_end = data.subscription_end;
+          const cell = document.getElementById(`end-${parseInt(id)}`);
+          if (cell) cell.textContent = new Date(data.subscription_end).toLocaleDateString('fr-FR');
+          await loadStats();
+        } else {
+          alert('Erreur lors de l\'extension');
+        }
+        extBtn.disabled = false;
+        extBtn.textContent = `+${months} mois`;
+        return;
       }
     });
 

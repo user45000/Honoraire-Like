@@ -126,7 +126,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
         if (!existing) {
           const tempPass = crypto.randomBytes(12).toString('hex');
           const hash = bcrypt.hashSync(tempPass, 10);
-          const r = db.prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)').run(guestEmail, hash);
+          const r = db.prepare('INSERT INTO users (email, password_hash, accepted_terms) VALUES (?, ?, 1)').run(guestEmail, hash);
           existing = { id: r.lastInsertRowid };
           sendEmail(guestEmail, 'Votre accès Honoraires MG est actif', buildEmail(`
             <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
@@ -272,11 +272,39 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
 
 // === Middleware ===
 app.use(express.json());
+
+// En-têtes de sécurité HTTP
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
+  next();
+});
+
+// Rate limiter en mémoire (pas de dépendance externe)
+const _rl = new Map();
+function rateLimit(max, windowMs) {
+  return (req, res, next) => {
+    const key = (req.ip || '') + req.path;
+    const now = Date.now();
+    const hits = (_rl.get(key) || []).filter(t => now - t < windowMs);
+    if (hits.length >= max) {
+      return res.status(429).json({ error: 'Trop de tentatives, réessayez plus tard' });
+    }
+    hits.push(now);
+    _rl.set(key, hits);
+    next();
+  };
+}
+
+if (!process.env.SESSION_SECRET) console.warn('⚠ SESSION_SECRET non défini, utilisez une valeur forte en production');
 app.use(session({
   secret: process.env.SESSION_SECRET || 'hon-secret-2026',
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000 }
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' }
 }));
 
 // === Tarifs ===
@@ -303,13 +331,17 @@ function safeUser(user) {
   return rest;
 }
 
+// Validation email simple
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // === API Auth ===
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', rateLimit(10, 15 * 60 * 1000), (req, res) => {
   const { email, password, acceptedTerms } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
+  const emailClean = email.toLowerCase().trim();
+  if (!emailRegex.test(emailClean)) return res.status(400).json({ error: 'Email invalide' });
   if (password.length < 6) return res.status(400).json({ error: 'Mot de passe minimum 6 caractères' });
   if (!acceptedTerms) return res.status(400).json({ error: 'Vous devez accepter les CGU/CGV' });
-  const emailClean = email.toLowerCase().trim();
   try {
     const hash = bcrypt.hashSync(password, 10);
     const result = db.prepare('INSERT INTO users (email, password_hash, accepted_terms) VALUES (?, ?, 1)').run(emailClean, hash);
@@ -326,8 +358,8 @@ app.post('/api/auth/register', (req, res) => {
       <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:32px">
         <tr>
           <td style="background-color:#F0F5FF;border-radius:12px;border-left:4px solid #2563EB;padding:18px 22px">
-            <div style="font-size:14px;font-weight:600;color:#2563EB;margin-bottom:5px">3 utilisations gratuites incluses</div>
-            <div style="font-size:13px;color:#64748b;line-height:1.5">Pour un accès illimité, abonnez-vous depuis l'onglet <strong>Compte</strong> de l'application — à partir de 0,99&nbsp;€/mois.</div>
+            <div style="font-size:14px;font-weight:600;color:#2563EB;margin-bottom:5px">Accès illimité à partir de 0,99&nbsp;€/mois</div>
+            <div style="font-size:13px;color:#64748b;line-height:1.5">Abonnez-vous depuis l'onglet <strong>Compte</strong> de l'application pour calculer vos honoraires sans limite.</div>
           </td>
         </tr>
       </table>
@@ -350,12 +382,12 @@ app.post('/api/auth/register', (req, res) => {
   }
 });
 
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', rateLimit(10, 15 * 60 * 1000), (req, res) => {
   const { email, password } = req.body || {};
   if (!email || !password) return res.status(400).json({ error: 'Email et mot de passe requis' });
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email.toLowerCase().trim());
   if (!user || !bcrypt.compareSync(password, user.password_hash)) {
-    return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+    return res.status(401).json({ error: 'Identifiants invalides' });
   }
   req.session.userId = user.id;
   res.json({ user: safeUser(user) });
@@ -466,9 +498,10 @@ app.post('/api/stripe/guest-checkout', async (req, res) => {
 });
 
 // === Admin ===
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'francois.ribollet@gmail.com').toLowerCase();
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase();
 
 function requireAdmin(req, res, next) {
+  if (!ADMIN_EMAIL) return res.status(503).json({ error: 'Admin non configuré' });
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
   const user = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
   if (!user || user.email.toLowerCase() !== ADMIN_EMAIL) return res.status(403).json({ error: 'Accès non autorisé' });
@@ -493,6 +526,20 @@ app.get('/api/admin/users', requireAdmin, (req, res) => {
 app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
   db.prepare('DELETE FROM users WHERE id = ?').run(parseInt(req.params.id));
   res.json({ ok: true });
+});
+
+app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
+  const id = parseInt(req.params.id);
+  const months = Math.max(1, Math.min(24, parseInt(req.body.months) || 1));
+  const user = db.prepare('SELECT subscription_end FROM users WHERE id = ?').get(id);
+  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+  const base = user.subscription_end && new Date(user.subscription_end) > new Date()
+    ? new Date(user.subscription_end)
+    : new Date();
+  base.setMonth(base.getMonth() + months);
+  const newEnd = base.toISOString();
+  db.prepare("UPDATE users SET subscription_status = 'active', subscription_end = ? WHERE id = ?").run(newEnd, id);
+  res.json({ ok: true, subscription_end: newEnd });
 });
 
 app.get('/admin', (req, res) => {
