@@ -613,6 +613,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   cursor: pointer;
   margin-left: 4px;
   flex-shrink: 0;
+  outline: none;
+  border: none;
 }
 
 /* Info icon dans les acte-btn et majo-btn : zone 1/5 avec séparateur */
