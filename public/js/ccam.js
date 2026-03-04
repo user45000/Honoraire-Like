@@ -206,11 +206,7 @@ const CCAM = (() => {
       ? '<div class="ccam-sel-limit">2/2 — retirer un acte pour en ajouter un autre</div>'
       : '';
 
-    banner.innerHTML = `
-      <div class="ccam-sel-header">Actes CCAM sélectionnés</div>
-      ${acteLines}
-      ${limitMsg}
-    `;
+    banner.innerHTML = `${acteLines}${limitMsg}`;
 
     banner.querySelectorAll('.ccam-sel-remove').forEach(btn => {
       btn.addEventListener('click', () => {

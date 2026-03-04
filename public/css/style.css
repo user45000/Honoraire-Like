@@ -2168,6 +2168,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
     margin-bottom: 12px;
   }
 
+  /* Espace sous le header fixe dans l'onglet CCAM (periode-bar masquée) */
+  #tab-ccam {
+    padding-top: 14px;
+  }
+
   /* Modal centrée */
   .modal-content {
     border-radius: 16px;
