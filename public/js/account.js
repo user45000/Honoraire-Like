@@ -304,7 +304,8 @@ const Account = (() => {
       });
     });
 
-    document.getElementById('login-submit')?.addEventListener('click', async () => {
+    document.getElementById('login-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
       const password = document.getElementById('login-password').value;
       const rememberMe = document.getElementById('login-remember')?.checked || false;
@@ -330,7 +331,8 @@ const Account = (() => {
       }
     });
 
-    document.getElementById('register-submit')?.addEventListener('click', async () => {
+    document.getElementById('register-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
       const email = document.getElementById('register-email').value.trim();
       const password = document.getElementById('register-password').value;
       const acceptedTerms = document.getElementById('register-terms')?.checked;

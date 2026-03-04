@@ -528,16 +528,16 @@
         <!-- Connexion -->
         <div id="auth-login" class="section-card">
           <h3>Connexion</h3>
-          <div class="auth-form">
-            <input type="email" id="login-email" class="auth-input" placeholder="Email" autocomplete="email" inputmode="email">
-            <input type="password" id="login-password" class="auth-input" placeholder="Mot de passe" autocomplete="current-password">
+          <form class="auth-form" id="login-form" action="#">
+            <input type="email" id="login-email" class="auth-input" placeholder="ex : dr.martin@cabinet.fr" autocomplete="username" inputmode="email">
+            <input type="password" id="login-password" class="auth-input" placeholder="Votre mot de passe" autocomplete="current-password">
             <label class="auth-check">
               <input type="checkbox" id="login-remember">
               Rester connecté
             </label>
             <div id="login-error" class="auth-error"></div>
-            <button type="button" id="login-submit" class="auth-btn-primary">Se connecter</button>
-          </div>
+            <button type="submit" id="login-submit" class="auth-btn-primary">Se connecter</button>
+          </form>
           <p class="auth-switch">Pas encore de compte ? <button class="auth-link" id="show-register">Créer un compte</button></p>
           <p class="auth-switch"><button class="auth-link" id="show-forgot">Mot de passe oublié ?</button></p>
         </div>
@@ -564,16 +564,16 @@
         <!-- Inscription -->
         <div id="auth-register" class="section-card" style="display:none">
           <h3>Créer un compte</h3>
-          <div class="auth-form">
-            <input type="email" id="register-email" class="auth-input" placeholder="Email" autocomplete="email" inputmode="email">
-            <input type="password" id="register-password" class="auth-input" placeholder="Mot de passe (6 car. min)" autocomplete="new-password">
+          <form class="auth-form" id="register-form" action="#">
+            <input type="email" id="register-email" class="auth-input" placeholder="ex : dr.martin@cabinet.fr" autocomplete="username" inputmode="email">
+            <input type="password" id="register-password" class="auth-input" placeholder="Choisissez un mot de passe" autocomplete="new-password">
             <label class="auth-check">
               <input type="checkbox" id="register-terms">
               J'accepte les <a href="/legal" target="_blank" rel="noopener">CGU et CGV</a>
             </label>
             <div id="register-error" class="auth-error"></div>
-            <button type="button" id="register-submit" class="auth-btn-primary">Créer mon compte</button>
-          </div>
+            <button type="submit" id="register-submit" class="auth-btn-primary">Créer mon compte</button>
+          </form>
           <p class="auth-switch">Déjà un compte ? <button class="auth-link" id="show-login">Se connecter</button></p>
         </div>
       </div>
