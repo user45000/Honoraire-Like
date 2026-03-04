@@ -8,6 +8,7 @@ const Database = require('better-sqlite3');
 const nodemailer = require('nodemailer');
 
 const app = express();
+app.disable('x-powered-by');
 const PORT = process.env.PORT || 3001;
 
 // === Base de données SQLite ===
@@ -327,7 +328,7 @@ app.use((req, res, next) => {
     "script-src 'self'; " +
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
     "font-src 'self' https://fonts.gstatic.com; " +
-    "img-src 'self' data: https:; " +
+    "img-src 'self' data:; " +
     "connect-src 'self' https://api-adresse.data.gouv.fr https://router.project-osrm.org https://api.stripe.com; " +
     "frame-src https://js.stripe.com https://hooks.stripe.com; " +
     "object-src 'none';"
@@ -371,10 +372,10 @@ let tarifs = JSON.parse(fs.readFileSync(tarifsPath, 'utf8'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// === API Tarifs ===
-app.get('/api/tarifs', rateLimit(60, 60000), (req, res) => res.json(tarifs));
+// === API Tarifs (abonnement requis) ===
+app.get('/api/tarifs', rateLimit(60, 60000), requireSubscription, (req, res) => res.json(tarifs));
 
-app.get('/api/ccam', rateLimit(60, 60000), (req, res) => {
+app.get('/api/ccam', rateLimit(60, 60000), requireSubscription, (req, res) => {
   const q = (req.query.q || '').toLowerCase().trim();
   if (!q) return res.json(tarifs.ccam || []);
   const results = (tarifs.ccam || []).filter(a =>
@@ -606,6 +607,13 @@ app.post('/api/stripe/guest-checkout', async (req, res) => {
 // === Admin ===
 const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase();
 
+function requireSubscription(req, res, next) {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const user = db.prepare('SELECT subscription_status FROM users WHERE id = ?').get(req.session.userId);
+  if (!user || user.subscription_status !== 'active') return res.status(403).json({ error: 'Abonnement requis' });
+  next();
+}
+
 function requireAdmin(req, res, next) {
   if (!ADMIN_EMAIL) return res.status(503).json({ error: 'Admin non configuré' });
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
@@ -648,12 +656,27 @@ app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
   res.json({ ok: true, subscription_end: newEnd });
 });
 
-app.get('/admin', (req, res) => {
+app.get('/admin', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
-// === SPA fallback ===
+// === robots.txt ===
+app.get('/robots.txt', (req, res) => {
+  res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\n');
+});
+
+// === security.txt ===
+app.get('/.well-known/security.txt', (req, res) => {
+  res.type('text/plain').send(
+    'Contact: mailto:contact@honorairesmg.fr\n' +
+    'Expires: 2027-01-01T00:00:00.000Z\n' +
+    'Preferred-Languages: fr, en\n'
+  );
+});
+
+// === SPA fallback (assets inexistants → 404, routes SPA → index.html) ===
 app.get('*', (req, res) => {
+  if (req.path.includes('.')) return res.status(404).send('Not found');
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

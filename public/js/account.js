@@ -6,20 +6,11 @@ const Account = (() => {
   let selectedPlan = 'month';
 
   async function init() {
-    // Cacher immédiatement le paywall si abonnement actif en cache (évite le flash)
-    if (localStorage.getItem('hon_sub_status') === 'active') {
-      const overlay = document.getElementById('paywall-overlay');
-      if (overlay) overlay.style.display = 'none';
-    }
-
     try {
       const basePath = App.getBasePath();
       const res = await fetch(`${basePath}api/auth/me`);
       const data = await res.json();
       currentUser = data.user;
-      // Mettre en cache le statut pour la prochaine visite
-      if (currentUser) localStorage.setItem('hon_sub_status', currentUser.subscription_status);
-      else localStorage.removeItem('hon_sub_status');
     } catch (e) {
       currentUser = null;
     }
