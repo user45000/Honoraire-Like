@@ -320,7 +320,18 @@ app.use((req, res, next) => {
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
+  res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(), microphone=()');
+  res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.setHeader('Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self'; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "font-src 'self' https://fonts.gstatic.com; " +
+    "img-src 'self' data: https:; " +
+    "connect-src 'self' https://api-adresse.data.gouv.fr https://router.project-osrm.org https://api.stripe.com; " +
+    "frame-src https://js.stripe.com https://hooks.stripe.com; " +
+    "object-src 'none';"
+  );
   next();
 });
 
@@ -340,14 +351,18 @@ function rateLimit(max, windowMs) {
   };
 }
 
-if (!process.env.SESSION_SECRET) console.warn('⚠ SESSION_SECRET non défini, utilisez une valeur forte en production');
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  console.error('FATAL: SESSION_SECRET non défini. Définissez une valeur forte dans .env.stripe');
+  process.exit(1);
+}
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'hon-secret-2026',
+  secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  rolling: true,  // renouvelle le cookie à chaque visite (sliding session)
+  rolling: true,
   store: new SQLiteSessionStore(),
-  cookie: { httpOnly: true, sameSite: 'lax' }  // maxAge défini au login selon "rester connecté"
+  cookie: { httpOnly: true, sameSite: 'strict' }
 }));
 
 // === Tarifs ===
@@ -357,9 +372,9 @@ let tarifs = JSON.parse(fs.readFileSync(tarifsPath, 'utf8'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // === API Tarifs ===
-app.get('/api/tarifs', (req, res) => res.json(tarifs));
+app.get('/api/tarifs', rateLimit(60, 60000), (req, res) => res.json(tarifs));
 
-app.get('/api/ccam', (req, res) => {
+app.get('/api/ccam', rateLimit(60, 60000), (req, res) => {
   const q = (req.query.q || '').toLowerCase().trim();
   if (!q) return res.json(tarifs.ccam || []);
   const results = (tarifs.ccam || []).filter(a =>
@@ -541,7 +556,7 @@ app.post('/api/stripe/create-checkout-session', async (req, res) => {
     res.json({ url: session.url });
   } catch (e) {
     console.error('Stripe checkout error:', e);
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: 'Erreur lors de la création du paiement' });
   }
 });
 
@@ -562,7 +577,7 @@ app.post('/api/stripe/customer-portal', async (req, res) => {
     res.json({ url: portal.url });
   } catch (e) {
     console.error('Stripe portal error:', e);
-    res.status(500).json({ error: e.message });
+    res.status(500).json({ error: 'Erreur lors de l\'accès au portail' });
   }
 });
 

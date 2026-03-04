@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- ============================================================
+       Honoraires MG — PWA App Icon 512×512
+
+       Maskable safe zone: circle r=205 centered (256,256)
+       → safe rect roughly 88–424 on each axis
+
+       DESIGN:
+       A bold white "H" monogram with double horizontal bars
+       (evoking the € euro sign) and a small medical plus (+)
+       nestled into the upper-right inner corner of the H.
+
+       All shapes — no <text>, no fonts. Reads at 48px and 512px.
+       ============================================================ -->
+
+  <defs>
+    <!-- Navy → Ocean blue diagonal gradient -->
+    <linearGradient id="bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#1B2D4F"/>
+      <stop offset="100%" stop-color="#2563EB"/>
+    </linearGradient>
+    <!-- Subtle radial highlight -->
+    <radialGradient id="gl" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#60A5FA" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <rect width="512" height="512" fill="url(#gl)"/>
+
+  <!-- ── Main symbol (white) ── -->
+  <g fill="white">
+
+    <!-- LEFT PILLAR of H -->
+    <rect x="112" y="120" width="60" height="272" rx="16"/>
+
+    <!-- RIGHT PILLAR of H -->
+    <rect x="340" y="120" width="60" height="272" rx="16"/>
+
+    <!-- DOUBLE CROSSBAR — the two horizontal strokes that
+         simultaneously read as the H crossbar AND as the
+         double-line motif of the € (euro) symbol.
+         The lower bar is slightly shorter for visual rhythm. -->
+
+    <!-- Upper bar -->
+    <rect x="152" y="224" width="200" height="28" rx="10"/>
+    <!-- Lower bar (shorter = € asymmetry) -->
+    <rect x="152" y="264" width="174" height="28" rx="10"/>
+
+    <!-- MEDICAL CROSS — small plus sign tucked into the
+         upper-right interior space of the H, between the
+         two pillars, above the crossbar area.
+         This gives the dual reading: medicine + finance. -->
+    <g transform="translate(302, 140)">
+      <!-- Cross: vertical bar -->
+      <rect x="9" y="0" width="16" height="44" rx="5"/>
+      <!-- Cross: horizontal bar -->
+      <rect x="0" y="14" width="34" height="16" rx="5"/>
+    </g>
+
+  </g>
+</svg>
