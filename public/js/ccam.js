@@ -173,7 +173,7 @@ const CCAM = (() => {
       banner.id = 'ccam-selection-banner';
       banner.className = 'ccam-selection-banner';
       const ccamTab = document.getElementById('tab-ccam');
-      ccamTab.insertBefore(banner, ccamTab.firstChild);
+      ccamTab.appendChild(banner);
     }
 
     banner.style.display = '';
