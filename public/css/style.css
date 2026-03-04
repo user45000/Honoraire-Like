@@ -1174,6 +1174,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   color: var(--primary);
 }
 
+.ccam-ctx-chip.chip-courant {
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--success);
+}
+
 .ccam-ctx-switch-icon {
   width: 16px;
   height: 16px;

@@ -351,7 +351,11 @@ const Visite = (() => {
       ikEnabled: state.ikEnabled,
       ikKm: state.ikKm,
       heure: state.heure,
-      ccamActes: [...CCAM.getSelectedActes(), ...courantObjects]
+      ccamActes: (() => {
+        const seen = new Set();
+        return [...CCAM.getSelectedActes(), ...courantObjects]
+          .filter(a => seen.has(a.code) ? false : seen.add(a.code));
+      })()
     });
     App.updateResult(result);
   }

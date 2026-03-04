@@ -280,6 +280,10 @@ const Consultation = (() => {
 
   function recalculate() {
     const courantObjects = state.actesCourants.map(c => CCAM.getActe(c)).filter(Boolean);
+    // Dédupliquer par code (évite double DEQP003 si sélectionné en CCAM ET en actes courants)
+    const seen = new Set();
+    const ccamActes = [...CCAM.getSelectedActes(), ...courantObjects]
+      .filter(a => seen.has(a.code) ? false : seen.add(a.code));
     const result = Engine.calculate({
       acte: state.acte,
       age: state.age,
@@ -288,7 +292,7 @@ const Consultation = (() => {
       mode: state.mode,
       isVisite: false,
       heure: state.heure,
-      ccamActes: [...CCAM.getSelectedActes(), ...courantObjects]
+      ccamActes
     });
     App.updateResult(result);
   }

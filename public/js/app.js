@@ -532,13 +532,18 @@ const App = (() => {
     const label = document.getElementById('ccam-context-label');
     if (label) label.textContent = isVisite ? 'En visite' : 'Au cabinet';
 
-    // Chips : acte + majorations actives
+    // Chips : acte + majorations actives + actes courants (ECG, Frottis…)
+    const COURANT_LABELS = { 'DEQP003': 'ECG', 'JKHD001': 'Frottis' };
     const chips = document.getElementById('ccam-ctx-chips');
     if (chips) {
       const acteClass = 'ccam-ctx-chip chip-acte' + (isVisite ? ' chip-visite' : '');
       let html = `<span class="${acteClass}">${state.acte}</span>`;
       (state.majorations || []).forEach(m => {
         html += `<span class="ccam-ctx-chip chip-majo">${m}</span>`;
+      });
+      (state.actesCourants || []).forEach(code => {
+        const label = COURANT_LABELS[code] || code;
+        html += `<span class="ccam-ctx-chip chip-courant">${label}</span>`;
       });
       chips.innerHTML = html;
     }
