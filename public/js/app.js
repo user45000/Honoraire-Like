@@ -354,11 +354,102 @@ const App = (() => {
           input.value = f.properties.label;
           listEl.hidden = true;
           saveCabinetAddress(input, savedEl);
+          const citycode = f.properties.citycode || '';
+          localStorage.setItem('hon_cabinet_citycode', citycode);
+          checkCabinetAutoZone(citycode);
         });
         listEl.appendChild(li);
       });
       listEl.hidden = false;
     } catch (_) { listEl.hidden = true; }
+  }
+
+  // === Détection automatique zone géographique depuis l'adresse cabinet ===
+
+  function getDepartementCode(citycode) {
+    if (!citycode) return null;
+    if (citycode.startsWith('2A') || citycode.startsWith('2B')) return citycode.substring(0, 2);
+    if (citycode.length >= 3 && citycode.startsWith('97')) return citycode.substring(0, 3);
+    return citycode.substring(0, 2);
+  }
+
+  function isZoneMontagne(citycode) {
+    if (!citycode) return false;
+    if (citycode.startsWith('2A') || citycode.startsWith('2B')) return true; // Corse = montagne depuis jan 2026
+    return typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode);
+  }
+
+  function checkCabinetAutoZone(citycode) {
+    const suggestions = [];
+    const dep = getDepartementCode(citycode);
+
+    // Zone tarifaire outre-mer
+    let zoneTarget = null, zoneEmoji = '', zoneNom = '', zoneQuestion = '';
+    if (dep === '971' || dep === '972') {
+      zoneTarget = 'antilles'; zoneEmoji = '🌴';
+      zoneNom = dep === '971' ? 'Guadeloupe' : 'Martinique';
+      zoneQuestion = 'Appliquer la zone tarifaire Antilles ?';
+    } else if (dep === '973' || dep === '974') {
+      zoneTarget = 'reunion'; zoneEmoji = '🌴';
+      zoneNom = dep === '973' ? 'Guyane' : 'La Réunion';
+      zoneQuestion = 'Appliquer la zone tarifaire Réunion/Guyane ?';
+    }
+
+    if (zoneTarget && (localStorage.getItem('hon_zone') || 'metro') !== zoneTarget) {
+      suggestions.push({
+        type: 'outremer', emoji: zoneEmoji,
+        nom: zoneNom, question: zoneQuestion,
+        action: () => { applyCabinetZone('zone', zoneTarget); }
+      });
+    }
+
+    // Zone géographique montagne
+    if (isZoneMontagne(citycode) && (localStorage.getItem('hon_geo') || 'plaine') !== 'montagne') {
+      suggestions.push({
+        type: 'montagne', emoji: '🏔️',
+        nom: 'Zone montagne (Loi 1985)',
+        question: 'Basculer en IK montagne ?',
+        action: () => { applyCabinetZone('geo', 'montagne'); }
+      });
+    }
+
+    renderCabinetZoneSuggest(suggestions);
+  }
+
+  function applyCabinetZone(param, value) {
+    localStorage.setItem('hon_' + param, value);
+    document.querySelectorAll(`#tab-params .toggle-group[data-field="${param}"] .toggle-btn`).forEach(b => {
+      b.classList.toggle('active', b.dataset.value === value);
+    });
+    if (param === 'zone') onZoneChange();
+    if (param === 'geo') onGeoChange();
+    // Relancer la vérification pour retirer la suggestion appliquée
+    checkCabinetAutoZone(localStorage.getItem('hon_cabinet_citycode') || '');
+  }
+
+  function renderCabinetZoneSuggest(suggestions) {
+    const el = document.getElementById('cabinet-zone-suggest');
+    if (!el) return;
+    if (suggestions.length === 0) { el.style.display = 'none'; el.innerHTML = ''; return; }
+    el.style.display = '';
+    el.innerHTML = suggestions.map((s, i) => `
+      <div class="cz-suggest-item${s.type === 'outremer' ? ' cz-outremer' : ''}" data-cz="${i}">
+        <span class="cz-emoji">${s.emoji}</span>
+        <span class="cz-text"><strong>${s.nom}</strong>${s.question}</span>
+        <button class="cz-apply" data-cz="${i}">Basculer</button>
+        <button class="cz-dismiss" data-cz="${i}" aria-label="Ignorer">✕</button>
+      </div>
+    `).join('');
+    el._suggestions = [...suggestions];
+    el.querySelectorAll('.cz-apply').forEach(btn => {
+      btn.addEventListener('click', () => el._suggestions[+btn.dataset.cz]?.action());
+    });
+    el.querySelectorAll('.cz-dismiss').forEach(btn => {
+      btn.addEventListener('click', () => {
+        el._suggestions.splice(+btn.dataset.cz, 1);
+        renderCabinetZoneSuggest(el._suggestions);
+      });
+    });
   }
 
   function onZoneChange() {

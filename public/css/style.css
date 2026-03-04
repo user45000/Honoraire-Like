@@ -850,6 +850,89 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   opacity: 0;
 }
 
+/* === Suggestion zone auto-détectée (cabinet) === */
+#cabinet-zone-suggest {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.cz-suggest-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.cz-suggest-item.cz-outremer {
+  border-color: rgba(217, 119, 6, 0.25);
+  background: rgba(217, 119, 6, 0.05);
+}
+
+.cz-emoji {
+  font-size: 16px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.cz-text {
+  flex: 1;
+  color: var(--text);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.cz-text strong {
+  display: block;
+  font-weight: 600;
+  color: var(--primary);
+  font-size: 12.5px;
+}
+
+.cz-suggest-item.cz-outremer .cz-text strong {
+  color: var(--amber);
+}
+
+.cz-apply {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body);
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.cz-apply:hover { opacity: 0.85; }
+
+.cz-suggest-item.cz-outremer .cz-apply {
+  background: var(--amber);
+}
+
+.cz-dismiss {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 2px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+
+.cz-dismiss:hover { opacity: 1; }
+
 /* === Bannière installation PWA === */
 .pwa-install-banner {
   display: flex;
