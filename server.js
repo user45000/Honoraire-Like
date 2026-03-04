@@ -372,10 +372,10 @@ let tarifs = JSON.parse(fs.readFileSync(tarifsPath, 'utf8'));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-// === API Tarifs (abonnement requis) ===
-app.get('/api/tarifs', rateLimit(60, 60000), requireSubscription, (req, res) => res.json(tarifs));
+// === API Tarifs ===
+app.get('/api/tarifs', rateLimit(60, 60000), (req, res) => res.json(tarifs));
 
-app.get('/api/ccam', rateLimit(60, 60000), requireSubscription, (req, res) => {
+app.get('/api/ccam', rateLimit(60, 60000), (req, res) => {
   const q = (req.query.q || '').toLowerCase().trim();
   if (!q) return res.json(tarifs.ccam || []);
   const results = (tarifs.ccam || []).filter(a =>
