@@ -11,6 +11,7 @@ const Visite = (() => {
     deplacement: 'MD',
     ikEnabled: false,
     ikKm: 5,
+    ikGeoOverride: null,
     heure: null,
     relation: 'mt',
     actesCourants: []
@@ -98,6 +99,7 @@ const Visite = (() => {
     const ikControls = document.getElementById('ik-controls');
     ikCheckbox.addEventListener('change', () => {
       state.ikEnabled = ikCheckbox.checked;
+      if (!state.ikEnabled) state.ikGeoOverride = null;
       ikControls.style.display = state.ikEnabled ? '' : 'none';
       if (state.ikEnabled) updateIKInfo();
       recalculate();
@@ -327,9 +329,9 @@ const Visite = (() => {
       infoEl.textContent = '';
       return;
     }
-    const ik = Engine.calculateIK(state.ikKm);
-    const geo = Engine.getGeo();
-    const geoLabel = geo === 'montagne' ? 'montagne' : 'plaine';
+    const ik = Engine.calculateIK(state.ikKm, state.ikGeoOverride);
+    const geo = state.ikGeoOverride || Engine.getGeo();
+    const geoLabel = geo === 'montagne' ? '🏔️ montagne' : 'plaine';
     infoEl.textContent = `${geoLabel} — franchise ${ik.franchise} km — ${ik.kmFactures} km × ${ik.tarifKm.toFixed(2).replace('.', ',')}€ = ${ik.montant.toFixed(2).replace('.', ',')}€`;
   }
 
@@ -350,6 +352,7 @@ const Visite = (() => {
       deplacement: state.deplacement,
       ikEnabled: state.ikEnabled,
       ikKm: state.ikKm,
+      ikGeoOverride: state.ikGeoOverride,
       heure: state.heure,
       ccamActes: (() => {
         const seen = new Set();
@@ -440,13 +443,32 @@ const Visite = (() => {
         return;
       }
 
-      // 4. Remplir le champ km (aller simple, franchise gérée par le moteur)
+      // 4. Détecter si la commune du patient est en zone montagne
+      try {
+        const revUrl = `https://api-adresse.data.gouv.fr/reverse/?lon=${patLng}&lat=${patLat}&limit=1`;
+        const revRes = await fetch(revUrl);
+        const revData = await revRes.json();
+        const citycode = revData.features?.[0]?.properties?.citycode;
+        const isMontagne = citycode && (
+          citycode.startsWith('2A') || citycode.startsWith('2B') ||
+          (typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode))
+        );
+        state.ikGeoOverride = isMontagne ? 'montagne' : null;
+      } catch {
+        state.ikGeoOverride = null;
+      }
+
+      // 5. Remplir le champ km (aller simple, franchise gérée par le moteur)
       const km = Math.round(distKm);
       state.ikKm = km;
       document.getElementById('ik-km').value = km;
       updateIKInfo();
       recalculate();
-      status.textContent = `✅ ${distKm.toFixed(1)} km (aller) — franchise déduite automatiquement`;
+      let statusMsg = `✅ ${distKm.toFixed(1)} km (aller) — franchise déduite automatiquement`;
+      if (state.ikGeoOverride === 'montagne') {
+        statusMsg += ' — 🏔️ zone montagne, IK montagne appliqués pour cette visite';
+      }
+      status.textContent = statusMsg;
       status.className = 'ik-geo-status ok';
     } catch (e) {
       status.textContent = '❌ ' + (e.message || 'Erreur');

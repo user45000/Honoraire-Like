@@ -309,7 +309,7 @@ const Engine = (() => {
     const {
       acte, age, majorations = [], periode, mode,
       isVisite = false, deplacement, ikEnabled = false, ikKm = 0,
-      ccamActes = [], heure
+      ccamActes = [], heure, ikGeoOverride
     } = params;
 
     const codes = [];
@@ -361,7 +361,7 @@ const Engine = (() => {
 
     // 5. IK (visite uniquement — toujours cumulable, même en PDSA)
     if (isVisite && ikEnabled && ikKm > 0) {
-      const ikResult = calculateIK(ikKm);
+      const ikResult = calculateIK(ikKm, ikGeoOverride);
       if (ikResult.montant > 0) {
         const ikCode = `${ikResult.kmFactures}IK`;
         codes.push(ikCode);
@@ -583,10 +583,10 @@ const Engine = (() => {
   /**
    * Calcule l'indemnité kilométrique
    */
-  function calculateIK(km) {
+  function calculateIK(km, geoOverride) {
     if (!tarifs) return { montant: 0, kmFactures: 0 };
 
-    const geo = getGeo();
+    const geo = geoOverride || getGeo();
     const zone = getZone();
     const ikData = tarifs.ik[geo] || tarifs.ik.plaine;
 
