@@ -543,8 +543,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .majo-btn.active {
-  border-color: var(--success);
-  background: rgba(5,150,105,0.06);
+  border-color: var(--primary);
+  background: rgba(37,99,235,0.08);
 }
 
 .majo-btn.disabled {
@@ -577,7 +577,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .majo-btn.active .majo-code {
-  color: var(--success);
+  color: var(--primary);
 }
 
 .majo-price {
@@ -639,8 +639,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .majo-btn.active .info-icon {
-  border-left-color: rgba(5,150,105,0.25);
-  background: rgba(5,150,105,0.03);
+  border-left-color: rgba(37,99,235,0.25);
+  background: rgba(37,99,235,0.04);
 }
 
 /* === IK Section === */
