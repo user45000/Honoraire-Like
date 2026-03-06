@@ -354,6 +354,7 @@ const Visite = (() => {
       ikKm: state.ikKm,
       ikGeoOverride: state.ikGeoOverride,
       heure: state.heure,
+      ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : [],
       ccamActes: (() => {
         const seen = new Set();
         return [...CCAM.getSelectedActes(), ...courantObjects]
@@ -388,6 +389,7 @@ const Visite = (() => {
 
   function setPeriode(value) {
     state.periode = value;
+    if (CCAM.updateModifFromPeriode) CCAM.updateModifFromPeriode(value);
     updateModeVisibility();
     updateDeplacementForPeriode();
     updateDeplacementVisibility();

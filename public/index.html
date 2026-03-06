@@ -123,6 +123,7 @@
           <button class="acte-btn active" data-acte="G"><span class="acte-main">G<span class="acte-price">30€</span></span><span class="info-icon" data-info="G">i</span></button>
           <button class="acte-btn" data-acte="TCG"><span class="acte-main">TCG<span class="acte-price">25€</span></span><span class="info-icon" data-info="TCG">i</span></button>
           <button class="acte-btn" data-acte="APC"><span class="acte-main">APC<span class="acte-price">60€</span></span><span class="info-icon" data-info="APC">i</span></button>
+          <button class="acte-btn" data-acte="IMT"><span class="acte-main">IMT<span class="acte-price">60€</span></span><span class="info-icon" data-info="IMT">i</span></button>
           <button class="acte-btn" data-acte="GL1"><span class="acte-main">GL1<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL1">i</span></button>
           <button class="acte-btn" data-acte="GL2"><span class="acte-main">GL2<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL2">i</span></button>
           <button class="acte-btn" data-acte="GL3"><span class="acte-main">GL3<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL3">i</span></button>
@@ -410,6 +411,16 @@
       <div class="section-card">
         <div class="ccam-search-wrap">
           <input type="text" id="ccam-search" placeholder="Rechercher un acte (code ou mot-clé)..." class="ccam-search-input">
+        </div>
+      </div>
+
+      <div id="ccam-modif-card" class="section-card" style="display:none">
+        <h3>Modificateurs CCAM <span class="ccam-modif-hint">si actes CCAM sélectionnés</span></h3>
+        <div class="ccam-modif-toggles" id="ccam-modif-toggles">
+          <button class="ccam-modif-btn" data-modif="M"><span class="ccam-modif-code">M</span><span class="ccam-modif-sub">Urgence<br>+26,88€</span></button>
+          <button class="ccam-modif-btn" data-modif="P"><span class="ccam-modif-code">P</span><span class="ccam-modif-sub">Nuit<br>+35€</span></button>
+          <button class="ccam-modif-btn" data-modif="S"><span class="ccam-modif-code">S</span><span class="ccam-modif-sub">00h–06h<br>+40€</span></button>
+          <button class="ccam-modif-btn" data-modif="F"><span class="ccam-modif-code">F</span><span class="ccam-modif-sub">Dim/JF<br>+19,06€</span></button>
         </div>
       </div>
 

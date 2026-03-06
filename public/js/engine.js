@@ -73,7 +73,9 @@ const Engine = (() => {
     // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
     'RDV',
     // Consultations spécialisées à tarif national 100% AMO
-    'ASE', 'CSE', 'CSO', 'CTE', 'MPH', 'C2,5'
+    'ASE', 'CSE', 'CSO', 'CTE', 'MPH', 'C2,5',
+    // IMT : intégration nouveau MT en ALD → 100% AMO
+    'IMT'
   ];
 
   /**
@@ -309,7 +311,7 @@ const Engine = (() => {
     const {
       acte, age, majorations = [], periode, mode,
       isVisite = false, deplacement, ikEnabled = false, ikKm = 0,
-      ccamActes = [], heure, ikGeoOverride
+      ccamActes = [], heure, ikGeoOverride, ccamModificateurs = []
     } = params;
 
     const codes = [];
@@ -374,7 +376,20 @@ const Engine = (() => {
       }
     }
 
-    // 6. Actes CCAM associés
+    // 6. Modificateurs CCAM (M/P/S/F — appliqués si actes CCAM présents)
+    if (ccamActes && ccamActes.length > 0 && ccamModificateurs && ccamModificateurs.length > 0) {
+      const modDefs = tarifs.ccamModificateurs || {};
+      for (const modCode of ccamModificateurs) {
+        const mod = modDefs[modCode];
+        if (mod) {
+          codes.push('Mod.' + modCode);
+          details.push({ code: 'Mod.' + modCode, label: mod.label + ' (modificateur CCAM)', montant: mod.montant });
+          total += mod.montant;
+        }
+      }
+    }
+
+    // 7. Actes CCAM associés
     if (ccamActes && ccamActes.length > 0) {
       const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
       for (const item of ccamResult.items) {

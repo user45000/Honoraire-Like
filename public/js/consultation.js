@@ -292,7 +292,8 @@ const Consultation = (() => {
       mode: state.mode,
       isVisite: false,
       heure: state.heure,
-      ccamActes
+      ccamActes,
+      ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : []
     });
     App.updateResult(result);
   }
@@ -330,6 +331,7 @@ const Consultation = (() => {
 
   function setPeriode(value) {
     state.periode = value;
+    if (CCAM.updateModifFromPeriode) CCAM.updateModifFromPeriode(value);
     updateModeVisibility();
     updateActeStates();
     updateAllMajoStates();

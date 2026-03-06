@@ -5,11 +5,37 @@ const CCAM = (() => {
   let allActes = [];
   let favorites = [];
   let selectedActes = []; // Max 2 actes sélectionnés
+  let activeModificateurs = []; // Modificateurs CCAM actifs (M/P/S/F)
 
   function init() {
     try {
       favorites = JSON.parse(localStorage.getItem('hon_ccam_favs') || '[]');
     } catch { favorites = []; }
+
+    // Modificateurs CCAM
+    const modifToggles = document.getElementById('ccam-modif-toggles');
+    if (modifToggles) {
+      modifToggles.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ccam-modif-btn');
+        if (!btn) return;
+        const code = btn.dataset.modif;
+        const idx = activeModificateurs.indexOf(code);
+        // P/S/F sont mutuellement exclusifs (temps de nuit); M est indépendant
+        if (idx >= 0) {
+          activeModificateurs.splice(idx, 1);
+          btn.classList.remove('active');
+        } else {
+          if (['P','S','F'].includes(code)) {
+            // Retirer les autres P/S/F
+            activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
+            modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
+          }
+          activeModificateurs.push(code);
+          btn.classList.add('active');
+        }
+        App.onCCAMChanged();
+      });
+    }
 
     const searchInput = document.getElementById('ccam-search');
     let debounceTimer;
@@ -63,6 +89,8 @@ const CCAM = (() => {
     bindClicks(favListEl);
 
     updateSelectionBanner();
+    const modifCard = document.getElementById('ccam-modif-card');
+    if (modifCard) modifCard.style.display = selectedActes.length > 0 ? '' : 'none';
   }
 
   function renderItem(acte) {
@@ -215,6 +243,28 @@ const CCAM = (() => {
     });
   }
 
+  function updateModifFromPeriode(periode) {
+    // Auto-détecter P/S/F depuis la période courante (sans écraser M)
+    activeModificateurs = activeModificateurs.filter(m => m === 'M');
+    const modifToggles = document.getElementById('ccam-modif-toggles');
+    if (modifToggles) {
+      modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
+      let autoCode = null;
+      if (periode === 'nuitprofonde') autoCode = 'S';
+      else if (periode === 'nuit') autoCode = 'P';
+      else if (periode === 'dimferie' || periode === 'samediAM') autoCode = 'F';
+      if (autoCode) {
+        activeModificateurs.push(autoCode);
+        const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
+        if (btn) btn.classList.add('active');
+      }
+    }
+  }
+
+  function getModificateurs() {
+    return [...activeModificateurs];
+  }
+
   function onShow() {
     render(document.getElementById('ccam-search').value.trim());
   }
@@ -223,5 +273,5 @@ const CCAM = (() => {
     return allActes.find(a => a.code === code) || null;
   }
 
-  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe };
+  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe, getModificateurs, updateModifFromPeriode };
 })();
