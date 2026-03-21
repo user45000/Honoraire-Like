@@ -28,7 +28,7 @@
       "tarifs": {
         "metro": 25,
         "antilles": 30,
-        "reunion": 30
+        "reunion": 29.6
       },
       "type": "consultation",
       "description": "Téléconsultation par vidéo (caméra obligatoire). Équivalent du G à distance. Nécessite l'accès au dossier patient. Cumulable avec majorations standards (sauf MEG). Non utilisable pour la première consultation d'un patient."
