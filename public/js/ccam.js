@@ -21,11 +21,19 @@ const CCAM = (() => {
         const code = btn.dataset.modif;
         const idx = activeModificateurs.indexOf(code);
         // P/S/F sont mutuellement exclusifs (temps de nuit); M est indépendant
+        // F/P/S nécessitent M (urgence) — règle CCAM
         if (idx >= 0) {
           activeModificateurs.splice(idx, 1);
           btn.classList.remove('active');
+          // Si on décoche M, retirer aussi F/P/S
+          if (code === 'M') {
+            activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
+            modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
+          }
         } else {
           if (['P','S','F'].includes(code)) {
+            // F/P/S nécessitent M
+            if (!activeModificateurs.includes('M')) return;
             // Retirer les autres P/S/F
             activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
             modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
@@ -247,18 +255,22 @@ const CCAM = (() => {
 
   function updateModifFromPeriode(periode) {
     // Auto-détecter P/S/F depuis la période courante (sans écraser M)
+    // F/P/S ne sont applicables que si M (urgence) est coché — règle CCAM
+    const hasM = activeModificateurs.includes('M');
     activeModificateurs = activeModificateurs.filter(m => m === 'M');
     const modifToggles = document.getElementById('ccam-modif-toggles');
     if (modifToggles) {
       modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
-      let autoCode = null;
-      if (periode === 'nuitprofonde') autoCode = 'S';
-      else if (periode === 'nuit') autoCode = 'P';
-      else if (periode === 'dimferie' || periode === 'samediAM') autoCode = 'F';
-      if (autoCode) {
-        activeModificateurs.push(autoCode);
-        const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
-        if (btn) btn.classList.add('active');
+      if (hasM) {
+        let autoCode = null;
+        if (periode === 'nuitprofonde') autoCode = 'S';
+        else if (periode === 'nuit') autoCode = 'P';
+        else if (periode === 'dimferie' || periode === 'samediAM') autoCode = 'F';
+        if (autoCode) {
+          activeModificateurs.push(autoCode);
+          const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
+          if (btn) btn.classList.add('active');
+        }
       }
     }
   }

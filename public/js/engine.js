@@ -377,9 +377,12 @@ const Engine = (() => {
     }
 
     // 6. Modificateurs CCAM (M/P/S/F — appliqués si actes CCAM présents)
+    // F/P/S ne sont applicables que si M (urgence) est présent — règle CCAM
     if (ccamActes && ccamActes.length > 0 && ccamModificateurs && ccamModificateurs.length > 0) {
       const modDefs = tarifs.ccamModificateurs || {};
+      const hasM = ccamModificateurs.includes('M');
       for (const modCode of ccamModificateurs) {
+        if (['P','S','F'].includes(modCode) && !hasM) continue;
         const mod = modDefs[modCode];
         if (mod) {
           codes.push('Mod.' + modCode);
