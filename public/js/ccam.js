@@ -7,6 +7,104 @@ const CCAM = (() => {
   let selectedActes = []; // Max 2 actes sélectionnés
   let activeModificateurs = []; // Modificateurs CCAM actifs (M/P/S/F)
 
+  // Retourne la période du contexte actif (consultation ou visite)
+  function getContextPeriode() {
+    const ctx = App.getCCAMContext();
+    const state = ctx === 'visite' ? Visite.getState() : Consultation.getState();
+    return state.periode || 'jour';
+  }
+
+  // Retourne le modificateur horaire compatible avec la période
+  function getTimeModifForPeriode(periode) {
+    if (periode === 'nuit') return 'P';
+    if (periode === 'nuitprofonde') return 'S';
+    if (periode === 'dimferie' || periode === 'samediAM') return 'F';
+    return null; // jour → aucun
+  }
+
+  // Calcule la disponibilité de chaque modificateur + raison si bloqué
+  function getModifAvailability() {
+    const periode = getContextPeriode();
+    const hasM = activeModificateurs.includes('M');
+    const validTimeModif = getTimeModifForPeriode(periode);
+    const periodeLabels = {
+      jour: 'en journée', nuit: 'de nuit', nuitprofonde: 'de nuit profonde',
+      dimferie: 'dim/férié', samediAM: 'samedi après-midi'
+    };
+    const pLabel = periodeLabels[periode] || '';
+
+    return {
+      M: { available: true, reason: '' },
+      P: {
+        available: hasM && validTimeModif === 'P',
+        reason: !hasM ? 'Cochez M (urgence) d\'abord'
+          : periode === 'jour' ? 'Pas de nuit en journée'
+          : validTimeModif !== 'P' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
+          : ''
+      },
+      S: {
+        available: hasM && validTimeModif === 'S',
+        reason: !hasM ? 'Cochez M (urgence) d\'abord'
+          : periode === 'jour' ? 'Pas de nuit profonde en journée'
+          : validTimeModif !== 'S' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
+          : ''
+      },
+      F: {
+        available: hasM && validTimeModif === 'F',
+        reason: !hasM ? 'Cochez M (urgence) d\'abord'
+          : periode === 'jour' ? 'Pas de dim/férié en journée'
+          : validTimeModif !== 'F' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
+          : ''
+      }
+    };
+  }
+
+  // Met à jour l'affichage enabled/disabled des boutons modificateurs
+  function updateModifStates() {
+    const modifToggles = document.getElementById('ccam-modif-toggles');
+    if (!modifToggles) return;
+    const avail = getModifAvailability();
+
+    modifToggles.querySelectorAll('.ccam-modif-btn').forEach(btn => {
+      const code = btn.dataset.modif;
+      const info = avail[code];
+      if (!info) return;
+
+      if (!info.available) {
+        btn.classList.add('disabled');
+        // Si le modificateur était actif, le retirer
+        if (activeModificateurs.includes(code)) {
+          activeModificateurs = activeModificateurs.filter(m => m !== code);
+          btn.classList.remove('active');
+        }
+      } else {
+        btn.classList.remove('disabled');
+      }
+    });
+  }
+
+  // Animation shake + tooltip quand on clique sur un bouton désactivé
+  function shakeWithTooltip(btn, reason) {
+    btn.classList.remove('shake');
+    void btn.offsetWidth; // force reflow
+    btn.classList.add('shake');
+
+    // Tooltip
+    let tip = btn.querySelector('.ccam-modif-tooltip');
+    if (!tip) {
+      tip = document.createElement('span');
+      tip.className = 'ccam-modif-tooltip';
+      btn.appendChild(tip);
+    }
+    tip.textContent = reason;
+    tip.classList.add('visible');
+
+    setTimeout(() => {
+      btn.classList.remove('shake');
+      tip.classList.remove('visible');
+    }, 1800);
+  }
+
   function init() {
     try {
       favorites = JSON.parse(localStorage.getItem('hon_ccam_favs') || '[]');
@@ -19,21 +117,27 @@ const CCAM = (() => {
         const btn = e.target.closest('.ccam-modif-btn');
         if (!btn) return;
         const code = btn.dataset.modif;
+        const avail = getModifAvailability();
+
+        // Clic sur bouton désactivé → feedback visuel
+        if (avail[code] && !avail[code].available) {
+          shakeWithTooltip(btn, avail[code].reason);
+          return;
+        }
+
         const idx = activeModificateurs.indexOf(code);
-        // P/S/F sont mutuellement exclusifs (temps de nuit); M est indépendant
-        // F/P/S nécessitent M (urgence) — règle CCAM
         if (idx >= 0) {
+          // Décochage
           activeModificateurs.splice(idx, 1);
           btn.classList.remove('active');
-          // Si on décoche M, retirer aussi F/P/S
+          // Si on décoche M → retirer aussi P/S/F
           if (code === 'M') {
             activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
             modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
           }
         } else {
+          // Cochage
           if (['P','S','F'].includes(code)) {
-            // F/P/S nécessitent M
-            if (!activeModificateurs.includes('M')) return;
             // Retirer les autres P/S/F
             activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
             modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
@@ -41,6 +145,7 @@ const CCAM = (() => {
           activeModificateurs.push(code);
           btn.classList.add('active');
         }
+        updateModifStates();
         App.onCCAMChanged();
       });
     }
@@ -100,13 +205,16 @@ const CCAM = (() => {
     const modifCard = document.getElementById('ccam-modif-card');
     if (modifCard) {
       const hasNonBaseOnly = selectedActes.some(a => !a.baseOnly);
-      // Masquer les modificateurs si aucun acte ou uniquement des actes programmés (baseOnly)
       modifCard.style.display = (selectedActes.length > 0 && hasNonBaseOnly) ? '' : 'none';
       if (!hasNonBaseOnly) {
-        // Retirer les modificateurs actifs quand il n'y a que des actes programmés
         activeModificateurs = [];
         const modifToggles = document.getElementById('ccam-modif-toggles');
-        if (modifToggles) modifToggles.querySelectorAll('.ccam-modif-btn').forEach(b => b.classList.remove('active'));
+        if (modifToggles) modifToggles.querySelectorAll('.ccam-modif-btn').forEach(b => {
+          b.classList.remove('active');
+          b.classList.remove('disabled');
+        });
+      } else {
+        updateModifStates();
       }
     }
   }
@@ -264,24 +372,22 @@ const CCAM = (() => {
   }
 
   function updateModifFromPeriode(periode) {
-    // Auto-détecter P/S/F depuis la période courante (sans écraser M)
-    // F/P/S ne sont applicables que si M (urgence) est coché — règle CCAM
+    // Quand la période change, réajuster les modificateurs actifs
     const hasM = activeModificateurs.includes('M');
+    // Retirer P/S/F — on va remettre le bon si M est coché
     activeModificateurs = activeModificateurs.filter(m => m === 'M');
     const modifToggles = document.getElementById('ccam-modif-toggles');
     if (modifToggles) {
       modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
       if (hasM) {
-        let autoCode = null;
-        if (periode === 'nuitprofonde') autoCode = 'S';
-        else if (periode === 'nuit') autoCode = 'P';
-        else if (periode === 'dimferie' || periode === 'samediAM') autoCode = 'F';
+        const autoCode = getTimeModifForPeriode(periode);
         if (autoCode) {
           activeModificateurs.push(autoCode);
           const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
           if (btn) btn.classList.add('active');
         }
       }
+      updateModifStates();
     }
   }
 

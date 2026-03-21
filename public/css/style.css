@@ -2324,3 +2324,47 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ccam-modif-btn.active .ccam-modif-sub {
   color: var(--primary);
 }
+
+.ccam-modif-btn.disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.ccam-modif-btn.disabled .ccam-modif-code,
+.ccam-modif-btn.disabled .ccam-modif-sub {
+  color: var(--text-secondary);
+}
+
+@keyframes modif-shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
+}
+.ccam-modif-btn.shake {
+  animation: modif-shake 0.35s ease;
+}
+
+.ccam-modif-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--text);
+  color: white;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+.ccam-modif-tooltip.visible {
+  opacity: 1;
+}
+.ccam-modif-btn {
+  position: relative;
+}
