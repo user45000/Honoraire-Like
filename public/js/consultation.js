@@ -6,8 +6,11 @@ const Consultation = (() => {
     age: 'adulte',
     acte: 'G',
     majorations: [],
+    actesCourants: [],
     periode: 'jour',
-    mode: 'nonregule'
+    mode: 'nonregule',
+    heure: null,
+    relation: 'mt'
   };
 
   function init() {
@@ -24,7 +27,7 @@ const Consultation = (() => {
       recalculate();
     });
 
-    // Type d'acte
+    // Type d'acte (grille principale)
     const acteGrid = document.getElementById('consult-acte-grid');
     acteGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -35,14 +38,14 @@ const Consultation = (() => {
       }
       const btn = e.target.closest('.acte-btn');
       if (!btn || btn.classList.contains('disabled')) return;
-      acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
       updateAllMajoStates();
       recalculate();
     });
 
-    // Majorations
+    // Majorations (grille principale)
     const majoGrid = document.getElementById('consult-majo-grid');
     majoGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -59,32 +62,60 @@ const Consultation = (() => {
       recalculate();
     });
 
-    // Période horaire
-    const periodeGroup = document.querySelector('#tab-consultation .toggle-group[data-field="periode"]');
-    periodeGroup.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-      periodeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.periode = btn.dataset.value;
-      updateModeVisibility();
-      updateAllMajoStates();
-      recalculate();
-    });
-
-    // Mode de garde
-    const modeGroup = document.querySelector('#tab-consultation .toggle-group[data-field="mode"]');
-    if (modeGroup) {
-      modeGroup.addEventListener('click', (e) => {
-        const btn = e.target.closest('.toggle-btn');
-        if (!btn) return;
-        modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.mode = btn.dataset.value;
+    // Coordination numérique (TE2 acte + RQD majoration)
+    const coordCard = document.getElementById('consult-coord-card');
+    coordCard.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        if (e.target.closest('.acte-btn')) showActeInfo(infoIcon.dataset.info);
+        else showMajoInfo(infoIcon.dataset.info);
+        return;
+      }
+      const acteBtn = e.target.closest('.acte-btn');
+      if (acteBtn && !acteBtn.classList.contains('disabled')) {
+        document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+        acteBtn.classList.add('active');
+        state.acte = acteBtn.dataset.acte;
         updateAllMajoStates();
         recalculate();
-      });
-    }
+        return;
+      }
+      const majoBtn = e.target.closest('.majo-btn');
+      if (majoBtn && !majoBtn.classList.contains('disabled')) {
+        toggleMajoration(majoBtn.dataset.majo, majoBtn);
+        updateAllMajoStates();
+        recalculate();
+      }
+    });
+
+    // Actes courants (ECG, Frottis)
+    const courantsGrid = document.getElementById('consult-courants-grid');
+    courantsGrid.addEventListener('click', (e) => {
+      const infoBtn = e.target.closest('[data-courant-info]');
+      if (infoBtn) {
+        e.stopPropagation();
+        const acte = CCAM.getActe(infoBtn.dataset.courantInfo);
+        if (acte) {
+          document.getElementById('modal-title').textContent = `${acte.code} — ${acte.label}`;
+          document.getElementById('modal-body').innerHTML = `<p class="majo-detail-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</p><p>${acte.note || ''}</p>`;
+          document.getElementById('modal-overlay').classList.add('active');
+        }
+        return;
+      }
+      const btn = e.target.closest('.majo-btn[data-courant]');
+      if (!btn || btn.classList.contains('disabled')) return;
+      const code = btn.dataset.courant;
+      const idx = state.actesCourants.indexOf(code);
+      if (idx >= 0) {
+        state.actesCourants.splice(idx, 1);
+        btn.classList.remove('active');
+      } else {
+        state.actesCourants.push(code);
+        btn.classList.add('active');
+      }
+      recalculate();
+    });
 
     updateActePrices();
     updateActeStates();
@@ -94,6 +125,9 @@ const Consultation = (() => {
   function handleAgeChange() {
     const majoGrid = document.getElementById('consult-majo-grid');
     const megBtn = majoGrid.querySelector('[data-majo="MEG"]');
+    const acteGrid = document.getElementById('consult-acte-grid');
+
+    // MEG : auto-activer pour enfant 0-6 ans seulement
     if (state.age === 'enfant') {
       if (!state.majorations.includes('MEG')) {
         state.majorations.push('MEG');
@@ -102,13 +136,20 @@ const Consultation = (() => {
     } else {
       state.majorations = state.majorations.filter(m => m !== 'MEG');
       megBtn.classList.remove('active');
-      // Si l'utilisateur est sur un acte pédiatrique et repasse en adulte → revenir à G
-      if (Engine.ACTES_PEDIATRIQUES.includes(state.acte)) {
-        state.acte = 'G';
-        const acteGrid = document.getElementById('consult-acte-grid');
-        acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
-        acteGrid.querySelector('[data-acte="G"]').classList.add('active');
-      }
+    }
+
+    // Réinitialiser l'acte s'il n'est plus valide pour le nouvel âge
+    const isActeEnfant = Engine.ACTES_ENFANT.includes(state.acte);
+    const isActeJeune = Engine.ACTES_JEUNE.includes(state.acte);
+    const isActeSenior = Engine.ACTES_SENIOR.includes(state.acte);
+    if (
+      (isActeEnfant && state.age !== 'enfant') ||
+      (isActeJeune && state.age !== 'jeune') ||
+      (isActeSenior && state.age !== 'senior')
+    ) {
+      state.acte = 'G';
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#tab-consultation [data-acte="G"]').classList.add('active');
     }
     updateActeStates();
   }
@@ -123,7 +164,7 @@ const Consultation = (() => {
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
         state.majorations = state.majorations.filter(m => m !== ex);
-        const exBtn = document.querySelector(`#consult-majo-grid [data-majo="${ex}"]`);
+        const exBtn = document.querySelector(`#tab-consultation [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
       // Vérifier aussi les exclusions inverses
@@ -133,7 +174,7 @@ const Consultation = (() => {
           const majo = tarifs.majorations[m];
           if (majo?.exclusifs?.includes(code)) {
             state.majorations = state.majorations.filter(x => x !== m);
-            const mBtn = document.querySelector(`#consult-majo-grid [data-majo="${m}"]`);
+            const mBtn = document.querySelector(`#tab-consultation [data-majo="${m}"]`);
             if (mBtn) mBtn.classList.remove('active');
           }
         }
@@ -149,11 +190,10 @@ const Consultation = (() => {
    */
   function updateAllMajoStates() {
     const availability = Engine.getAvailableMajos(
-      state.acte, state.age, state.periode, state.mode, false, null, state.majorations
+      state.acte, state.age, state.periode, state.mode, false, null, state.majorations, state.heure, state.relation
     );
-    const majoGrid = document.getElementById('consult-majo-grid');
 
-    majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
+    document.querySelectorAll('#tab-consultation .majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
       const info = availability[code];
       if (!info) return;
@@ -175,36 +215,62 @@ const Consultation = (() => {
   }
 
   /**
-   * Grise/dégrise les actes pédiatriques selon l'âge du patient
+   * Grise/dégrise les actes selon l'âge du patient
    */
   function updateActeStates() {
     const acteGrid = document.getElementById('consult-acte-grid');
-    for (const code of Engine.ACTES_PEDIATRIQUES) {
+
+    // Actes enfant (COE, COD) : visibles uniquement pour 0-6 ans
+    for (const code of Engine.ACTES_ENFANT) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
-      if (state.age === 'adulte') {
-        btn.classList.add('disabled');
-        btn.title = 'Acte pédiatrique uniquement';
-      } else {
-        btn.classList.remove('disabled');
-        btn.title = '';
+      btn.style.display = state.age === 'enfant' ? '' : 'none';
+    }
+
+    // Actes jeune (COB, CCP) : visibles uniquement pour 6-25 ans
+    for (const code of Engine.ACTES_JEUNE) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      btn.style.display = state.age === 'jeune' ? '' : 'none';
+    }
+
+    // Actes senior (GL1/GL2/GL3) : visibles uniquement pour >80 ans ET médecin traitant
+    for (const code of Engine.ACTES_SENIOR) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      btn.style.display = (state.age === 'senior' && state.relation === 'mt') ? '' : 'none';
+    }
+
+    // Actes non disponibles en PDSA / nuit (COE, COD, APC)
+    const isHorsJour = state.periode !== 'jour';
+    for (const code of ['COE', 'COD', 'APC']) {
+      const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
+      if (!btn) continue;
+      btn.classList.toggle('disabled', isHorsJour);
+    }
+
+    // Frottis : non disponible en PDSA / nuit
+    const frottisBtn = document.querySelector('#consult-courants-grid [data-courant="JKHD001"]');
+    if (frottisBtn) {
+      frottisBtn.classList.toggle('disabled', isHorsJour);
+      if (isHorsJour) {
+        state.actesCourants = state.actesCourants.filter(c => c !== 'JKHD001');
+        frottisBtn.classList.remove('active');
       }
     }
   }
 
   function updateModeVisibility() {
-    const section = document.getElementById('consult-mode-section');
     if (state.periode === 'jour') {
-      section.style.display = 'none';
       state.mode = 'nonregule';
+      App.updateModeBar(false, state.mode);
     } else {
-      section.style.display = '';
+      App.updateModeBar(true, state.mode);
     }
   }
 
   function updateActePrices() {
-    const grid = document.getElementById('consult-acte-grid');
-    grid.querySelectorAll('.acte-btn').forEach(btn => {
+    document.querySelectorAll('#tab-consultation .acte-btn').forEach(btn => {
       const code = btn.dataset.acte;
       const tarif = Engine.getActeTarif(code);
       const priceEl = btn.querySelector('.acte-price');
@@ -213,6 +279,11 @@ const Consultation = (() => {
   }
 
   function recalculate() {
+    const courantObjects = state.actesCourants.map(c => CCAM.getActe(c)).filter(Boolean);
+    // Dédupliquer par code (évite double DEQP003 si sélectionné en CCAM ET en actes courants)
+    const seen = new Set();
+    const ccamActes = [...CCAM.getSelectedActes(), ...courantObjects]
+      .filter(a => seen.has(a.code) ? false : seen.add(a.code));
     const result = Engine.calculate({
       acte: state.acte,
       age: state.age,
@@ -220,7 +291,9 @@ const Consultation = (() => {
       periode: state.periode,
       mode: state.mode,
       isVisite: false,
-      ccamActes: CCAM.getSelectedActes()
+      heure: state.heure,
+      ccamActes,
+      ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : []
     });
     App.updateResult(result);
   }
@@ -229,6 +302,26 @@ const Consultation = (() => {
     updateActePrices();
     updateActeStates();
     updateAllMajoStates();
+    App.updateModeBar(state.periode !== 'jour', state.mode);
+    recalculate();
+  }
+
+  function setRelation(value) {
+    state.relation = value;
+    // Si un acte MT-only était actif (GL1/2/3) → reset sur G
+    if (value === 'hors' && Engine.ACTES_SENIOR.includes(state.acte)) {
+      state.acte = 'G';
+      document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
+      document.querySelector('#tab-consultation [data-acte="G"]').classList.add('active');
+    }
+    updateActeStates();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  function setMode(value) {
+    state.mode = value;
+    updateAllMajoStates();
     recalculate();
   }
 
@@ -236,5 +329,20 @@ const Consultation = (() => {
     return state;
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices };
+  function setPeriode(value) {
+    state.periode = value;
+    if (CCAM.updateModifFromPeriode) CCAM.updateModifFromPeriode(value);
+    updateModeVisibility();
+    updateActeStates();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  function setHeure(value) {
+    state.heure = value;
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation };
 })();

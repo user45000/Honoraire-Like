@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#60A5FA"/>
+  <!-- Croix médicale -->
+  <rect x="205" y="102" width="102" height="236" rx="20" fill="white"/>
+  <rect x="138" y="169" width="236" height="102" rx="20" fill="white"/>
+  <!-- Arc stéthoscope -->
+  <path d="M256 338 C256 410 358 410 358 369"
+    stroke="white" stroke-width="23" stroke-linecap="round" fill="none" opacity="0.8"/>
+  <!-- Embout stéthoscope -->
+  <circle cx="358" cy="361" r="28" fill="white" opacity="0.8"/>
+</svg>

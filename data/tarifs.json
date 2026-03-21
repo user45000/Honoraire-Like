@@ -5,147 +5,473 @@
   "consultations": {
     "G": {
       "label": "Consultation généraliste",
-      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
-      "type": "consultation"
+      "tarifs": {
+        "metro": 30,
+        "antilles": 36,
+        "reunion": 36
+      },
+      "type": "consultation",
+      "description": "Consultation de médecine générale de secteur 1. Tarif de base. Applicable par le médecin traitant ou un autre généraliste. Cumulable avec la plupart des majorations (MCG, MEG, MSH, MIC, MIS, PIV, SNP, MRT…)."
     },
     "APC": {
       "label": "Avis ponctuel de consultant",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "consultation"
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
+      "type": "consultation",
+      "description": "Consultation d'un médecin (généraliste ou spécialiste) à la demande explicite du médecin traitant. 1 fois par épisode pathologique. Une synthèse doit être adressée au MT. Non cumulable avec MCG."
     },
     "TCG": {
       "label": "Téléconsultation",
-      "tarifs": { "metro": 25.00, "antilles": 30.00, "reunion": 30.00 },
-      "type": "consultation"
+      "tarifs": {
+        "metro": 25,
+        "antilles": 30,
+        "reunion": 30
+      },
+      "type": "consultation",
+      "description": "Téléconsultation par vidéo (caméra obligatoire). Équivalent du G à distance. Nécessite l'accès au dossier patient. Cumulable avec majorations standards (sauf MEG). Non utilisable pour la première consultation d'un patient."
+    },
+    "TE2": {
+      "label": "Téléexpertise (médecin requis)",
+      "tarifs": {
+        "metro": 23,
+        "antilles": 23,
+        "reunion": 23
+      },
+      "type": "consultation",
+      "description": "Acte du médecin qui répond à une demande de téléexpertise. Max 4 fois/an par patient pour le même médecin requis. Réponse sous 7 jours (ou 24h si urgence). Acte isolé, non cumulable avec G/VG pour le même patient le même jour."
     },
     "GL1": {
-      "label": "Consultation longue - diabète/ALD",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "label": "Consultation longue post-hospitalisation",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
       "type": "consultation",
-      "description": "Consultation longue MT (>80 ans, 1×/an/patient) : post-hospitalisation ≤45j (non cumulable MSH/MIC même séjour), déprescription (≥10 lignes ordonnance), dossier APA"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Dans les 45 jours post-sortie d'hospitalisation. Non cumulable avec MSH ou MIC pour le même séjour."
     },
     "GL2": {
-      "label": "Consultation longue - IVG",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "label": "Consultation longue déprescription",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
       "type": "consultation",
-      "description": "Consultation longue IVG médicamenteuse"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Patient sous ≥10 lignes de médicaments, après bilan de médication réalisé par le pharmacien."
     },
     "GL3": {
-      "label": "Consultation longue - prévention",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "label": "Consultation longue orientation médico-sociale",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
       "type": "consultation",
-      "description": "Consultation longue de prévention"
+      "seniorOnly": true,
+      "description": "Patient >80 ans, médecin traitant uniquement, 1×/an/patient. Dossier MDPH, APA ou ViaTrajectoire. Non cumulable avec MPH pour la même demande."
     },
     "COE": {
       "label": "Examen obligatoire nourrisson (certificat)",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
       "type": "consultation",
-      "pediatrique": true,
-      "amo100": true
+      "enfantOnly": true,
+      "amo100": true,
+      "description": "Examen médical obligatoire du nourrisson avec délivrance d'un certificat de santé (2e, 9e ou 24e mois). Remis à la PMI. 100% AMO automatique."
     },
     "COD": {
       "label": "Examen obligatoire enfant <6 ans",
-      "tarifs": { "metro": 35.00, "antilles": 42.00, "reunion": 42.00 },
+      "tarifs": {
+        "metro": 35,
+        "antilles": 42,
+        "reunion": 42
+      },
       "type": "consultation",
-      "pediatrique": true,
-      "amo100": true
+      "enfantOnly": true,
+      "amo100": true,
+      "description": "Examen médical obligatoire entre 3 mois et 6 ans (hors examens COE avec certificat). 100% AMO automatique."
     },
     "COB": {
       "label": "Examen obligatoire enfant ≥6 ans",
-      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
+      "tarifs": {
+        "metro": 30,
+        "antilles": 36,
+        "reunion": 36
+      },
       "type": "consultation",
-      "pediatrique": true,
-      "amo100": true
+      "jeuneOnly": true,
+      "amo100": true,
+      "description": "Examen médical obligatoire entre 6 et 16 ans. 100% AMO automatique."
+    },
+    "CCP": {
+      "label": "Consultation contraception et prévention sexuelle",
+      "tarifs": {
+        "metro": 47.5,
+        "antilles": 47.5,
+        "reunion": 47.5
+      },
+      "type": "consultation",
+      "jeuneOnly": true,
+      "amo100": true,
+      "description": "Première consultation de contraception et prévention en santé sexuelle. Patient ≤ 25 ans (hommes et femmes). 100% AMO automatique. 1 fois par patient. Non cumulable avec MCG."
+    },
+    "EPG": {
+      "label": "Examen médical futur co-parent",
+      "tarifs": {
+        "metro": 30,
+        "antilles": 36,
+        "reunion": 36
+      },
+      "type": "consultation",
+      "description": "Examen du futur père/co-parent avant la naissance. Même tarif que G. Code transmis en MTX. Non cumulable avec MCG."
+    },
+    "C2,5": {
+      "label": "Entretien prénatal précoce",
+      "tarifs": {
+        "metro": 57.5,
+        "antilles": 57.5,
+        "reunion": 57.5
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Première séance individuelle ou en couple à l'entretien prénatal précoce obligatoire. 100% AMO."
+    },
+    "ASE": {
+      "label": "Consultation Aide Sociale à l'Enfance",
+      "tarifs": {
+        "metro": 47.5,
+        "antilles": 47.5,
+        "reunion": 47.5
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation pour enfants jusqu'à 18 ans confiés à l'Aide Sociale à l'Enfance. 100% AMO."
+    },
+    "CSE": {
+      "label": "Consultation suivi enfant autiste",
+      "tarifs": {
+        "metro": 47.5,
+        "antilles": 47.5,
+        "reunion": 47.5
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation de suivi et de coordination de la prise en charge d'un enfant autiste (CSE). 100% AMO."
+    },
+    "CSO": {
+      "label": "Consultation obésité enfant",
+      "tarifs": {
+        "metro": 47.5,
+        "antilles": 47.5,
+        "reunion": 47.5
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation pour les enfants en risque avéré d'obésité de 3 ans à moins de 13 ans. 100% AMO."
+    },
+    "CTE": {
+      "label": "Consultation repérage TND",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 60,
+        "reunion": 60
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Repérage des troubles du neuro-développement (TND) ou d'un trouble de la relation précoce parents-enfant. Cabinet uniquement. 100% AMO."
+    },
+    "MPH": {
+      "label": "Consultation très complexe handicap",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 60,
+        "reunion": 60
+      },
+      "type": "consultation",
+      "amo100": true,
+      "description": "Consultation très complexe dans le cadre de l'amélioration de la prise en charge des personnes avec handicap. 100% AMO. Non cumulable avec GL3 pour la même demande."
     },
     "VG": {
       "label": "Visite généraliste",
-      "tarifs": { "metro": 30.00, "antilles": 36.00, "reunion": 36.00 },
-      "type": "visite"
+      "tarifs": {
+        "metro": 30,
+        "antilles": 36,
+        "reunion": 36
+      },
+      "type": "visite",
+      "description": "Visite à domicile du médecin généraliste. Équivalent du G pour les actes réalisés au domicile du patient. Indemnités de déplacement (MD, MDM, MDD, MDN, MDI) et IK à ajouter."
     },
     "VL": {
       "label": "Visite longue",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "visite"
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
+      "type": "visite",
+      "description": "Visite longue à domicile pour patient polypathologique ou situation nécessitant un temps de présence prolongé. Médecin traitant uniquement. Cumulable avec majorations (MUT, MRT, SNP…)."
     },
     "VSP": {
       "label": "Visite très complexe (soins palliatifs)",
-      "tarifs": { "metro": 60.00, "antilles": 72.00, "reunion": 72.00 },
-      "type": "visite"
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
+      "type": "visite",
+      "description": "Visite très complexe à domicile dans le cadre de soins palliatifs ou de situation médicale grave. Non cumulable avec VL pour le même patient le même jour."
+    },
+    "IMT": {
+      "label": "Intégration nouveau médecin traitant (ALD)",
+      "tarifs": {
+        "metro": 60,
+        "antilles": 72,
+        "reunion": 72
+      },
+      "type": "consultation",
+      "description": "Consultation d'intégration du patient par le nouveau médecin traitant pour un patient en ALD. 1 fois par changement de MT. 100% AMO."
     }
   },
   "majorations": {
     "MCG": {
       "label": "Majoration de coordination généraliste",
-      "tarif": 5.00,
-      "description": "Coordination par le médecin traitant (art. 2 bis)",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["SNP"]
+      "tarif": 5,
+      "description": "Applicable par un médecin autre que le MT, sur envoi du MT, pour soins itératifs (patient polypathologique avec autonomie réduite, nécessitant une coordination avec au moins un paramédical), ou patient loin de sa résidence habituelle. Synthèse adressée au MT obligatoire. Non cumulable avec MUT, SNP.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": [
+        "SNP",
+        "MUT"
+      ],
+      "horsPatOnly": true
     },
     "MEG": {
       "label": "Majoration enfant 0-6 ans",
-      "tarif": 5.00,
+      "tarif": 5,
       "description": "Patient âgé de 0 à 6 ans (art. 14.7)",
-      "applicableTo": ["G", "VG", "TCG"]
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ]
     },
     "MSH": {
       "label": "Majoration sortie hospitalisation",
-      "tarif": 23.00,
-      "description": "Consultation dans les 30 jours après sortie d'hospitalisation (art. 15.5). Non cumulable avec MDN/MDD en visite.",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MIC", "MIS"]
+      "tarif": 23,
+      "description": "Consultation dans les 30 jours après sortie d'hospitalisation pour chirurgie ou décompensation d'une pathologie chronique grave. Par le médecin traitant uniquement. 1 fois par hospitalisation. Non cumulable avec MIC, MIS. Présentiel obligatoire (non applicable en téléconsultation).",
+      "applicableTo": [
+        "G",
+        "VG"
+      ],
+      "exclusifs": [
+        "MIC",
+        "MIS"
+      ],
+      "mtOnly": true
     },
     "MIC": {
       "label": "Majoration insuffisance cardiaque",
-      "tarif": 23.00,
-      "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite.",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MSH", "MIS"]
+      "tarif": 23,
+      "description": "Suivi dans les 2 mois après hospitalisation pour IC (art. 15.5). Non cumulable avec MDN/MDD en visite. Présentiel obligatoire (non applicable en téléconsultation).",
+      "applicableTo": [
+        "G",
+        "VG"
+      ],
+      "exclusifs": [
+        "MSH",
+        "MIS"
+      ],
+      "mtOnly": true
     },
     "MIS": {
-      "label": "Majoration insuffisance rénale sévère",
-      "tarif": 30.00,
-      "description": "Suivi patient IRC stade 4-5 (art. 15.9). Non cumulable avec MSH/MIC.",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MSH", "MIC"]
+      "label": "Majoration d'information et de stratégie",
+      "tarif": 30,
+      "description": "Consultation initiale d'annonce d'une pathologie grave : cancer, maladie neurodégénérative ou neurologique évolutive, ou trouble du neurodéveloppement (TND). Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/PIV. Présentiel obligatoire.",
+      "applicableTo": [
+        "G",
+        "VG"
+      ],
+      "exclusifs": [
+        "MSH",
+        "MIC",
+        "PIV"
+      ],
+      "mtOnly": true
+    },
+    "PIV": {
+      "label": "Majoration annonce VIH",
+      "tarif": 30,
+      "description": "Consultation initiale à l'annonce d'une séropositivité VIH. Code transmis à l'AM : MTX (anonymisation). 1 seule fois par patient. Non cumulable avec MSH/MIC/MIS. Présentiel obligatoire.",
+      "applicableTo": [
+        "G",
+        "VG"
+      ],
+      "exclusifs": [
+        "MSH",
+        "MIC",
+        "MIS"
+      ]
     },
     "MUT": {
       "label": "Majoration urgence traitant",
-      "tarif": 5.00,
-      "description": "Urgence par le médecin traitant, dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA.",
-      "applicableTo": ["G", "VG"]
+      "tarif": 5,
+      "description": "RDV spécialiste obtenu par le MT dans les 4 jours ouvrés (art. 14.1.6). Non cumulable avec PDSA, MCG, SNP.",
+      "applicableTo": [
+        "G",
+        "VG"
+      ],
+      "exclusifs": [
+        "MCG",
+        "SNP"
+      ],
+      "mtOnly": true
+    },
+    "MOP": {
+      "label": "Majoration personne âgée >80 ans",
+      "tarif": 5,
+      "description": "Patient de plus de 80 ans. Applicable uniquement si le médecin n'est PAS le médecin traitant du patient (le MT perçoit le FMT à la place). Tarif opposable obligatoire.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "horsPatOnly": true
     },
     "SNP": {
       "label": "Soins non programmés",
-      "tarif": 15.00,
-      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Non cumulable avec MCG, MHP, majorations d'urgence et PDSA.",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["MCG", "MHP"]
+      "tarif": 15,
+      "description": "Consultation non programmée via régulation SAS (art. 14.1.3). Pour les patients hors patientèle. Non cumulable avec MCG, MUT, MHP, MRT, majorations d'urgence et PDSA.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": [
+        "MCG",
+        "MHP",
+        "MUT",
+        "MRT"
+      ],
+      "horsPatOnly": true
     },
     "MHP": {
       "label": "Majoration hors régulation PDSA",
-      "tarif": 5.00,
+      "tarif": 5,
       "description": "Consultation non programmée horaires PDSA (art. 22-4). Non cumulable avec SNP, PDSA, F/MN/MM, MDN/MDD.",
-      "applicableTo": ["G", "VG", "TCG"],
-      "exclusifs": ["SNP"]
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": [
+        "SNP"
+      ]
+    },
+    "MU": {
+      "label": "Majoration urgence visite",
+      "tarif": 22.6,
+      "description": "Visite urgente interrompant les consultations ou sur demande du centre 15. Uniquement en visite de jour non régulée. Non cumulable avec F/MN/MM. Cumulable avec IK et ECG.",
+      "applicableTo": [
+        "VG",
+        "VL",
+        "VSP"
+      ],
+      "exclusifs": []
+    },
+    "MRT": {
+      "label": "Régulation médecin traitant (SAS)",
+      "tarif": 15,
+      "description": "Urgence régulée via SAS pour la patientèle propre du médecin traitant. Alternative au SNP pour ses propres patients (art. 14.1.3). Non cumulable avec SNP.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": [
+        "SNP",
+        "MCG",
+        "MHP",
+        "MUT"
+      ],
+      "mtOnly": true
+    },
+    "SHE": {
+      "label": "Majoration horaire étendu SAS",
+      "tarif": 5,
+      "description": "En sus de SNP ou MRT, entre 19h et 21h, en semaine (lun-ven), sur régulation SAS uniquement.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": []
+    },
+    "MVR": {
+      "label": "Majoration visite rapide SAS",
+      "tarif": 10,
+      "description": "En sus de VG, pour visite à domicile effectuée dans les 24h suivant une régulation SAS de jour (depuis le 01/01/2026). Cumulable avec SNP ou MRT. Non applicable la nuit en PDSA (VRN/VRM/VRD s'appliquent à la place).",
+      "applicableTo": [
+        "VG"
+      ],
+      "exclusifs": []
+    },
+    "RQD": {
+      "label": "Demande de téléexpertise (requérant)",
+      "tarif": 10,
+      "description": "Acte du médecin qui sollicite une téléexpertise (médecin requérant). Cumulable avec la consultation ou visite du même jour. Max 4 fois/an par patient.",
+      "applicableTo": [
+        "G",
+        "VG",
+        "TCG"
+      ],
+      "exclusifs": []
+    },
+    "RDV": {
+      "label": "Bilan de prévention",
+      "tarif": 30,
+      "description": "Majoration \"Mon bilan de prévention\" : G + RDV = 60€, 100% AMO. Tranches d'âge : 18-25 ans, 45-50 ans, 60-65 ans, 70-75 ans. 1 fois par tranche d'âge. Inclut dépistage addictions, prévention CV/cancer, santé mentale. Depuis le 01/01/2023. Non cumulable avec les majorations de soins aigus/urgence (MSH, MIC, MIS, PIV, MUT).",
+      "applicableTo": [
+        "G"
+      ],
+      "exclusifs": [
+        "MSH",
+        "MIC",
+        "MIS",
+        "PIV",
+        "MUT"
+      ],
+      "mtOnly": true
     }
   },
   "majorationsHoraires": {
     "regulees": {
       "CRN": {
         "label": "Nuit régulée (20h-0h / 6h-8h)",
-        "tarif": 42.50
+        "tarif": 42.5
       },
       "CRM": {
         "label": "Milieu de nuit régulé (0h-6h)",
-        "tarif": 46.50
+        "tarif": 51.5
       },
       "CRS": {
         "label": "Samedi après-midi régulé",
-        "tarif": 26.50
+        "tarif": 26.5
       },
       "CRD": {
         "label": "Dimanche et férié régulé",
-        "tarif": 26.50
+        "tarif": 26.5
       }
     },
     "nonRegulees": {
@@ -155,106 +481,1061 @@
       },
       "MN": {
         "label": "Nuit (20h-0h / 6h-8h)",
-        "tarif": 35.00
+        "tarif": 35
       },
       "MM": {
         "label": "Nuit profonde (0h-6h)",
-        "tarif": 40.00
+        "tarif": 40
       }
     },
     "visiteRegulees": {
       "VRN": {
         "label": "Visite nuit régulée (20h-0h / 6h-8h)",
-        "tarif": 52.50
+        "tarif": 52.5
       },
       "VRM": {
         "label": "Visite milieu de nuit régulée (0h-6h)",
-        "tarif": 66.00
+        "tarif": 66
       },
       "VRS": {
         "label": "Visite samedi a.m. régulée",
-        "tarif": 36.50
+        "tarif": 36.5
       },
       "VRD": {
         "label": "Visite dimanche/férié régulée",
-        "tarif": 36.50
+        "tarif": 36.5
       }
     }
   },
   "deplacement": {
     "MD": {
       "label": "Majoration de déplacement",
-      "tarifs": { "metro": 10.00, "antilles": 10.00, "reunion": 10.00 },
-      "exclusifs": ["MDN", "MDI", "MDD", "MDM"]
+      "tarifs": {
+        "metro": 10,
+        "antilles": 10,
+        "reunion": 10
+      },
+      "exclusifs": [
+        "MDN",
+        "MDI",
+        "MDD",
+        "MDM"
+      ]
     },
     "MDM": {
       "label": "Déplacement montagne",
-      "tarifs": { "metro": 15.00, "antilles": 15.00, "reunion": 15.00 },
-      "exclusifs": ["MD", "MDN", "MDI", "MDD"]
+      "tarifs": {
+        "metro": 15,
+        "antilles": 15,
+        "reunion": 15
+      },
+      "exclusifs": [
+        "MD",
+        "MDN",
+        "MDI",
+        "MDD"
+      ]
     },
     "MDD": {
       "label": "Déplacement dimanche/férié",
-      "tarifs": { "metro": 29.10, "antilles": 29.41, "reunion": 29.76 },
-      "exclusifs": ["MD", "MDM", "MDN", "MDI"]
+      "tarifs": {
+        "metro": 29.1,
+        "antilles": 29.41,
+        "reunion": 29.76
+      },
+      "exclusifs": [
+        "MD",
+        "MDM",
+        "MDN",
+        "MDI"
+      ]
     },
     "MDN": {
       "label": "Déplacement nuit (20h-0h / 6h-8h)",
-      "tarifs": { "metro": 45.00, "antilles": 45.00, "reunion": 45.00 },
-      "exclusifs": ["MD", "MDM", "MDD", "MDI"]
+      "tarifs": {
+        "metro": 45,
+        "antilles": 45,
+        "reunion": 45
+      },
+      "exclusifs": [
+        "MD",
+        "MDM",
+        "MDD",
+        "MDI"
+      ]
     },
     "MDI": {
       "label": "Déplacement nuit profonde (0h-6h)",
-      "tarifs": { "metro": 50.00, "antilles": 50.00, "reunion": 50.00 },
-      "exclusifs": ["MD", "MDM", "MDD", "MDN"]
+      "tarifs": {
+        "metro": 50,
+        "antilles": 50,
+        "reunion": 50
+      },
+      "exclusifs": [
+        "MD",
+        "MDM",
+        "MDD",
+        "MDN"
+      ]
     }
   },
   "ik": {
     "plaine": {
-      "tarifs": { "metro": 0.61, "antilles": 0.67, "reunion": 0.73 },
+      "tarifs": {
+        "metro": 0.61,
+        "antilles": 0.67,
+        "reunion": 0.73
+      },
       "franchise_km": 4
     },
     "montagne": {
-      "tarifs": { "metro": 1.00, "antilles": 1.01, "reunion": 1.10 },
+      "tarifs": {
+        "metro": 1,
+        "antilles": 1.01,
+        "reunion": 1.1
+      },
       "franchise_km": 2
     },
     "piedSki": {
-      "tarifs": { "metro": 4.57, "antilles": 5.03, "reunion": 5.49 },
+      "tarifs": {
+        "metro": 4.57,
+        "antilles": 5.03,
+        "reunion": 5.49
+      },
       "franchise_km": 0
     }
   },
   "ccam": [
-    { "code": "DEQP003", "label": "ECG 12 dérivations", "tarif": 14.52, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
-    { "code": "JKHD001", "label": "Frottis cervico-vaginal", "tarif": 12.73, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG depuis 2017" },
-    { "code": "GLQP012", "label": "Spirométrie", "tarif": 41.87, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024, dépistage BPCO)" },
-    { "code": "JKLD001", "label": "Pose de DIU", "tarif": 38.40, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
-    { "code": "JKKD001", "label": "Changement de DIU", "tarif": 38.40, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
-    { "code": "JKGD001", "label": "Retrait de DIU", "tarif": 62.70, "cumulG": "oui", "note": "Cumulable à 100% avec G/VG (convention 2024)" },
-    { "code": "MZLB001", "label": "Infiltration articulaire membre supérieur", "tarif": 27.30, "cumulG": "oui", "note": "Sans guidage. Cumulable à 100% (convention 2024)" },
-    { "code": "NZLB001", "label": "Infiltration articulaire membre inférieur", "tarif": 32.20, "cumulG": "oui", "note": "Sans guidage. Cumulable à 100% (convention 2024)" },
-    { "code": "LHLB001", "label": "Infiltration vertébrale postérieure", "tarif": 35.70, "cumulG": "oui", "note": "Sans guidage. Cumulable à 100% (convention 2024)" },
-    { "code": "QZJA002", "label": "Suture plaie superficielle < 3cm", "tarif": 25.52, "cumulG": "non", "note": "Acte isolé : facturer G ou CCAM, le plus rémunérateur" },
-    { "code": "QZJA005", "label": "Suture plaie superficielle 3-10cm", "tarif": 39.78, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZJA017", "label": "Suture plaie profonde", "tarif": 66.33, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "YYYY036", "label": "Ablation de fils/agrafes", "tarif": 4.83, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZEA002", "label": "Ablation corps étranger sous-cutané", "tarif": 27.06, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZFA006", "label": "Cryothérapie / azote liquide (1 lésion)", "tarif": 24.40, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZFA031", "label": "Cryothérapie / azote liquide (2-5 lésions)", "tarif": 38.40, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "BAQP001", "label": "Examen du fond d'œil", "tarif": 20.66, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "YYYY180", "label": "Injection IM ou SC", "tarif": 3.78, "cumulG": "non", "note": "Inclus dans la consultation si réalisé pendant" },
-    { "code": "YYYY070", "label": "Injection intraveineuse", "tarif": 3.78, "cumulG": "non", "note": "Inclus dans la consultation si réalisé pendant" },
-    { "code": "YYYY015", "label": "Pansement simple", "tarif": 4.50, "cumulG": "non", "note": "Inclus dans la consultation si réalisé pendant" },
-    { "code": "YYYY023", "label": "Pansement lourd et complexe", "tarif": 9.00, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "AHQP001", "label": "Audiométrie tonale", "tarif": 25.10, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "GEQP002", "label": "Bandelette urinaire (BU)", "tarif": 4.59, "cumulG": "non", "note": "Acte isolé, inclus dans la consultation" },
-    { "code": "QZHA002", "label": "Pose d'implant contraceptif", "tarif": 17.99, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZGA004", "label": "Retrait d'implant contraceptif", "tarif": 41.80, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "YYYY190", "label": "Vaccination (injection vaccinale)", "tarif": 7.20, "cumulG": "non", "note": "Vaccination incluse dans G si réalisée pendant la consultation" },
-    { "code": "ZZQP042", "label": "Échographie abdominale", "tarif": 53.06, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "CDQP010", "label": "Échographie thyroïdienne", "tarif": 38.06, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "JQQP002", "label": "Échographie pelvienne", "tarif": 47.69, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "MGQP002", "label": "Écho-doppler veineux membre inférieur", "tarif": 49.26, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "ZZLP025", "label": "Test CRP rapide", "tarif": 7.00, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "ALQP003", "label": "Tympanométrie", "tarif": 26.40, "cumulG": "non", "note": "Acte isolé" },
-    { "code": "QZHA001", "label": "Biopsie dermo-épidermique", "tarif": 10.50, "cumulG": "50%", "note": "Cumulable à 50% avec G/VG (biopsie)" }
-  ]
+    {
+      "code": "DEQP003",
+      "label": "ECG 12 dérivations",
+      "tarif": 14.77,
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG (convention 2024)"
+    },
+    {
+      "code": "JKHD001",
+      "label": "Frottis cervico-vaginal",
+      "tarif": 13,
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG depuis 2017"
+    },
+    {
+      "code": "GLQP012",
+      "label": "Spirométrie",
+      "tarif": 41.87,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes (VL, APC, GL…) ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "JKLD001",
+      "label": "Pose de DIU",
+      "tarif": 38.4,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "JKKD001",
+      "label": "Changement de DIU",
+      "tarif": 38.4,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "JKGD001",
+      "label": "Retrait de DIU",
+      "tarif": 62.7,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "MZLB001",
+      "label": "Infiltration articulaire membre supérieur",
+      "tarif": 27.3,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "NZLB001",
+      "label": "Infiltration articulaire membre inférieur",
+      "tarif": 32.2,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "LHLB001",
+      "label": "Infiltration vertébrale postérieure",
+      "tarif": 35.7,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs."
+    },
+    {
+      "code": "QZJA002",
+      "label": "Suture plaie superficielle < 3cm",
+      "tarif": 25.52,
+      "cumulG": "non",
+      "note": "Acte isolé : facturer G ou CCAM, le plus rémunérateur"
+    },
+    {
+      "code": "QZJA005",
+      "label": "Suture plaie superficielle 3-10cm",
+      "tarif": 39.78,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZJA017",
+      "label": "Suture plaie profonde",
+      "tarif": 66.33,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "YYYY036",
+      "label": "Ablation de fils/agrafes",
+      "tarif": 4.83,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZEA002",
+      "label": "Ablation corps étranger sous-cutané",
+      "tarif": 27.06,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZFA006",
+      "label": "Cryothérapie / azote liquide (1 lésion)",
+      "tarif": 24.4,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZFA031",
+      "label": "Cryothérapie / azote liquide (2-5 lésions)",
+      "tarif": 38.4,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "BAQP001",
+      "label": "Examen du fond d'œil",
+      "tarif": 20.66,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "YYYY180",
+      "label": "Injection IM ou SC",
+      "tarif": 3.78,
+      "cumulG": "non",
+      "note": "Inclus dans la consultation si réalisé pendant"
+    },
+    {
+      "code": "YYYY070",
+      "label": "Injection intraveineuse",
+      "tarif": 3.78,
+      "cumulG": "non",
+      "note": "Inclus dans la consultation si réalisé pendant"
+    },
+    {
+      "code": "YYYY015",
+      "label": "Pansement simple",
+      "tarif": 4.5,
+      "cumulG": "non",
+      "note": "Inclus dans la consultation si réalisé pendant"
+    },
+    {
+      "code": "YYYY023",
+      "label": "Pansement lourd et complexe",
+      "tarif": 9,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "AHQP001",
+      "label": "Audiométrie tonale",
+      "tarif": 25.1,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "GEQP002",
+      "label": "Bandelette urinaire (BU)",
+      "tarif": 4.59,
+      "cumulG": "non",
+      "note": "Acte isolé, inclus dans la consultation"
+    },
+    {
+      "code": "QZHA002",
+      "label": "Pose d'implant contraceptif",
+      "tarif": 17.99,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZGA004",
+      "label": "Retrait d'implant contraceptif",
+      "tarif": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "YYYY190",
+      "label": "Vaccination (injection vaccinale)",
+      "tarif": 7.2,
+      "cumulG": "non",
+      "note": "Vaccination incluse dans G si réalisée pendant la consultation"
+    },
+    {
+      "code": "ZZQP042",
+      "label": "Échographie abdominale",
+      "tarif": 53.06,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "CDQP010",
+      "label": "Échographie thyroïdienne",
+      "tarif": 38.06,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "JQQP002",
+      "label": "Échographie pelvienne",
+      "tarif": 47.69,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "MGQP002",
+      "label": "Écho-doppler veineux membre inférieur",
+      "tarif": 49.26,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "ZZLP025",
+      "label": "Test CRP rapide",
+      "tarif": 7,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "ALQP003",
+      "label": "Tympanométrie",
+      "tarif": 26.4,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "QZHA001",
+      "label": "Biopsie dermo-épidermique",
+      "tarif": 10.5,
+      "cumulG": "50%",
+      "note": "Cumulable à 50% avec G/VG (biopsie)"
+    },
+    {
+      "code": "FSD",
+      "label": "Forfait Sécurité Dermatologie",
+      "tarif": 45,
+      "cumulG": "non",
+      "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire."
+    },
+    {
+      "code": "YYYY490",
+      "label": "Supplément ECG en visite à domicile",
+      "tarif": 9.6,
+      "cumulG": "oui",
+      "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile. Toujours cumulable à 100% avec VG + DEQP003."
+    },
+    {
+      "code": "GLQP007",
+      "label": "Polygraphie respiratoire nocturne",
+      "tarif": 151.68,
+      "cumulG": "non",
+      "note": "Dépistage SAHOS. Acte isolé."
+    },
+    {
+      "code": "YYYY010",
+      "label": "Traitement de premier recours (actes techniques)",
+      "tarif": 48,
+      "cumulG": "non",
+      "note": "Traitement nécessitant actes techniques et présence prolongée."
+    },
+    {
+      "code": "QZJA001",
+      "label": "Suture plaie profonde >10cm (hors face)",
+      "tarif": 88.68,
+      "cumulG": "non",
+      "note": "Cabinet uniquement."
+    },
+    {
+      "code": "QZJA009",
+      "label": "Évacuation collection superficielle cutanée",
+      "tarif": 39.91,
+      "cumulG": "non",
+      "note": "Abcès, kyste superficiel."
+    },
+    {
+      "code": "QZJA012",
+      "label": "Suture plaie profonde 3-10cm (hors face/main)",
+      "tarif": 64.29,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZJA015",
+      "label": "Suture plaie superficielle >10cm (hors face)",
+      "tarif": 64.29,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZJA016",
+      "label": "Suture plaie profonde <3cm (hors face/main)",
+      "tarif": 50.99,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZJA021",
+      "label": "Suture plusieurs plaies pulpo-unguéales",
+      "tarif": 147.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZJA022",
+      "label": "Suture plaie pulpo-unguéale",
+      "tarif": 84.25,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZJB002",
+      "label": "Évacuation collection superficielle et/ou profonde",
+      "tarif": 26.6,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAJA002",
+      "label": "Suture plaie superficielle face >10cm",
+      "tarif": 86.46,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAJA004",
+      "label": "Suture plaie profonde face <3cm",
+      "tarif": 62.7,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAJA005",
+      "label": "Suture plaie superficielle face 3-10cm",
+      "tarif": 77.6,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAJA013",
+      "label": "Suture plaie superficielle face <3cm",
+      "tarif": 31.35,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "HAJA003",
+      "label": "Suture plaie cutanée lèvre non transfixiante",
+      "tarif": 35.47,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "HAJA006",
+      "label": "Suture plaie transfixiante de lèvre",
+      "tarif": 57.64,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "HAJA010",
+      "label": "Suture plaie muqueuse intrabuccale",
+      "tarif": 33.99,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "GAJA002",
+      "label": "Suture plaie du nez",
+      "tarif": 56.16,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "CAJA002",
+      "label": "Suture plaie de l'auricule",
+      "tarif": 48.77,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA001",
+      "label": "Exérèse 2-5 lésions sous-cutanées (malignes)",
+      "tarif": 73.9,
+      "cumulG": "non",
+      "note": "Associé au FSD si exérèse ambulatoire."
+    },
+    {
+      "code": "QZFA002",
+      "label": "Exérèse 1 lésion sous-cutanée (maligne)",
+      "tarif": 56.39,
+      "cumulG": "non",
+      "note": "Associé au FSD si exérèse ambulatoire."
+    },
+    {
+      "code": "QZFA010",
+      "label": "Exérèse tangentielle 1-20 molluscum contagiosum",
+      "tarif": 24.49,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA013",
+      "label": "Curetage 1-5 lésions cutanées",
+      "tarif": 34.13,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA015",
+      "label": "Exérèse tangentielle ≥21 molluscum contagiosum",
+      "tarif": 37.84,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA021",
+      "label": "Exérèse tangentielle ≥6 lésions cutanées",
+      "tarif": 36.36,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA022",
+      "label": "Curetage >6 lésions cutanées",
+      "tarif": 44.52,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA028",
+      "label": "Exérèse tangentielle 1-5 lésions cutanées",
+      "tarif": 30.42,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZFA036",
+      "label": "Exérèse lésion superficielle <5cm²",
+      "tarif": 28.8,
+      "cumulG": "non",
+      "note": "Associé au FSD si exérèse ambulatoire."
+    },
+    {
+      "code": "QZNP004",
+      "label": "Cryothérapie 1-10 lésions (corps)",
+      "tarif": 23.74,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZNP012",
+      "label": "Cryothérapie 11-50 lésions (corps)",
+      "tarif": 31.16,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZNP005",
+      "label": "Cryothérapie >50 lésions (corps)",
+      "tarif": 40.07,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QANP007",
+      "label": "Cryothérapie 1-10 lésions (visage)",
+      "tarif": 28.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QANP005",
+      "label": "Cryothérapie >11 lésions (visage)",
+      "tarif": 36.36,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZNP013",
+      "label": "Électrocoagulation 1-5 lésions",
+      "tarif": 25.23,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZNP025",
+      "label": "Électrocoagulation ≥6 lésions",
+      "tarif": 34.13,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAGA001",
+      "label": "Ablation plusieurs corps étrangers profonds (visage/mains)",
+      "tarif": 111.59,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAGA002",
+      "label": "Ablation plusieurs corps étrangers superficiels (visage/mains)",
+      "tarif": 79.07,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAGA003",
+      "label": "Ablation corps étranger superficiel (visage/main)",
+      "tarif": 49.51,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QAGA004",
+      "label": "Ablation corps étranger profond (visage/main)",
+      "tarif": 84.25,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZGA003",
+      "label": "Ablation corps étranger profond (hors visage/mains)",
+      "tarif": 62.82,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZGA006",
+      "label": "Ablation plusieurs corps étrangers profonds (hors visage)",
+      "tarif": 87.94,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZGA007",
+      "label": "Ablation plusieurs corps étrangers superficiels (hors visage)",
+      "tarif": 70.21,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "GAGD002",
+      "label": "Ablation corps étranger de la cavité nasale",
+      "tarif": 36.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZHA003",
+      "label": "Biopsie tablette/lit de l'ongle",
+      "tarif": 45.26,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZHA005",
+      "label": "Biopsie des tissus sous-cutanés",
+      "tarif": 26.6,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JMHA001",
+      "label": "Biopsie de la vulve",
+      "tarif": 25.99,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZGA002",
+      "label": "Ablation ou changement d'un implant hormonal",
+      "tarif": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZLA004",
+      "label": "Pose d'implant hormonal",
+      "tarif": 18.77,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "QZQP001",
+      "label": "Dermatoscopie surveillance lésion à haut risque",
+      "tarif": 54.1,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "EGJA001",
+      "label": "Évacuation d'une thrombose hémorroïdaire externe",
+      "tarif": 62.7,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "HKFA008",
+      "label": "Destruction de lésion de l'anus",
+      "tarif": 38.4,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JZNP001",
+      "label": "Destruction 10-50 lésions périnéales / organes génitaux",
+      "tarif": 52.68,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JZNP002",
+      "label": "Destruction <10 lésions périnéales / organes génitaux",
+      "tarif": 36.36,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JZNP003",
+      "label": "Destruction ≥51 lésions périnéales ou lésion >30cm²",
+      "tarif": 75.68,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JMFA002",
+      "label": "Exérèse de lésion vulvopérinéale",
+      "tarif": 45.49,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JHNP001",
+      "label": "Destruction de lésion du gland et/ou du prépuce",
+      "tarif": 40.65,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "JHFA015",
+      "label": "Exérèse de lésion de la peau du pénis",
+      "tarif": 51.73,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "CAGD001",
+      "label": "Ablation bouchon de cérumen simple (uni/bilatéral)",
+      "tarif": 20,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "CAGD002",
+      "label": "Ablation bouchon de cérumen épidermique (uni/bilatéral)",
+      "tarif": 31.2,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "GABD001",
+      "label": "Tamponnement nasal antérieur et postérieur",
+      "tarif": 58.4,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "GABD002",
+      "label": "Tamponnement nasal antérieur",
+      "tarif": 28.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MZHB002",
+      "label": "Ponction articulaire membre supérieur",
+      "tarif": 30.1,
+      "cumulG": "non",
+      "note": "Sans guidage. Acte isolé."
+    },
+    {
+      "code": "NZHB002",
+      "label": "Ponction articulaire membre inférieur",
+      "tarif": 30.1,
+      "cumulG": "non",
+      "note": "Sans guidage. Acte isolé."
+    },
+    {
+      "code": "NZJB001",
+      "label": "Évacuation collection articulaire membre inférieur",
+      "tarif": 63,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement."
+    },
+    {
+      "code": "MZJB001",
+      "label": "Évacuation collection articulaire membre supérieur",
+      "tarif": 83.6,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement."
+    },
+    {
+      "code": "MZMP001",
+      "label": "Contention souple articulation membre supérieur",
+      "tarif": 31.35,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MZMP004",
+      "label": "Attelle rigide poignet/main (fracture sans réduction)",
+      "tarif": 30.3,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MZMP006",
+      "label": "Attelle rigide avant-bras/poignet/main (sans coude)",
+      "tarif": 27.34,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MZMP013",
+      "label": "Attelle antébrachio-palmaire (fracture sans réduction)",
+      "tarif": 35.47,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MGMP001",
+      "label": "Attelle de posture poignet et/ou main",
+      "tarif": 46.9,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MHMP007",
+      "label": "Orthèse statique d'un doigt",
+      "tarif": 38.4,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "NFMP001",
+      "label": "Contention souple du genou",
+      "tarif": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "NGMP001",
+      "label": "Contention souple cheville/pied ou semelle plâtrée",
+      "tarif": 20.9,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "NZMP003",
+      "label": "Attelle rigide jambe/cheville/pied (sans genou)",
+      "tarif": 27.57,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "NZMP006",
+      "label": "Attelle rigide fémoro-jambière (fracture sans réduction)",
+      "tarif": 44.34,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "NZMP014",
+      "label": "Attelle rigide jambier-pédieuse (fracture sans réduction)",
+      "tarif": 32.52,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "MADP001",
+      "label": "Contention orthopédique fracture de clavicule",
+      "tarif": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé."
+    },
+    {
+      "code": "ALQP006",
+      "label": "Test trouble cognitif (MMS/MMSE)",
+      "tarif": 69.12,
+      "cumulG": "oui",
+      "note": "Évaluation cognitive MMSE. Cumulable avec G/VG. 1 fois par an."
+    },
+    {
+      "code": "QZJA011",
+      "label": "Évacuation abcès profond",
+      "tarif": 49.51,
+      "cumulG": "non",
+      "note": "Évacuation chirurgicale d'une collection profonde sous-cutanée."
+    },
+    {
+      "code": "MJPA010",
+      "label": "Incision de panaris superficiel",
+      "tarif": 39.91,
+      "cumulG": "non",
+      "note": "Incision et drainage d'un panaris pulpaire ou sous-unguéal."
+    },
+    {
+      "code": "QCJA001",
+      "label": "Suture de plaie de la main",
+      "tarif": 62.7,
+      "cumulG": "non",
+      "note": "Suture de plaie de la paume ou des doigts."
+    },
+    {
+      "code": "BACA008",
+      "label": "Suture du sourcil",
+      "tarif": 30.3,
+      "cumulG": "non",
+      "note": "Suture d'une plaie du sourcil."
+    },
+    {
+      "code": "BACA002",
+      "label": "Suture de la paupière",
+      "tarif": 30.3,
+      "cumulG": "non",
+      "note": "Suture d'une plaie superficielle de la paupière."
+    },
+    {
+      "code": "NGMP002",
+      "label": "Attelle postérieure de cheville",
+      "tarif": 42.7,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Confection d'une attelle plâtrée ou résine de cheville."
+    },
+    {
+      "code": "AHLB006",
+      "label": "Infiltration du canal carpien",
+      "tarif": 30.8,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Injection dans la gaine du nerf médian au canal carpien."
+    },
+    {
+      "code": "QZFA004",
+      "label": "Exérèse cutanée 5–10 cm²",
+      "tarif": 55.43,
+      "cumulG": "non",
+      "note": "Exérèse d'une lésion cutanée de 5 à 10 cm²."
+    },
+    {
+      "code": "QZFA011",
+      "label": "Exérèse cutanée 10–50 cm²",
+      "tarif": 99.77,
+      "cumulG": "non",
+      "note": "Exérèse d'une lésion cutanée de 10 à 50 cm²."
+    },
+    {
+      "code": "YYYY011",
+      "label": "Prise en charge lésion traumatique",
+      "tarif": 20.16,
+      "cumulG": "oui",
+      "note": "Forfait prise en charge d'une lésion traumatique simple."
+    },
+    {
+      "code": "YYYY008",
+      "label": "Supplément radio traumatisme montagne",
+      "tarif": 11.52,
+      "cumulG": "oui",
+      "note": "Supplément radio en zone montagne lors d'un traumatisme."
+    },
+    {
+      "code": "LHRP001",
+      "label": "Médecine manuelle-ostéopathique (colonne)",
+      "tarif": 35,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Manipulation vertébrale ostéopathique médicale."
+    },
+    {
+      "code": "QZRB001",
+      "label": "Séance d'acupuncture",
+      "tarif": 18,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Séance d'acupuncture médicale (médecins formés)."
+    },
+    {
+      "code": "CDRP002",
+      "label": "Dépistage surdité nourrisson (<3 ans)",
+      "tarif": 50.4,
+      "cumulG": "oui",
+      "note": "Dépistage auditif du nourrisson de moins de 3 ans."
+    },
+    {
+      "code": "BLQP010",
+      "label": "Test vision binoculaire Lang",
+      "tarif": 26.02,
+      "cumulG": "oui",
+      "note": "Test de Lang — vision stéréoscopique enfant."
+    }
+  ],
+  "ccamModificateurs": {
+    "M": {
+      "label": "Urgence",
+      "description": "Acte réalisé en urgence",
+      "montant": 26.88
+    },
+    "P": {
+      "label": "Nuit (20h–08h)",
+      "description": "Acte réalisé entre 20h–00h ou 06h–08h",
+      "montant": 35
+    },
+    "S": {
+      "label": "Nuit profonde (00h–06h)",
+      "description": "Acte réalisé entre 00h et 06h",
+      "montant": 40
+    },
+    "F": {
+      "label": "Dimanche / Jour férié",
+      "description": "Acte réalisé un dimanche ou jour férié",
+      "montant": 19.06
+    }
+  }
 }

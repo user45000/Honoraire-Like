@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Honoraires MG</title>
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1B2D4F;
+      --bg: #F0F5FF;
+      --card: white;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --success: #059669;
+      --amber: #d97706;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Header */
+    header { background: var(--primary-dark); color: white; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
+    header h1 { font-size: 16px; font-weight: 600; }
+    .header-badge { font-size: 11px; background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 100px; margin-left: 8px; }
+    .logout-btn { margin-left: auto; background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .logout-btn:hover { background: rgba(255,255,255,0.2); }
+
+    /* Accès non autorisé */
+    #unauth-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 52px); }
+    .unauth-card { background: white; border-radius: 12px; padding: 32px; width: 100%; max-width: 380px; box-shadow: 0 4px 24px rgba(0,0,0,0.08); text-align: center; }
+    .unauth-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-dark); }
+    .unauth-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+    .unauth-card a { display: inline-block; background: var(--primary); color: white; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+    .unauth-card a:hover { background: #1d4ed8; }
+
+    /* Dashboard */
+    #dashboard { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+
+    /* Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: white; border-radius: 10px; padding: 16px 20px; border: 1px solid var(--border); }
+    .stat-card .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+    .stat-card .stat-value { font-size: 28px; font-weight: 700; color: var(--primary-dark); }
+    .stat-card.active .stat-value { color: var(--success); }
+    .stat-card.trial .stat-value { color: var(--amber); }
+    .stat-card.expired .stat-value { color: var(--danger); }
+
+    /* Users table */
+    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--primary-dark); }
+    .table-wrap { background: white; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); background: #f8fafc; }
+    td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: #f8fafc; }
+    .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+    .badge-active { background: rgba(5,150,105,0.1); color: var(--success); }
+    .badge-trial { background: rgba(217,119,6,0.1); color: var(--amber); }
+    .badge-expired { background: rgba(220,38,38,0.08); color: var(--danger); }
+    .action-cell { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; }
+    .ext-btn { background: none; border: 1px solid var(--success); color: var(--success); padding: 4px 8px; border-radius: 6px; font-size: 12px; cursor: pointer; font-weight: 600; white-space: nowrap; }
+    .ext-btn:hover { background: rgba(5,150,105,0.08); }
+    .del-btn { background: none; border: 1px solid var(--border); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .del-btn:hover { background: rgba(220,38,38,0.06); border-color: var(--danger); }
+
+    /* Search */
+    .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+    .search-input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; width: 220px; }
+    .search-input:focus { outline: none; border-color: var(--primary); }
+
+    .refresh-btn { background: none; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); }
+    .refresh-btn:hover { border-color: var(--primary); color: var(--primary); }
+    @media (max-width: 600px) {
+      #dashboard { padding: 16px; }
+      table { font-size: 12px; }
+      th, td { padding: 8px 10px; }
+      .del-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <svg width="24" height="24" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+      <rect width="20" height="20" rx="4.5" fill="#60A5FA"/>
+      <rect x="8" y="4" width="4" height="9" rx="0.8" fill="white"/>
+      <rect x="5.4" y="6.6" width="9.2" height="4" rx="0.8" fill="white"/>
+      <path d="M10 13.2 C10 16 14 16 14 14.4" stroke="white" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.8"/>
+      <circle cx="14" cy="14" r="1.1" fill="white" opacity="0.8"/>
+    </svg>
+    <h1>Honoraires MG <span class="header-badge">Admin</span></h1>
+    <a href="/" style="margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:white;padding:6px 14px;border-radius:6px;font-size:13px;text-decoration:none">← Application</a>
+  </header>
+
+  <!-- Accès non autorisé -->
+  <div id="unauth-screen" style="display:none">
+    <div class="unauth-card">
+      <h2>Accès réservé</h2>
+      <p>Connectez-vous avec votre compte admin depuis l'application, puis revenez ici.</p>
+      <a href="/">Aller à l'application</a>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Utilisateurs total</div>
+        <div class="stat-value" id="stat-total">—</div>
+      </div>
+      <div class="stat-card active">
+        <div class="stat-label">Abonnés actifs</div>
+        <div class="stat-value" id="stat-active">—</div>
+      </div>
+      <div class="stat-card trial">
+        <div class="stat-label">En essai</div>
+        <div class="stat-value" id="stat-trial">—</div>
+      </div>
+      <div class="stat-card expired">
+        <div class="stat-label">Expirés</div>
+        <div class="stat-value" id="stat-expired">—</div>
+      </div>
+    </div>
+
+    <div class="table-header">
+      <span class="section-title">Utilisateurs</span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="search" id="search-input" class="search-input" placeholder="Rechercher un email…">
+        <button class="refresh-btn" id="refresh-btn">↻ Actualiser</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Statut</th>
+            <th>Créé le</th>
+            <th>Fin abonnement</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let allUsers = [];
+
+    async function tryLoadDashboard() {
+      try {
+        const res = await fetch('/api/admin/stats');
+        if (!res.ok) return showUnauth();
+        showDashboard();
+        await loadStats();
+        await loadUsers();
+      } catch (e) {
+        showUnauth();
+      }
+    }
+
+    function showUnauth() {
+      document.getElementById('unauth-screen').style.display = 'flex';
+      document.getElementById('dashboard').style.display = 'none';
+    }
+
+    function showDashboard() {
+      document.getElementById('unauth-screen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'block';
+    }
+
+    async function loadStats() {
+      const res = await fetch('/api/admin/stats');
+      const data = await res.json();
+      document.getElementById('stat-total').textContent = data.total;
+      document.getElementById('stat-active').textContent = data.active;
+      document.getElementById('stat-trial').textContent = data.trial;
+      document.getElementById('stat-expired').textContent = data.expired;
+    }
+
+    async function loadUsers() {
+      const res = await fetch('/api/admin/users');
+      allUsers = await res.json();
+      renderUsers(allUsers);
+    }
+
+    function escHtml(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderUsers(users) {
+      const tbody = document.getElementById('users-tbody');
+      tbody.innerHTML = '';
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px">Aucun utilisateur</td></tr>';
+        return;
+      }
+      users.forEach(u => {
+        const safeId = parseInt(u.id, 10);
+        const safeEmail = escHtml(u.email);
+        const badge = {
+          active: '<span class="badge badge-active">Abonné</span>',
+          trial: '<span class="badge badge-trial">Essai</span>',
+          expired: '<span class="badge badge-expired">Expiré</span>'
+        }[u.subscription_status] || '<span class="badge">Inconnu</span>';
+        const end = u.subscription_end
+          ? new Date(u.subscription_end).toLocaleDateString('fr-FR')
+          : '—';
+        const created = new Date(u.created_at).toLocaleDateString('fr-FR');
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color:#94a3b8">${safeId}</td>
+          <td>${safeEmail}</td>
+          <td>${badge}</td>
+          <td>${created}</td>
+          <td id="end-${safeId}">${end}</td>
+          <td><div class="action-cell">
+            <button class="ext-btn" data-id="${safeId}" data-months="1">+1 mois</button>
+            <button class="ext-btn" data-id="${safeId}" data-months="3">+3 mois</button>
+            <button class="del-btn" data-id="${safeId}">Supprimer</button>
+          </div></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('users-tbody').addEventListener('click', async (e) => {
+      const delBtn = e.target.closest('.del-btn');
+      if (delBtn) {
+        const id = delBtn.dataset.id;
+        const user = allUsers.find(u => u.id == id);
+        if (!user) return;
+        if (!confirm(`Supprimer le compte de ${user.email} ?\nCette action est irréversible.`)) return;
+        const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          allUsers = allUsers.filter(u => u.id != id);
+          renderUsers(filterUsers());
+          await loadStats();
+        } else {
+          alert('Erreur lors de la suppression');
+        }
+        return;
+      }
+
+      const extBtn = e.target.closest('.ext-btn');
+      if (extBtn) {
+        const id = extBtn.dataset.id;
+        const months = parseInt(extBtn.dataset.months);
+        const user = allUsers.find(u => u.id == id);
+        if (!user) return;
+        extBtn.disabled = true;
+        extBtn.textContent = '…';
+        const res = await fetch(`/api/admin/users/${id}/extend`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ months })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          user.subscription_status = 'active';
+          user.subscription_end = data.subscription_end;
+          const cell = document.getElementById(`end-${parseInt(id)}`);
+          if (cell) cell.textContent = new Date(data.subscription_end).toLocaleDateString('fr-FR');
+          await loadStats();
+        } else {
+          alert('Erreur lors de l\'extension');
+        }
+        extBtn.disabled = false;
+        extBtn.textContent = `+${months} mois`;
+        return;
+      }
+    });
+
+    document.getElementById('search-input').addEventListener('input', () => {
+      renderUsers(filterUsers());
+    });
+
+    function filterUsers() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      return q ? allUsers.filter(u => u.email.toLowerCase().includes(q)) : allUsers;
+    }
+
+    document.getElementById('refresh-btn').addEventListener('click', async () => {
+      await loadStats();
+      await loadUsers();
+    });
+
+    tryLoadDashboard();
+  </script>
+</body>
+</html>

@@ -5,11 +5,37 @@ const CCAM = (() => {
   let allActes = [];
   let favorites = [];
   let selectedActes = []; // Max 2 actes sélectionnés
+  let activeModificateurs = []; // Modificateurs CCAM actifs (M/P/S/F)
 
   function init() {
     try {
       favorites = JSON.parse(localStorage.getItem('hon_ccam_favs') || '[]');
     } catch { favorites = []; }
+
+    // Modificateurs CCAM
+    const modifToggles = document.getElementById('ccam-modif-toggles');
+    if (modifToggles) {
+      modifToggles.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ccam-modif-btn');
+        if (!btn) return;
+        const code = btn.dataset.modif;
+        const idx = activeModificateurs.indexOf(code);
+        // P/S/F sont mutuellement exclusifs (temps de nuit); M est indépendant
+        if (idx >= 0) {
+          activeModificateurs.splice(idx, 1);
+          btn.classList.remove('active');
+        } else {
+          if (['P','S','F'].includes(code)) {
+            // Retirer les autres P/S/F
+            activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
+            modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
+          }
+          activeModificateurs.push(code);
+          btn.classList.add('active');
+        }
+        App.onCCAMChanged();
+      });
+    }
 
     const searchInput = document.getElementById('ccam-search');
     let debounceTimer;
@@ -63,14 +89,16 @@ const CCAM = (() => {
     bindClicks(favListEl);
 
     updateSelectionBanner();
+    const modifCard = document.getElementById('ccam-modif-card');
+    if (modifCard) modifCard.style.display = selectedActes.length > 0 ? '' : 'none';
   }
 
   function renderItem(acte) {
     const isFav = favorites.includes(acte.code);
     const isSelected = selectedActes.some(a => a.code === acte.code);
+    const maxReached = selectedActes.length >= 2 && !isSelected;
     const cumul = acte.cumulG || 'non';
 
-    const esc = escapeHTML;
     let cumulBadge = '';
     if (cumul === 'oui') {
       cumulBadge = '<span class="ccam-cumul yes">+ G</span>';
@@ -80,21 +108,33 @@ const CCAM = (() => {
       cumulBadge = '<span class="ccam-cumul no">isolé</span>';
     }
 
+    // Badge de rang quand 2 actes sont sélectionnés
+    let rankBadge = '';
+    if (isSelected && selectedActes.length === 2) {
+      const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+      const rank = sorted.findIndex(a => a.code === acte.code);
+      rankBadge = rank === 0
+        ? '<span class="ccam-rank rank-primary">① principal</span>'
+        : '<span class="ccam-rank rank-secondary">② 50%</span>';
+    }
+
     return `
-      <div class="ccam-item ${isSelected ? 'selected' : ''}" data-code="${esc(acte.code)}">
-        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${esc(acte.code)}">
+      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : ''}" data-code="${acte.code}">
+        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${acte.code}">
           ${isFav ? '&#9733;' : '&#9734;'}
         </button>
         <div class="ccam-info">
           <div class="ccam-top-row">
-            <span class="ccam-code">${esc(acte.code)}</span>
+            <span class="ccam-code">${acte.code}</span>
             ${cumulBadge}
+            ${rankBadge}
           </div>
-          <span class="ccam-label">${esc(acte.label)}</span>
+          <span class="ccam-label">${acte.label}</span>
         </div>
         <span class="ccam-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</span>
-        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${esc(acte.code)}" title="${isSelected ? 'Retirer' : 'Ajouter au calcul'}">
-          ${isSelected ? '✓' : '+'}
+        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${acte.code}"
+          title="${isSelected ? 'Retirer' : maxReached ? '2 actes maximum' : 'Ajouter au calcul'}">
+          ${isSelected ? '✓' : maxReached ? '–' : '+'}
         </button>
       </div>
     `;
@@ -130,10 +170,7 @@ const CCAM = (() => {
     if (idx >= 0) {
       selectedActes.splice(idx, 1);
     } else {
-      if (selectedActes.length >= 2) {
-        // Max 2 actes CCAM — retirer le premier
-        selectedActes.shift();
-      }
+      if (selectedActes.length >= 2) return; // Max 2 actes — bloqué
       const acte = allActes.find(a => a.code === code);
       if (acte) selectedActes.push(acte);
     }
@@ -164,28 +201,40 @@ const CCAM = (() => {
       banner.id = 'ccam-selection-banner';
       banner.className = 'ccam-selection-banner';
       const ccamTab = document.getElementById('tab-ccam');
-      ccamTab.insertBefore(banner, ccamTab.firstChild);
+      ccamTab.appendChild(banner);
     }
 
     banner.style.display = '';
-    const esc = escapeHTML;
-    const acteLines = selectedActes.map(a => {
-      const cumul = a.cumulG || 'non';
-      let ruleText = '';
-      if (cumul === 'oui') ruleText = 'cumulable à 100% avec G';
-      else if (cumul === '50%') ruleText = 'cumulable à 50% avec G';
-      else ruleText = 'non cumulable — le plus rémunérateur sera facturé';
+
+    // Trier par tarif décroissant pour afficher ① principal puis ② 50%
+    const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+    const has2 = selectedActes.length === 2;
+
+    const acteLines = sorted.map((a, idx) => {
+      const rankIcon = has2 ? (idx === 0 ? '① ' : '② ') : '';
+      let tauxLabel = '';
+      let tauxClass = '';
+      if (has2) {
+        tauxLabel = idx === 0 ? '100%' : '50%';
+        tauxClass = idx === 0 ? 'taux-full' : 'taux-half';
+      } else {
+        const cumul = a.cumulG || 'non';
+        if (cumul === 'oui') { tauxLabel = '+ G'; tauxClass = 'taux-full'; }
+        else if (cumul === '50%') { tauxLabel = '50% + G'; tauxClass = 'taux-half'; }
+        else { tauxLabel = 'remplace G si + rémunérateur'; tauxClass = ''; }
+      }
       return `<div class="ccam-sel-item">
-        <strong>${esc(a.code)}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
-        <span class="ccam-sel-rule">${esc(ruleText)}</span>
-        <button class="ccam-sel-remove" data-remove="${esc(a.code)}">&times;</button>
+        <strong>${rankIcon}${a.code}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
+        <span class="ccam-sel-taux ${tauxClass}">${tauxLabel}</span>
+        <button class="ccam-sel-remove" data-remove="${a.code}">&times;</button>
       </div>`;
     }).join('');
 
-    banner.innerHTML = `
-      <div class="ccam-sel-header">Actes CCAM sélectionnés</div>
-      ${acteLines}
-    `;
+    const limitMsg = has2
+      ? '<div class="ccam-sel-limit">2/2 — retirer un acte pour en ajouter un autre</div>'
+      : '';
+
+    banner.innerHTML = `${acteLines}${limitMsg}`;
 
     banner.querySelectorAll('.ccam-sel-remove').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -194,9 +243,35 @@ const CCAM = (() => {
     });
   }
 
+  function updateModifFromPeriode(periode) {
+    // Auto-détecter P/S/F depuis la période courante (sans écraser M)
+    activeModificateurs = activeModificateurs.filter(m => m === 'M');
+    const modifToggles = document.getElementById('ccam-modif-toggles');
+    if (modifToggles) {
+      modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
+      let autoCode = null;
+      if (periode === 'nuitprofonde') autoCode = 'S';
+      else if (periode === 'nuit') autoCode = 'P';
+      else if (periode === 'dimferie' || periode === 'samediAM') autoCode = 'F';
+      if (autoCode) {
+        activeModificateurs.push(autoCode);
+        const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
+        if (btn) btn.classList.add('active');
+      }
+    }
+  }
+
+  function getModificateurs() {
+    return [...activeModificateurs];
+  }
+
   function onShow() {
     render(document.getElementById('ccam-search').value.trim());
   }
 
-  return { init, setActes, onShow, getSelectedActes, clearSelection };
+  function getActe(code) {
+    return allActes.find(a => a.code === code) || null;
+  }
+
+  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe, getModificateurs, updateModifFromPeriode };
 })();

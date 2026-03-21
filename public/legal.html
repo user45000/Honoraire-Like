@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CGU / CGV — Honoraires MG</title>
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1B2D4F;
+      --bg: #F0F5FF;
+      --text: #1e293b;
+      --text-secondary: #64748b;
+      --border: #e2e8f0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: var(--primary-dark); color: white; padding: 16px 20px; display: flex; align-items: center; gap: 12px; }
+    header a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; }
+    header a:hover { color: white; }
+    .logo-icon { width: 28px; height: 28px; flex-shrink: 0; }
+    header h1 { font-size: 16px; font-weight: 600; color: white; margin-left: auto; }
+    .tabs { background: white; border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; }
+    .tab-btn { padding: 12px 20px; border: none; background: none; cursor: pointer; font-size: 14px; font-weight: 500; color: var(--text-secondary); border-bottom: 2px solid transparent; white-space: nowrap; }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .content { max-width: 760px; margin: 0 auto; padding: 32px 20px; }
+    .section { display: none; }
+    .section.active { display: block; }
+    h2 { font-size: 22px; font-weight: 700; color: var(--primary-dark); margin-bottom: 6px; }
+    .updated { font-size: 12px; color: var(--text-secondary); margin-bottom: 28px; }
+    h3 { font-size: 15px; font-weight: 700; margin: 24px 0 8px; color: var(--primary-dark); }
+    p { font-size: 14px; margin-bottom: 10px; color: var(--text); }
+    ul { padding-left: 20px; margin-bottom: 10px; }
+    li { font-size: 14px; margin-bottom: 4px; }
+    a { color: var(--primary); }
+    .contact-box { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-top: 20px; }
+    .contact-box p { margin: 0; }
+    @media (max-width: 480px) { .content { padding: 20px 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/">
+      <svg class="logo-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <rect width="20" height="20" rx="4.5" fill="#60A5FA"/>
+        <rect x="8" y="4" width="4" height="9" rx="0.8" fill="white"/>
+        <rect x="5.4" y="6.6" width="9.2" height="4" rx="0.8" fill="white"/>
+        <path d="M10 13.2 C10 16 14 16 14 14.4" stroke="white" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.8"/>
+        <circle cx="14" cy="14" r="1.1" fill="white" opacity="0.8"/>
+      </svg>
+    </a>
+    <a href="/">← Retour à l'application</a>
+    <h1>Informations légales</h1>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-section="cgu">CGU</button>
+    <button class="tab-btn" data-section="cgv">CGV</button>
+    <button class="tab-btn" data-section="privacy">Données personnelles</button>
+    <button class="tab-btn" data-section="mentions">Mentions légales</button>
+  </div>
+
+  <div class="content">
+
+    <!-- CGU -->
+    <div id="sec-cgu" class="section active">
+      <h2>Conditions Générales d'Utilisation</h2>
+      <p class="updated">Dernière mise à jour : mars 2026</p>
+
+      <h3>1. Objet</h3>
+      <p>Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de l'application Honoraires MG, accessible à l'adresse <strong>honorairesmg.fr</strong>, éditée par RiBang Studio.</p>
+      <p>En accédant à l'application, vous acceptez sans réserve les présentes CGU. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser l'application.</p>
+
+      <h3>2. Description du service</h3>
+      <p>Honoraires MG est un calculateur d'honoraires à destination des médecins généralistes, permettant d'estimer les montants de facturation selon les tarifs conventionnels en vigueur (convention médicale 2024-2029, tarifs AMO et AMC).</p>
+      <p><strong>L'application est fournie à titre purement indicatif.</strong> Les résultats ne constituent pas un document officiel et ne sauraient engager la responsabilité de l'éditeur. L'utilisateur est seul responsable de la facturation effective de ses actes.</p>
+
+      <h3>3. Accès au service</h3>
+      <p>L'application est accessible gratuitement pour les 3 premières utilisations. Au-delà, un abonnement payant est requis pour continuer à utiliser le service.</p>
+      <p>La création d'un compte nécessite la fourniture d'une adresse email valide et d'un mot de passe. L'utilisateur est responsable de la confidentialité de ses identifiants.</p>
+
+      <h3>4. Utilisation acceptable</h3>
+      <p>L'utilisateur s'engage à :</p>
+      <ul>
+        <li>Utiliser l'application conformément à sa destination professionnelle</li>
+        <li>Ne pas tenter de contourner les mécanismes de protection ou d'accès</li>
+        <li>Ne pas utiliser l'application à des fins illicites ou frauduleuses</li>
+        <li>Maintenir ses identifiants confidentiels</li>
+      </ul>
+
+      <h3>5. Disponibilité</h3>
+      <p>RiBang Studio s'efforce d'assurer la disponibilité de l'application, mais ne peut garantir un accès ininterrompu. Des interruptions de service peuvent survenir pour maintenance ou raisons techniques.</p>
+
+      <h3>6. Modification des CGU</h3>
+      <p>RiBang Studio se réserve le droit de modifier les présentes CGU à tout moment. Les modifications sont effectives dès leur publication. L'utilisation continue de l'application après modification vaut acceptation des nouvelles conditions.</p>
+
+      <h3>7. Droit applicable</h3>
+      <p>Les présentes CGU sont soumises au droit français. Tout litige sera de la compétence des juridictions françaises.</p>
+    </div>
+
+    <!-- CGV -->
+    <div id="sec-cgv" class="section">
+      <h2>Conditions Générales de Vente</h2>
+      <p class="updated">Dernière mise à jour : mars 2026</p>
+
+      <h3>1. Vendeur</h3>
+      <p>RiBang Studio — <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a></p>
+      <p>Micro-entreprise soumise à la TVA (franchise en base, art. 293 B CGI).</p>
+
+      <h3>2. Service proposé</h3>
+      <p>Accès illimité à l'application Honoraires MG sous forme d'abonnement mensuel ou annuel, avec activation immédiate après paiement.</p>
+
+      <h3>3. Tarifs</h3>
+      <ul>
+        <li><strong>Abonnement mensuel :</strong> 0,99 € TTC / mois</li>
+        <li><strong>Abonnement annuel :</strong> 9,99 € TTC / an (soit ~0,83 € / mois)</li>
+      </ul>
+      <p>Les prix sont indiqués en euros toutes taxes comprises. RiBang Studio bénéficiant de la franchise en base de TVA, aucune TVA n'est applicable.</p>
+
+      <h3>4. Paiement</h3>
+      <p>Le paiement est effectué en ligne via la plateforme sécurisée <strong>Stripe</strong>, par carte bancaire (Visa, Mastercard, American Express). Les coordonnées bancaires ne sont jamais stockées sur nos serveurs.</p>
+      <p>L'abonnement est renouvelé automatiquement à chaque échéance. Vous pouvez désactiver le renouvellement automatique à tout moment depuis votre espace compte.</p>
+
+      <h3>5. Droit de rétractation</h3>
+      <p>Conformément à l'article L221-28 du Code de la Consommation, le droit de rétractation de 14 jours ne s'applique pas aux services numériques dont l'exécution a commencé avec l'accord exprès de l'acheteur et renonciation au droit de rétractation.</p>
+      <p>En procédant au paiement, vous acceptez que l'accès au service soit activé immédiatement et renoncez expressément à votre droit de rétractation.</p>
+
+      <h3>6. Résiliation</h3>
+      <p>Vous pouvez résilier votre abonnement à tout moment depuis l'onglet <strong>Compte → Gérer mon abonnement</strong>. La résiliation prend effet à la fin de la période en cours, sans remboursement au prorata.</p>
+
+      <h3>7. Service client</h3>
+      <p>Pour toute question ou réclamation : <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a></p>
+      <p>Nous nous engageons à répondre dans un délai de 48 heures ouvrées.</p>
+
+      <h3>8. Litiges</h3>
+      <p>En cas de litige, une solution amiable sera recherchée en priorité. À défaut, le litige sera soumis à la médiation de la consommation conformément aux articles L611-1 et suivants du Code de la consommation. Les juridictions françaises sont compétentes.</p>
+    </div>
+
+    <!-- Données personnelles -->
+    <div id="sec-privacy" class="section">
+      <h2>Données personnelles &amp; RGPD</h2>
+      <p class="updated">Dernière mise à jour : mars 2026</p>
+
+      <h3>Responsable du traitement</h3>
+      <p>RiBang Studio — <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a></p>
+
+      <h3>Données collectées</h3>
+      <p>Nous collectons uniquement les données strictement nécessaires au fonctionnement du service :</p>
+      <ul>
+        <li><strong>Adresse email</strong> — pour identifier votre compte et vous contacter</li>
+        <li><strong>Mot de passe haché</strong> — jamais stocké en clair (algorithme bcrypt)</li>
+        <li><strong>Identifiants Stripe</strong> — pour la gestion de votre abonnement</li>
+        <li><strong>Statut et dates d'abonnement</strong></li>
+      </ul>
+      <p>Aucune donnée médicale sur vos patients n'est collectée ou transmise.</p>
+
+      <h3>Finalités du traitement</h3>
+      <ul>
+        <li>Gestion de votre compte utilisateur</li>
+        <li>Gestion de votre abonnement et des paiements</li>
+        <li>Envoi d'emails transactionnels (confirmation d'inscription, d'abonnement)</li>
+      </ul>
+
+      <h3>Base légale</h3>
+      <p>Le traitement est fondé sur l'exécution du contrat (art. 6§1b RGPD) pour les données liées au compte et à l'abonnement.</p>
+
+      <h3>Durée de conservation</h3>
+      <p>Les données sont conservées pendant toute la durée de votre utilisation du service, puis supprimées dans un délai de 3 ans après la dernière connexion ou sur demande.</p>
+
+      <h3>Sous-traitants</h3>
+      <ul>
+        <li><strong>Stripe, Inc.</strong> — traitement des paiements (<a href="https://stripe.com/fr/privacy" target="_blank" rel="noopener">politique de confidentialité</a>)</li>
+        <li><strong>Google (Gmail SMTP)</strong> — envoi des emails transactionnels</li>
+        <li><strong>Hébergeur VPS</strong> — stockage des données en Europe</li>
+      </ul>
+
+      <h3>Vos droits (RGPD)</h3>
+      <p>Vous disposez des droits suivants, exerçables en contactant <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a> :</p>
+      <ul>
+        <li><strong>Droit d'accès</strong> — obtenir une copie de vos données</li>
+        <li><strong>Droit de rectification</strong> — corriger des données inexactes</li>
+        <li><strong>Droit à l'effacement</strong> — supprimer votre compte depuis l'onglet Compte ou par email</li>
+        <li><strong>Droit à la portabilité</strong> — recevoir vos données dans un format structuré</li>
+        <li><strong>Droit d'opposition</strong> — vous opposer à un traitement</li>
+      </ul>
+      <p>Vous pouvez également introduire une réclamation auprès de la <strong>CNIL</strong> (<a href="https://www.cnil.fr" target="_blank" rel="noopener">cnil.fr</a>).</p>
+
+      <h3 id="cookies">Cookies et stockage local</h3>
+      <p>L'application utilise uniquement des cookies <strong>strictement nécessaires</strong> à son fonctionnement. Aucun accord préalable n'est requis pour ces cookies (Article 82 de la loi Informatique et Libertés, Directive ePrivacy 2002/58/CE).</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;margin:12px 0">
+        <thead>
+          <tr style="background:#f0f5ff">
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Nom</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Type</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Finalité</th>
+            <th style="padding:8px 12px;text-align:left;border:1px solid #e2e8f0">Durée</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0"><code>connect.sid</code></td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Cookie HTTP, HttpOnly</td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Maintien de la session d'authentification</td>
+            <td style="padding:8px 12px;border:1px solid #e2e8f0">Session (fermeture du navigateur) ou 6 mois glissants si « Rester connecté » coché (renouvelé à chaque visite)</td>
+          </tr>
+        </tbody>
+      </table>
+      <p><strong>Stockage local (localStorage)</strong> — données conservées uniquement sur votre appareil, jamais transmises :</p>
+      <ul>
+        <li>Préférences d'affichage (mode simple/complet, secteur, zone géographique)</li>
+        <li>Compteur de visites gratuites</li>
+        <li>Statut d'abonnement en cache (pour éviter un appel réseau à chaque ouverture)</li>
+        <li>Mémorisation du consentement à l'information cookie</li>
+      </ul>
+      <p>Nous n'utilisons <strong>aucun cookie de tracking, analytique ou publicitaire</strong>.</p>
+    </div>
+
+    <!-- Mentions légales -->
+    <div id="sec-mentions" class="section">
+      <h2>Mentions légales</h2>
+      <p class="updated">Dernière mise à jour : mars 2026</p>
+
+      <h3>Éditeur</h3>
+      <p>
+        <strong>RiBang Studio</strong><br>
+        Micro-entreprise — France<br>
+        Email : <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a>
+      </p>
+
+      <h3>Directeur de la publication</h3>
+      <p>François Ribollet</p>
+
+      <h3>Hébergement</h3>
+      <p>
+        Serveur VPS — Europe<br>
+        L'application est hébergée sur un serveur physique situé en Europe.
+      </p>
+
+      <h3>Propriété intellectuelle</h3>
+      <p>L'ensemble des éléments de l'application Honoraires MG (code source, design, contenu) est protégé par le droit d'auteur et appartient à RiBang Studio. Toute reproduction partielle ou totale sans autorisation est interdite.</p>
+      <p>Les données tarifaires sont issues des documents officiels publiés par l'Assurance Maladie (ameli.fr) et sont dans le domaine public.</p>
+
+      <h3>Limitation de responsabilité</h3>
+      <p>L'application Honoraires MG est fournie à titre indicatif. RiBang Studio ne peut être tenu responsable des erreurs de facturation résultant d'une utilisation de l'application. Les tarifs officiels publiés par l'Assurance Maladie font foi.</p>
+
+      <div class="contact-box">
+        <p>Pour toute question : <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a></p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-btn');
+    const sections = document.querySelectorAll('.section');
+    tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('sec-' + btn.dataset.section).classList.add('active');
+      });
+    });
+    // Ouvrir directement un onglet via le hash
+    const hash = location.hash.replace('#', '');
+    if (hash) {
+      const target = document.querySelector(`[data-section="${hash}"]`);
+      if (target) target.click();
+    }
+  </script>
+</body>
+</html>

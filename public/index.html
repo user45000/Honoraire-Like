@@ -3,95 +3,239 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#2c3e6b">
+  <meta name="description" content="Calculateur d'honoraires pour médecin généraliste. Consultations, visites, CCAM, majorations NGAP — rapide, précis, hors connexion.">
+  <meta name="theme-color" content="#1B2D4F">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Honoraires">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
   <title>Honoraires MG</title>
+  <!-- Open Graph / iMessage preview -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://honorairesmg.fr/">
+  <meta property="og:title" content="Honoraires MG">
+  <meta property="og:description" content="Le calculateur d'honoraires du médecin généraliste. Gratuit, rapide, hors connexion.">
+  <meta property="og:image" content="https://honorairesmg.fr/og-image.png?v=5">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="fr_FR">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Honoraires MG">
+  <meta name="twitter:description" content="Le calculateur d'honoraires du médecin généraliste.">
+  <meta name="twitter:image" content="https://honorairesmg.fr/og-image.png?v=5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
+  <!-- CSS critique : paywall visible immédiatement, caché si abonné -->
+  <style>
+    #paywall-overlay { position:fixed; inset:0; z-index:1000; background:#1B2D4F; display:flex; }
+    html.hmg-sub #paywall-overlay { display:none !important; }
+  </style>
+  <script>
+    if (localStorage.getItem('hon_sub_status') === 'active') {
+      document.documentElement.classList.add('hmg-sub');
+    }
+  </script>
 </head>
 <body>
   <header class="app-header">
-    <h1>Honoraires MG</h1>
+    <button class="vmt-btn" data-mode="simple">Simple</button>
+    <h1>
+      <svg class="logo-icon" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="20" height="20" rx="4.5" fill="#60A5FA"/>
+        <rect x="8"   y="4"   width="4"   height="9" rx="0.8" fill="white"/>
+        <rect x="5.4" y="6.6" width="9.2" height="4" rx="0.8" fill="white"/>
+        <path d="M10 13.2 C10 16 14 16 14 14.4" stroke="white" stroke-width="0.9" stroke-linecap="round" fill="none" opacity="0.8"/>
+        <circle cx="14" cy="14" r="1.1" fill="white" opacity="0.8"/>
+      </svg>
+      <span class="logo-text">Honoraires <strong>MG</strong></span>
+    </h1>
+    <button class="vmt-btn" data-mode="complet">Complet</button>
   </header>
+
+  <div class="header-spacer"></div>
+
+  <div class="section-card periode-bar">
+    <h3>Période</h3>
+    <div class="periode-toggle-row">
+      <div class="toggle-group" id="periode-shared">
+        <button class="toggle-btn active" data-value="jour">Jour</button>
+        <button class="toggle-btn" data-value="dimferie">WE/Férié</button>
+        <button class="toggle-btn" data-value="nuit">Nuit</button>
+        <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
+      </div>
+      <button class="info-icon" id="periode-info-btn" aria-label="Infos sur les périodes" aria-expanded="false">i</button>
+    </div>
+    <div class="heure-row">
+      <select id="jour-input">
+        <option value="0">Lundi</option>
+        <option value="1">Mardi</option>
+        <option value="2">Mercredi</option>
+        <option value="3">Jeudi</option>
+        <option value="4">Vendredi</option>
+        <option value="5">Samedi</option>
+        <option value="6">Dimanche</option>
+        <option value="7">Jour férié</option>
+      </select>
+      <input type="time" id="heure-input">
+      <button id="now-badge" class="now-badge" aria-label="Heure actuelle">
+        <span class="now-dot"></span>Maintenant
+      </button>
+      <button id="reset-now-btn" class="reset-now-btn" style="display:none" aria-label="Revenir à l'heure actuelle">
+        ↺ Maintenant
+      </button>
+    </div>
+  </div>
+
+  <div class="section-card mode-bar" id="mode-bar">
+    <h3>Mode de garde</h3>
+    <div class="toggle-group" id="mode-bar-group">
+      <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
+      <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
+    </div>
+  </div>
 
   <main class="app-main">
     <!-- Onglet Consultation -->
     <section id="tab-consultation" class="tab-content active">
       <div class="section-card">
         <h3>Patient</h3>
+        <div class="toggle-group" data-field="relation">
+          <button class="toggle-btn active" data-value="mt">Médecin traitant</button>
+          <button class="toggle-btn" data-value="hors">Hors patientèle</button>
+        </div>
         <div class="toggle-group" data-field="age">
-          <button class="toggle-btn active" data-value="adulte">Adulte</button>
           <button class="toggle-btn" data-value="enfant">0-6 ans</button>
+          <button class="toggle-btn" data-value="jeune">6-25 ans</button>
+          <button class="toggle-btn active" data-value="adulte">Adulte</button>
+          <button class="toggle-btn" data-value="senior">80+ ans</button>
         </div>
       </div>
 
       <div class="section-card">
-        <h3>Type d'acte</h3>
+        <h3>Type d'acte <button class="complet-hint js-switch-complet"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></h3>
         <div class="acte-grid" id="consult-acte-grid">
-          <button class="acte-btn active" data-acte="G">G<span class="acte-price">30€</span></button>
-          <button class="acte-btn" data-acte="TCG">TCG<span class="acte-price">25€</span></button>
-          <button class="acte-btn" data-acte="APC">APC<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL1">GL1<span class="info-icon" data-info="GL1">i</span><span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL2">GL2<span class="info-icon" data-info="GL2">i</span><span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="GL3">GL3<span class="info-icon" data-info="GL3">i</span><span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="COE">COE<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="COD">COD<span class="acte-price">35€</span></button>
-          <button class="acte-btn" data-acte="COB">COB<span class="acte-price">30€</span></button>
+          <button class="acte-btn active" data-acte="G"><span class="acte-main">G<span class="acte-price">30€</span></span><span class="info-icon" data-info="G">i</span></button>
+          <button class="acte-btn" data-acte="TCG"><span class="acte-main">TCG<span class="acte-price">25€</span></span><span class="info-icon" data-info="TCG">i</span></button>
+<button class="acte-btn" data-acte="IMT"><span class="acte-main">IMT<span class="acte-price">60€</span></span><span class="info-icon" data-info="IMT">i</span></button>
+          <button class="acte-btn" data-acte="APC"><span class="acte-main">APC<span class="acte-price">60€</span></span><span class="info-icon" data-info="APC">i</span></button>
+          <button class="acte-btn" data-acte="GL1"><span class="acte-main">GL1<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL1">i</span></button>
+          <button class="acte-btn" data-acte="GL2"><span class="acte-main">GL2<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL2">i</span></button>
+          <button class="acte-btn" data-acte="GL3"><span class="acte-main">GL3<span class="acte-price">60€</span></span><span class="info-icon" data-info="GL3">i</span></button>
+          <button class="acte-btn" data-acte="COE"><span class="acte-main">COE<span class="acte-price">60€</span></span><span class="info-icon" data-info="COE">i</span></button>
+          <button class="acte-btn" data-acte="COD"><span class="acte-main">COD<span class="acte-price">35€</span></span><span class="info-icon" data-info="COD">i</span></button>
+          <button class="acte-btn" data-acte="COB"><span class="acte-main">COB<span class="acte-price">30€</span></span><span class="info-icon" data-info="COB">i</span></button>
+          <button class="acte-btn" data-acte="CCP"><span class="acte-main">CCP<span class="acte-price">47,50€</span></span><span class="info-icon" data-info="CCP">i</span></button>
+          <button class="acte-btn" data-acte="EPG" data-advanced="true"><span class="acte-main">EPG<span class="acte-price">30€</span></span><span class="info-icon" data-info="EPG">i</span></button>
+          <button class="acte-btn" data-acte="C2,5" data-advanced="true"><span class="acte-main">C2,5<span class="acte-price">57,50€</span></span><span class="info-icon" data-info="C2,5">i</span></button>
+          <button class="acte-btn" data-acte="MPH" data-advanced="true"><span class="acte-main">MPH<span class="acte-price">60€</span></span><span class="info-icon" data-info="MPH">i</span></button>
+          <button class="acte-btn" data-acte="CSE" data-advanced="true"><span class="acte-main">CSE<span class="acte-price">47,50€</span></span><span class="info-icon" data-info="CSE">i</span></button>
+          <button class="acte-btn" data-acte="CSO" data-advanced="true"><span class="acte-main">CSO<span class="acte-price">47,50€</span></span><span class="info-icon" data-info="CSO">i</span></button>
+          <button class="acte-btn" data-acte="CTE" data-advanced="true"><span class="acte-main">CTE<span class="acte-price">60€</span></span><span class="info-icon" data-info="CTE">i</span></button>
+          <button class="acte-btn" data-acte="ASE" data-advanced="true"><span class="acte-main">ASE<span class="acte-price">47,50€</span></span><span class="info-icon" data-info="ASE">i</span></button>
         </div>
       </div>
 
       <div class="section-card">
-        <h3>Période horaire</h3>
-        <div class="toggle-group" data-field="periode">
-          <button class="toggle-btn active" data-value="jour">Jour</button>
-          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
-          <button class="toggle-btn" data-value="nuit">Nuit</button>
-          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
-        </div>
-      </div>
-
-      <div class="section-card" id="consult-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <h3>Majorations</h3>
+        <h3>Majorations <button class="complet-hint js-switch-complet"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></h3>
         <div class="majo-grid" id="consult-majo-grid">
           <button class="majo-btn" data-majo="MCG">
-            <span class="majo-row-top"><span class="majo-code">MCG</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MCG">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MCG</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Coordination</span>
+          </span><span class="info-icon" data-info="MCG">i</span>
           </button>
           <button class="majo-btn" data-majo="MEG">
-            <span class="majo-row-top"><span class="majo-code">MEG</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MEG">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MEG</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Enfant 0-6 ans</span>
+          </span><span class="info-icon" data-info="MEG">i</span>
           </button>
           <button class="majo-btn" data-majo="MSH">
-            <span class="majo-row-top"><span class="majo-code">MSH</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MSH">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MSH</span><span class="majo-price">+23€</span></span>
             <span class="majo-label">Sortie hospit.</span>
+          </span><span class="info-icon" data-info="MSH">i</span>
           </button>
           <button class="majo-btn" data-majo="MIC">
-            <span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIC">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span></span>
             <span class="majo-label">Insuf. cardiaque</span>
+          </span><span class="info-icon" data-info="MIC">i</span>
           </button>
-          <button class="majo-btn" data-majo="MIS">
-            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
-            <span class="majo-label">Insuf. rénale</span>
+          <button class="majo-btn" data-majo="MIS" data-advanced="true">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span></span>
+            <span class="majo-label">Annonce cancer/neuro</span>
+          </span><span class="info-icon" data-info="MIS">i</span>
+          </button>
+          <button class="majo-btn" data-majo="PIV" data-advanced="true">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">PIV</span><span class="majo-price">+30€</span></span>
+            <span class="majo-label">Annonce VIH</span>
+          </span><span class="info-icon" data-info="PIV">i</span>
           </button>
           <button class="majo-btn" data-majo="MUT">
-            <span class="majo-row-top"><span class="majo-code">MUT</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MUT">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MUT</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Urgence traitant</span>
+          </span><span class="info-icon" data-info="MUT">i</span>
           </button>
           <button class="majo-btn" data-majo="SNP">
-            <span class="majo-row-top"><span class="majo-code">SNP</span><span class="majo-price">+15€</span><span class="info-icon" data-info="SNP">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">SNP</span><span class="majo-price">+15€</span></span>
             <span class="majo-label">Non programmé</span>
+          </span><span class="info-icon" data-info="SNP">i</span>
           </button>
           <button class="majo-btn" data-majo="MHP">
-            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MHP">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Hors PDSA</span>
+          </span><span class="info-icon" data-info="MHP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MOP">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MOP</span><span class="majo-price">+5€</span></span>
+            <span class="majo-label">Pers. âgée >80 ans</span>
+          </span><span class="info-icon" data-info="MOP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MRT">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MRT</span><span class="majo-price">+15€</span></span>
+            <span class="majo-label">Régul. MT (SAS)</span>
+          </span><span class="info-icon" data-info="MRT">i</span>
+          </button>
+          <button class="majo-btn" data-majo="SHE">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">SHE</span><span class="majo-price">+5€</span></span>
+            <span class="majo-label">Horaire étendu 19h-21h</span>
+          </span><span class="info-icon" data-info="SHE">i</span>
+          </button>
+          <button class="majo-btn" data-majo="RDV">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">RDV</span><span class="majo-price">+30€</span></span>
+            <span class="majo-label">Bilan prévention</span>
+          </span><span class="info-icon" data-info="RDV">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h3>Actes courants</h3>
+        <div class="majo-grid" id="consult-courants-grid">
+          <button class="majo-btn" data-courant="DEQP003">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">ECG</span><span class="majo-price">+14,77€</span></span>
+            <span class="majo-label">12 dérivations</span>
+          </span><span class="info-icon" data-courant-info="DEQP003">i</span>
+          </button>
+          <button class="majo-btn" data-courant="JKHD001">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">Frottis</span><span class="majo-price">+13,00€</span></span>
+            <span class="majo-label">Cervico-vaginal</span>
+          </span><span class="info-icon" data-courant-info="JKHD001">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card" id="consult-coord-card" data-advanced="true">
+        <h3>Coordination numérique</h3>
+        <div class="coord-grid">
+          <button class="acte-btn" data-acte="TE2"><span class="acte-main">TE2<span class="acte-price">23€</span></span><span class="info-icon" data-info="TE2">i</span></button>
+          <button class="majo-btn" data-majo="RQD">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">RQD</span><span class="majo-price">+10€</span></span>
+            <span class="majo-label">Téléexpertise demandée</span>
+          </span><span class="info-icon" data-info="RQD">i</span>
           </button>
         </div>
       </div>
@@ -101,73 +245,121 @@
     <section id="tab-visite" class="tab-content">
       <div class="section-card">
         <h3>Patient</h3>
+        <div class="toggle-group" data-field="relation">
+          <button class="toggle-btn active" data-value="mt">Médecin traitant</button>
+          <button class="toggle-btn" data-value="hors">Hors patientèle</button>
+        </div>
         <div class="toggle-group" data-field="age-visite">
-          <button class="toggle-btn active" data-value="adulte">Adulte</button>
           <button class="toggle-btn" data-value="enfant">0-6 ans</button>
+          <button class="toggle-btn" data-value="jeune">6-25 ans</button>
+          <button class="toggle-btn active" data-value="adulte">Adulte</button>
+          <button class="toggle-btn" data-value="senior">80+ ans</button>
         </div>
       </div>
 
       <div class="section-card">
-        <h3>Type de visite</h3>
+        <h3>Type de visite <button class="complet-hint js-switch-complet"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></h3>
         <div class="acte-grid" id="visite-acte-grid">
-          <button class="acte-btn active" data-acte="VG">VG<span class="acte-price">30€</span></button>
-          <button class="acte-btn" data-acte="VL">VL<span class="acte-price">60€</span></button>
-          <button class="acte-btn" data-acte="VSP">VSP<span class="acte-price">60€</span></button>
+          <button class="acte-btn active" data-acte="VG"><span class="acte-main">VG<span class="acte-price">30€</span></span><span class="info-icon" data-info="VG">i</span></button>
+          <button class="acte-btn" data-acte="VL"><span class="acte-main">VL<span class="acte-price">60€</span></span><span class="info-icon" data-info="VL">i</span></button>
+          <button class="acte-btn" data-acte="VSP"><span class="acte-main">VSP<span class="acte-price">60€</span></span><span class="info-icon" data-info="VSP">i</span></button>
         </div>
       </div>
 
       <div class="section-card">
-        <h3>Période horaire</h3>
-        <div class="toggle-group" data-field="periode-visite">
-          <button class="toggle-btn active" data-value="jour">Jour</button>
-          <button class="toggle-btn" data-value="dimferie">Dim/Férié</button>
-          <button class="toggle-btn" data-value="nuit">Nuit</button>
-          <button class="toggle-btn" data-value="nuitprofonde">Nuit prof.</button>
-        </div>
-      </div>
-
-      <div class="section-card" id="visite-mode-section" style="display:none">
-        <h3>Mode de garde</h3>
-        <div class="toggle-group" data-field="mode-visite">
-          <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
-          <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
-        </div>
-      </div>
-
-      <div class="section-card">
-        <h3>Majorations</h3>
+        <h3>Majorations <button class="complet-hint js-switch-complet"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button></h3>
         <div class="majo-grid" id="visite-majo-grid">
           <button class="majo-btn" data-majo="MCG">
-            <span class="majo-row-top"><span class="majo-code">MCG</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MCG">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MCG</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Coordination</span>
+          </span><span class="info-icon" data-info="MCG">i</span>
           </button>
           <button class="majo-btn" data-majo="MEG">
-            <span class="majo-row-top"><span class="majo-code">MEG</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MEG">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MEG</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Enfant 0-6 ans</span>
+          </span><span class="info-icon" data-info="MEG">i</span>
           </button>
           <button class="majo-btn" data-majo="MSH">
-            <span class="majo-row-top"><span class="majo-code">MSH</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MSH">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MSH</span><span class="majo-price">+23€</span></span>
             <span class="majo-label">Sortie hospit.</span>
+          </span><span class="info-icon" data-info="MSH">i</span>
           </button>
           <button class="majo-btn" data-majo="MIC">
-            <span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span><span class="info-icon" data-info="MIC">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MIC</span><span class="majo-price">+23€</span></span>
             <span class="majo-label">Insuf. cardiaque</span>
+          </span><span class="info-icon" data-info="MIC">i</span>
           </button>
-          <button class="majo-btn" data-majo="MIS">
-            <span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span><span class="info-icon" data-info="MIS">i</span></span>
-            <span class="majo-label">Insuf. rénale</span>
+          <button class="majo-btn" data-majo="MIS" data-advanced="true">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MIS</span><span class="majo-price">+30€</span></span>
+            <span class="majo-label">Annonce cancer/neuro</span>
+          </span><span class="info-icon" data-info="MIS">i</span>
+          </button>
+          <button class="majo-btn" data-majo="PIV" data-advanced="true">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">PIV</span><span class="majo-price">+30€</span></span>
+            <span class="majo-label">Annonce VIH</span>
+          </span><span class="info-icon" data-info="PIV">i</span>
           </button>
           <button class="majo-btn" data-majo="MUT">
-            <span class="majo-row-top"><span class="majo-code">MUT</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MUT">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MUT</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Urgence traitant</span>
+          </span><span class="info-icon" data-info="MUT">i</span>
           </button>
           <button class="majo-btn" data-majo="SNP">
-            <span class="majo-row-top"><span class="majo-code">SNP</span><span class="majo-price">+15€</span><span class="info-icon" data-info="SNP">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">SNP</span><span class="majo-price">+15€</span></span>
             <span class="majo-label">Non programmé</span>
+          </span><span class="info-icon" data-info="SNP">i</span>
           </button>
           <button class="majo-btn" data-majo="MHP">
-            <span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span><span class="info-icon" data-info="MHP">i</span></span>
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MHP</span><span class="majo-price">+5€</span></span>
             <span class="majo-label">Hors PDSA</span>
+          </span><span class="info-icon" data-info="MHP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MOP">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MOP</span><span class="majo-price">+5€</span></span>
+            <span class="majo-label">Pers. âgée >80 ans</span>
+          </span><span class="info-icon" data-info="MOP">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MU">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MU</span><span class="majo-price">+22,60€</span></span>
+            <span class="majo-label">Urgence visite</span>
+          </span><span class="info-icon" data-info="MU">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MRT">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MRT</span><span class="majo-price">+15€</span></span>
+            <span class="majo-label">Régul. MT (SAS)</span>
+          </span><span class="info-icon" data-info="MRT">i</span>
+          </button>
+          <button class="majo-btn" data-majo="SHE">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">SHE</span><span class="majo-price">+5€</span></span>
+            <span class="majo-label">Horaire étendu 19h-21h</span>
+          </span><span class="info-icon" data-info="SHE">i</span>
+          </button>
+          <button class="majo-btn" data-majo="MVR">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">MVR</span><span class="majo-price">+10€</span></span>
+            <span class="majo-label">Visite rapide SAS</span>
+          </span><span class="info-icon" data-info="MVR">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card" id="visite-courants-card">
+        <h3>Actes courants</h3>
+        <div class="majo-grid" id="visite-courants-grid">
+          <button class="majo-btn" data-courant="DEQP003">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">ECG</span><span class="majo-price">+24,37€</span></span>
+            <span class="majo-label">12 dérivations</span>
+          </span><span class="info-icon" data-courant-info="DEQP003">i</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="section-card" id="visite-coord-card" data-advanced="true">
+        <h3>Coordination numérique</h3>
+        <div class="majo-grid">
+          <button class="majo-btn" data-majo="RQD">
+            <span class="majo-body"><span class="majo-row-top"><span class="majo-code">RQD</span><span class="majo-price">+10€</span></span>
+            <span class="majo-label">Téléexpertise demandée</span>
+          </span><span class="info-icon" data-info="RQD">i</span>
           </button>
         </div>
       </div>
@@ -192,10 +384,12 @@
             <span class="ik-label">Activer IK</span>
           </label>
           <div class="ik-controls" id="ik-controls" style="display:none">
+            <button class="ik-geo-btn" id="ik-geolocate">📍 Distance depuis le cabinet</button>
+            <div class="ik-geo-status" id="ik-geo-status"></div>
             <div class="ik-km-input">
               <button class="ik-btn" id="ik-minus">-</button>
               <input type="number" id="ik-km" value="5" min="0" max="200" step="1">
-              <span class="ik-unit">km</span>
+              <span class="ik-unit">km (aller)</span>
               <button class="ik-btn" id="ik-plus">+</button>
             </div>
             <div class="ik-info" id="ik-info"></div>
@@ -206,9 +400,27 @@
 
     <!-- Onglet CCAM -->
     <section id="tab-ccam" class="tab-content">
+      <div id="ccam-context-bar" class="ccam-context-bar ctx-cabinet" style="display:none" role="button" tabindex="0" aria-label="Changer le contexte de calcul">
+        <span class="ccam-ctx-dot ctx-cabinet" id="ccam-ctx-dot"></span>
+        <strong id="ccam-context-label">Au cabinet</strong>
+        <div id="ccam-ctx-chips" class="ccam-ctx-chips"></div>
+        <svg class="ccam-ctx-switch-icon" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path d="M3 6h12M13 4l2 2-2 2M15 12H3M5 10l-2 2 2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="section-card">
         <div class="ccam-search-wrap">
           <input type="text" id="ccam-search" placeholder="Rechercher un acte (code ou mot-clé)..." class="ccam-search-input">
+        </div>
+      </div>
+
+      <div id="ccam-modif-card" class="section-card" style="display:none">
+        <h3>Modificateurs CCAM <span class="ccam-modif-hint">si actes CCAM sélectionnés</span></h3>
+        <div class="ccam-modif-toggles" id="ccam-modif-toggles">
+          <button class="ccam-modif-btn" data-modif="M"><span class="ccam-modif-code">M</span><span class="ccam-modif-sub">Urgence<br>+26,88€</span></button>
+          <button class="ccam-modif-btn" data-modif="P"><span class="ccam-modif-code">P</span><span class="ccam-modif-sub">Nuit<br>+35€</span></button>
+          <button class="ccam-modif-btn" data-modif="S"><span class="ccam-modif-code">S</span><span class="ccam-modif-sub">00h–06h<br>+40€</span></button>
+          <button class="ccam-modif-btn" data-modif="F"><span class="ccam-modif-code">F</span><span class="ccam-modif-sub">Dim/JF<br>+19,06€</span></button>
         </div>
       </div>
 
@@ -225,6 +437,32 @@
 
     <!-- Onglet Paramètres -->
     <section id="tab-params" class="tab-content">
+
+      <!-- Bannière installation PWA iOS (masquée si déjà installé ou ignoré) -->
+      <div id="pwa-install-banner" class="pwa-install-banner" style="display:none">
+        <div class="pwa-install-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <polyline points="12 6 12 14"/>
+            <polyline points="9 11 12 8 15 11"/>
+            <line x1="9" y1="18" x2="15" y2="18"/>
+          </svg>
+        </div>
+        <div class="pwa-install-text">
+          <strong>Installer l'application</strong>
+          <span>Appuyez sur <svg class="pwa-share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> puis <em>"Sur l'écran d'accueil"</em></span>
+        </div>
+        <button class="pwa-install-close" id="pwa-install-close" aria-label="Fermer">✕</button>
+      </div>
+
+      <div class="section-card">
+        <h3>Mode à l'ouverture</h3>
+        <div class="toggle-group" data-field="startup_mode">
+          <button class="toggle-btn active" data-value="simple">Simple</button>
+          <button class="toggle-btn" data-value="complet">Complet</button>
+        </div>
+      </div>
+
       <div class="section-card">
         <h3>Secteur conventionnel</h3>
         <div class="toggle-group" data-field="secteur">
@@ -250,28 +488,170 @@
           <button class="toggle-btn" data-value="montagne">Montagne</button>
         </div>
       </div>
+
+      <div class="section-card">
+        <h3>Cabinet médical</h3>
+        <p class="cabinet-hint">Adresse utilisée pour le calcul automatique des IK</p>
+        <div class="cabinet-address-wrapper">
+          <input type="text" id="cabinet-address" class="cabinet-address-input" placeholder="3 rue de la Paix, 75001 Paris" autocomplete="honoraires-cabinet-nofill">
+          <ul id="cabinet-suggestions" class="address-suggestions" hidden></ul>
+          <span id="cabinet-saved" class="cabinet-saved-status"></span>
+        </div>
+        <div id="cabinet-zone-suggest" style="display:none"></div>
+      </div>
+
+      <!-- Mon compte -->
+      <div id="params-account-section" class="section-card" style="display:none">
+        <h3>Mon compte</h3>
+        <div class="account-info" style="margin-bottom:14px">
+          <div class="account-row">
+            <span class="account-label">Email</span>
+            <span id="params-account-email" class="account-value"></span>
+          </div>
+          <div class="account-row">
+            <span class="account-label">Abonnement</span>
+            <span id="params-account-status" class="account-status-badge">—</span>
+          </div>
+        </div>
+        <div id="params-change-pw-form" style="display:none">
+          <input type="password" id="params-new-password" class="auth-input" placeholder="Nouveau mot de passe (6 car. min)" autocomplete="new-password">
+          <div id="params-pw-error" class="auth-error"></div>
+          <div id="params-pw-success" class="auth-success" style="display:none">Mot de passe modifié.</div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button type="button" id="params-pw-save" class="auth-btn-primary" style="flex:1">Enregistrer</button>
+            <button type="button" id="params-pw-cancel" class="auth-btn-secondary" style="flex:1">Annuler</button>
+          </div>
+        </div>
+        <button type="button" id="params-change-pw-btn" class="auth-btn-secondary">Changer le mot de passe</button>
+        <button type="button" id="params-logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
+        <button type="button" id="params-delete-btn" class="auth-btn-danger" style="margin-top:8px">Supprimer mon compte</button>
+      </div>
+      <div id="params-account-hint" class="section-card" style="display:none">
+        <p style="text-align:center;font-size:14px;color:var(--text-secondary)"><button class="auth-link" id="params-go-compte">Connectez-vous</button> pour gérer votre compte</p>
+      </div>
     </section>
 
-    <!-- Onglet Crédits -->
-    <section id="tab-credits" class="tab-content">
+    <!-- Onglet Compte -->
+    <section id="tab-compte" class="tab-content">
+
+      <!-- Panneau auth (non connecté) -->
+      <div id="auth-panel">
+        <!-- Connexion -->
+        <div id="auth-login" class="section-card">
+          <h3>Connexion</h3>
+          <form class="auth-form" id="login-form" action="#">
+            <input type="email" id="login-email" class="auth-input" placeholder="ex : dr.martin@cabinet.fr" autocomplete="username" inputmode="email">
+            <input type="password" id="login-password" class="auth-input" placeholder="Votre mot de passe" autocomplete="current-password">
+            <label class="auth-check">
+              <input type="checkbox" id="login-remember">
+              Rester connecté
+            </label>
+            <div id="login-error" class="auth-error"></div>
+            <button type="submit" id="login-submit" class="auth-btn-primary">Se connecter</button>
+          </form>
+          <p class="auth-switch">Pas encore de compte ? <button class="auth-link" id="show-register">Créer un compte</button></p>
+          <p class="auth-switch"><button class="auth-link" id="show-forgot">Mot de passe oublié ?</button></p>
+        </div>
+        <!-- Mot de passe oublié -->
+        <div id="auth-forgot" class="section-card" style="display:none">
+          <h3>Mot de passe oublié</h3>
+          <div class="auth-form">
+            <input type="email" id="forgot-email" class="auth-input" placeholder="Votre email" autocomplete="email" inputmode="email">
+            <div id="forgot-error" class="auth-error"></div>
+            <div id="forgot-success" class="auth-success" style="display:none">Un lien de réinitialisation vous a été envoyé (valable 15 min).</div>
+            <button type="button" id="forgot-submit" class="auth-btn-primary">Envoyer le lien</button>
+          </div>
+          <p class="auth-switch"><button class="auth-link" id="back-to-login">← Retour à la connexion</button></p>
+        </div>
+        <!-- Réinitialisation mot de passe (token URL) -->
+        <div id="auth-reset" class="section-card" style="display:none">
+          <h3>Nouveau mot de passe</h3>
+          <div class="auth-form">
+            <input type="password" id="reset-password" class="auth-input" placeholder="Nouveau mot de passe (6 car. min)" autocomplete="new-password">
+            <div id="reset-error" class="auth-error"></div>
+            <button type="button" id="reset-submit" class="auth-btn-primary">Enregistrer le mot de passe</button>
+          </div>
+        </div>
+        <!-- Inscription -->
+        <div id="auth-register" class="section-card" style="display:none">
+          <h3>Créer un compte</h3>
+          <form class="auth-form" id="register-form" action="#">
+            <input type="email" id="register-email" class="auth-input" placeholder="ex : dr.martin@cabinet.fr" autocomplete="username" inputmode="email">
+            <input type="password" id="register-password" class="auth-input" placeholder="Choisissez un mot de passe" autocomplete="new-password">
+            <label class="auth-check">
+              <input type="checkbox" id="register-terms">
+              J'accepte les <a href="/legal" target="_blank" rel="noopener">CGU et CGV</a>
+            </label>
+            <div id="register-error" class="auth-error"></div>
+            <button type="submit" id="register-submit" class="auth-btn-primary">Créer mon compte</button>
+          </form>
+          <p class="auth-switch">Déjà un compte ? <button class="auth-link" id="show-login">Se connecter</button></p>
+        </div>
+      </div>
+
+      <!-- Panneau compte (connecté) -->
+      <div id="account-panel" style="display:none">
+        <div class="section-card">
+          <h3>Mon compte</h3>
+          <div class="account-info">
+            <div class="account-row">
+              <span class="account-label">Email</span>
+              <span id="account-email-val" class="account-value"></span>
+            </div>
+            <div class="account-row">
+              <span class="account-label">Abonnement</span>
+              <span id="account-status-badge" class="account-status-badge">—</span>
+            </div>
+            <div class="account-row" id="account-end-row" style="display:none">
+              <span class="account-label">Fin d'abonnement</span>
+              <span id="account-end-val" class="account-value"></span>
+            </div>
+          </div>
+          <!-- Sélecteur plan (masqué si déjà abonné) -->
+          <div id="subscribe-plan-picker" style="margin-top:14px">
+            <div class="subscribe-plans">
+              <button class="subscribe-plan-btn active" data-plan="month">
+                <span class="subscribe-plan-name">Mensuel</span>
+                <span class="subscribe-plan-price">0,99€<small>/mois</small></span>
+              </button>
+              <button class="subscribe-plan-btn" data-plan="year">
+                <span class="subscribe-plan-name">Annuel <span class="subscribe-plan-badge">−16%</span></span>
+                <span class="subscribe-plan-price">9,99€<small>/an</small></span>
+              </button>
+            </div>
+          </div>
+          <button id="subscribe-btn" class="auth-btn-primary" style="margin-top:10px">S'abonner</button>
+          <button id="logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
+          <button id="delete-account-btn" class="auth-btn-danger" style="margin-top:8px">Supprimer mon compte</button>
+        </div>
+      </div>
+
+      <!-- Crédits (toujours en bas) -->
       <div class="section-card credits-card">
         <h2>Honoraires MG</h2>
-        <p class="credits-version">Version 1.0 - Tarifs au 01/01/2026</p>
+        <p class="credits-version">Version 2.9 - Tarifs au 01/01/2026</p>
         <p>Calcul rapide d'honoraires pour médecins généralistes.</p>
         <p>Basé sur la convention médicale 2024-2029.</p>
+        <div class="credits-authors">
+          <h3>Créé par</h3>
+          <p>RiBang Studio</p>
+        </div>
         <div class="credits-sources">
-          <h3>Sources</h3>
+          <h3>Références officielles</h3>
           <ul>
-            <li>Convention nationale des médecins libéraux 2024-2029</li>
-            <li>ameli.fr — nomenclature et tarifs</li>
-            <li>omniprat.org — guide pratique MG</li>
+            <li><a href="https://www.ameli.fr/medecin/exercice-liberal/facturation-remuneration/consultations-actes/tarifs/tarifs-conventionnels-medecins-generalistes-specialistes" target="_blank" rel="noopener">ameli.fr — Tarifs conventionnels des médecins généralistes</a></li>
+            <li><a href="https://www.ameli.fr/medecin/textes-reference/convention-medicale-2024-2029/essentiel" target="_blank" rel="noopener">Convention médicale 2024-2029 — L'essentiel (ameli.fr)</a></li>
+            <li><a href="https://www.service-public.gouv.fr/particuliers/vosdroits/F17042" target="_blank" rel="noopener">Service-Public.fr — Tarifs des médecins conventionnés</a></li>
           </ul>
         </div>
         <div class="credits-disclaimer">
           <p>Cette application est fournie à titre indicatif. Vérifiez toujours les tarifs officiels sur ameli.fr.</p>
         </div>
-        <div class="credits-footer">
-          <p>Dernière mise à jour des tarifs : <span id="credits-date">23/02/2026</span></p>
+        <div class="credits-contact">
+          <p>Bug ou erreur ? Écrivez-nous : <a href="mailto:contact@honorairesmg.fr">contact@honorairesmg.fr</a></p>
+        </div>
+        <div class="credits-legal">
+          <a href="/legal" target="_blank" rel="noopener">CGU · CGV · Données perso · Mentions légales</a>
         </div>
       </div>
     </section>
@@ -289,11 +669,11 @@
   <!-- Navigation bottom -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="consultation">
-      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-      <span>Consult.</span>
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <span>Cabinet</span>
     </button>
     <button class="nav-btn" data-tab="visite">
-      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.85 7h10.29l1.08 3.11H5.77L6.85 7zM19 17H5v-5h14v5z"/><circle cx="7.5" cy="14.5" r="1.5"/><circle cx="16.5" cy="14.5" r="1.5"/></svg>
       <span>Visite</span>
     </button>
     <button class="nav-btn" data-tab="ccam">
@@ -304,9 +684,9 @@
       <svg class="nav-icon" viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.488.488 0 00-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 00-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
       <span>Param.</span>
     </button>
-    <button class="nav-btn" data-tab="credits">
-      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-      <span>Crédits</span>
+    <button class="nav-btn" data-tab="compte">
+      <svg class="nav-icon" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      <span>Compte</span>
     </button>
   </nav>
 
@@ -321,10 +701,70 @@
     </div>
   </div>
 
-  <script src="js/engine.js"></script>
-  <script src="js/consultation.js"></script>
-  <script src="js/visite.js"></script>
-  <script src="js/ccam.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Paywall abonnement -->
+  <div class="paywall-overlay" id="paywall-overlay">
+    <div class="paywall-content">
+      <svg class="paywall-logo" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="4" width="64" height="64" rx="16" fill="url(#pwGrad)"/>
+        <rect x="30" y="18" width="12" height="28" rx="2.5" fill="white"/>
+        <rect x="22" y="26" width="28" height="12" rx="2.5" fill="white"/>
+        <path d="M36 46V50C36 54.418 39.582 58 44 58H46C48.209 58 50 56.209 50 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+        <circle cx="50" cy="52" r="3" fill="white" opacity="0.6"/>
+        <defs>
+          <linearGradient id="pwGrad" x1="4" y1="4" x2="68" y2="68">
+            <stop stop-color="#60A5FA"/>
+            <stop offset="1" stop-color="#2563EB"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <h2 class="paywall-title">Honoraires <strong>MG</strong></h2>
+      <p class="paywall-subtitle">Soutenez le projet pour continuer</p>
+      <div class="paywall-plans">
+        <div class="paywall-plan active" data-plan="month" data-price="0,99€/mois">
+          <div class="plan-radio"></div>
+          <div class="plan-info">
+            <div class="plan-name">Mensuel</div>
+            <div class="plan-price">0,99€ <span>/ mois</span></div>
+          </div>
+        </div>
+        <div class="paywall-plan" data-plan="year" data-price="9,99€/an">
+          <div class="plan-radio"></div>
+          <div class="plan-info">
+            <div class="plan-name">Annuel <span class="plan-badge">2 mois offerts</span></div>
+            <div class="plan-price">9,99€ <span>/ an</span></div>
+            <div class="plan-detail">soit 0,83€ / mois</div>
+          </div>
+        </div>
+      </div>
+      <button class="plan-btn-primary" id="paywall-subscribe-btn">S'abonner — 0,99€/mois</button>
+      <button class="paywall-skip" id="paywall-skip-btn">Continuer sans s'abonner →</button>
+    </div>
+  </div>
+
+  <!-- Bannière cookies RGPD -->
+  <div id="cookie-banner" class="cookie-banner" style="display:none" role="alert">
+    <p>Cette app utilise un cookie d'authentification strictement nécessaire (session ou 6 mois glissants si « Rester connecté ») et le localStorage pour vos préférences locales. Aucun cookie publicitaire ni tracker. <a href="/legal#cookies" target="_blank" rel="noopener">En savoir plus</a></p>
+    <button id="cookie-ok" class="cookie-ok-btn">J'ai compris</button>
+  </div>
+  <script>
+    // Appelé par account.js : immédiatement si pas de paywall, après fermeture du paywall sinon
+    window.showCookieBannerIfNeeded = function() {
+      if (!localStorage.getItem('hon_cookies_ok')) {
+        document.getElementById('cookie-banner').style.display = 'flex';
+      }
+    };
+    document.getElementById('cookie-ok')?.addEventListener('click', () => {
+      localStorage.setItem('hon_cookies_ok', '1');
+      document.getElementById('cookie-banner').style.display = 'none';
+    });
+  </script>
+
+  <script src="js/montagne-communes.js" defer></script>
+  <script src="js/engine.js" defer></script>
+  <script src="js/consultation.js" defer></script>
+  <script src="js/visite.js" defer></script>
+  <script src="js/ccam.js" defer></script>
+  <script src="js/account.js" defer></script>
+  <script src="js/app.js" defer></script>
 </body>
 </html>

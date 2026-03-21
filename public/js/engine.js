@@ -38,41 +38,74 @@ const Engine = (() => {
    * Actes considérés comme "complexes" (art. 15.8/15.9)
    * Non cumulables avec MCG et MEG
    */
-  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP'];
+  const ACTES_COMPLEXES = ['APC', 'GL1', 'GL2', 'GL3', 'VL', 'VSP', 'CCP',
+    'EPG', 'C2,5', 'ASE', 'CSE', 'CSO', 'CTE', 'MPH'];
 
   /**
-   * Actes pédiatriques — grisés si patient adulte
+   * Actes enfant (0-6 ans) — grisés si patient non enfant
    */
-  const ACTES_PEDIATRIQUES = ['COE', 'COB', 'COD'];
+  const ACTES_ENFANT = ['COE', 'COD'];
+
+  /**
+   * Actes jeune (6-25 ans) — grisés si patient non jeune
+   */
+  const ACTES_JEUNE = ['COB', 'CCP'];
+
+  /**
+   * Tous les actes pédiatriques/jeune (pour MEG non-cumul)
+   */
+  const ACTES_PEDIATRIQUES = ['COE', 'COD', 'COB'];
+
+  /**
+   * Actes senior (>80 ans, médecin traitant uniquement) — grisés si patient non senior
+   */
+  const ACTES_SENIOR = ['GL1', 'GL2', 'GL3'];
 
   /**
    * Composants facturés 100% AMO (pas de part AMC)
    */
   const CODES_AMO100 = [
-    'F', 'MN', 'MM',
+    // F, MN, MM : majorations horaires non-régulées → 70% AMO standard (ticket modérateur)
     'CRN', 'CRM', 'CRD', 'CRS',
     'VRN', 'VRM', 'VRD', 'VRS',
-    'SNP',
-    'COE', 'COB', 'COD'
+    'SNP', 'MRT', 'SHE',
+    'COE', 'COB', 'COD', 'CCP',
+    // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
+    'RDV',
+    // Consultations spécialisées à tarif national 100% AMO
+    'ASE', 'CSE', 'CSO', 'CTE', 'MPH', 'C2,5',
+    // IMT : intégration nouveau MT en ALD → 100% AMO
+    'IMT'
   ];
 
   /**
    * Détermine les majorations disponibles selon le contexte complet
    * Retourne un objet { code: { available: bool, reason: string } }
    */
-  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos) {
+  function getAvailableMajos(acte, age, periode, mode, isVisite, deplacement, activeMajos, heure, relation) {
     if (!tarifs) return {};
     const result = {};
     const isRegule = mode === 'regule';
     const isHorsJour = periode !== 'jour';
     const isComplex = ACTES_COMPLEXES.includes(acte);
+    const isMT = !relation || relation === 'mt';
 
     for (const [code, majo] of Object.entries(tarifs.majorations)) {
       let available = true;
       let reason = '';
 
+      // 0. Contexte patientèle : mtOnly / horsPatOnly
+      if (available && majo.mtOnly && !isMT) {
+        available = false;
+        reason = 'Réservé au médecin traitant';
+      }
+      if (available && majo.horsPatOnly && isMT) {
+        available = false;
+        reason = 'Réservé hors patientèle';
+      }
+
       // 1. Vérifier applicableTo (art. 14.7 MEG, art. 2bis MCG, etc.)
-      if (majo.applicableTo && !majo.applicableTo.includes(acte)) {
+      if (available && majo.applicableTo && !majo.applicableTo.includes(acte)) {
         available = false;
         reason = `Non applicable à ${acte}`;
       }
@@ -83,10 +116,31 @@ const Engine = (() => {
         reason = 'Réservé aux enfants 0-6 ans';
       }
 
+      // 2b. MOP : uniquement patient >80 ans
+      if (available && code === 'MOP' && age !== 'senior') {
+        available = false;
+        reason = 'Réservé aux patients de plus de 80 ans';
+      }
+
+      // 2c. MOP : non cumulable avec CCP (âges mutuellement exclusifs, mais sécurité)
+      // (MEG non cumulable avec CCP déjà géré par age check ci-dessus)
+
       // 3. MCG : non cumulable avec consultations complexes (art. 2bis, 15.8, 15.9)
       if (available && code === 'MCG' && isComplex) {
         available = false;
         reason = `Non cumulable avec ${acte} (consultation complexe)`;
+      }
+
+      // 3b. MCG : non applicable en PDSA / nuit (hors horaires de jour)
+      if (available && code === 'MCG' && isHorsJour) {
+        available = false;
+        reason = 'Non applicable hors horaires de jour';
+      }
+
+      // 3c. RDV (bilan de prévention) : non applicable en PDSA / nuit
+      if (available && code === 'RDV' && isHorsJour) {
+        available = false;
+        reason = 'Non applicable hors horaires de jour';
       }
 
       // 4. MEG : non cumulable avec consultations complexes (art. 15.8, 15.9)
@@ -111,6 +165,12 @@ const Engine = (() => {
       if (available && code === 'SNP' && isHorsJour && !isRegule) {
         available = false;
         reason = 'Non cumulable avec majorations horaires non régulées (art. 14.1.3)';
+      }
+
+      // 6b. MHP : uniquement en horaires PDSA — inhibé en journée normale (art. 22-4)
+      if (available && code === 'MHP' && periode === 'jour') {
+        available = false;
+        reason = 'Hors horaires PDSA (nuit, dim. et jours fériés uniquement)';
       }
 
       // 7. MHP : non cumulable avec PDSA (art. 22-4)
@@ -167,6 +227,52 @@ const Engine = (() => {
         }
       }
 
+      // MU : visite de jour non-régulée uniquement (non-cumulable avec F/MN/MM)
+      if (available && code === 'MU' && (isHorsJour || isRegule)) {
+        available = false;
+        reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
+      }
+
+      // MU : non cumulable avec MD/MDN/MDD/MDM/MDI
+      if (available && code === 'MU' && deplacement && deplacement.startsWith('MD')) {
+        available = false;
+        reason = `Non cumulable avec ${deplacement}`;
+      }
+
+      // MVR : dans les 24h après régulation SAS de JOUR uniquement
+      // Non applicable en PDSA régulé (VRN/VRM/VRD ont leurs propres majorations)
+      // Nécessite SNP (hors patientèle) ou MRT (patientèle MT) actif
+      if (available && code === 'MVR') {
+        const hasSnpOrMrt = activeMajos && (activeMajos.includes('SNP') || activeMajos.includes('MRT'));
+        if (!hasSnpOrMrt) {
+          available = false;
+          reason = 'MVR applicable uniquement en journée après régulation SAS (SNP ou MRT requis)';
+        }
+      }
+
+      // MRT : non cumulable avec PDSA ni avec F/MN/MM
+      if (available && code === 'MRT' && isRegule) {
+        available = false;
+        reason = 'Non cumulable avec PDSA';
+      }
+      if (available && code === 'MRT' && isHorsJour && !isRegule) {
+        available = false;
+        reason = 'Non cumulable avec majorations horaires non régulées';
+      }
+
+      // SHE : nécessite SNP ou MRT actif + heure entre 19h et 21h
+      if (available && code === 'SHE') {
+        const h = (heure !== undefined && heure !== null) ? heure : -1;
+        const hasSnpOrMrt = activeMajos && (activeMajos.includes('SNP') || activeMajos.includes('MRT'));
+        if (!hasSnpOrMrt) {
+          available = false;
+          reason = 'Nécessite SNP ou MRT actif';
+        } else if (h < 19 || h >= 21) {
+          available = false;
+          reason = 'Applicable uniquement entre 19h et 21h en semaine';
+        }
+      }
+
       result[code] = { available, reason };
     }
 
@@ -176,9 +282,12 @@ const Engine = (() => {
   /**
    * Vérifie si la majoration horaire est applicable à l'acte
    * TCG : non cumulable avec F/MN/MM (art. 14.9.3) mais PDSA ok
+   * TE2 : acte asynchrone, aucune majoration horaire applicable
    */
   function isHoraireApplicable(acte, periode, mode) {
     if (periode === 'jour') return false;
+    // TE2 : téléexpertise asynchrone, pas de majoration horaire
+    if (acte === 'TE2') return false;
     // TCG : pas de F/MN/MM (art. 14.9.3), mais PDSA ok
     if (acte === 'TCG' && mode !== 'regule') return false;
     return true;
@@ -202,7 +311,7 @@ const Engine = (() => {
     const {
       acte, age, majorations = [], periode, mode,
       isVisite = false, deplacement, ikEnabled = false, ikKm = 0,
-      ccamActes = []
+      ccamActes = [], heure, ikGeoOverride, ccamModificateurs = []
     } = params;
 
     const codes = [];
@@ -216,7 +325,7 @@ const Engine = (() => {
     total += acteTarif;
 
     // 2. Majorations (avec règles contextuelles NGAP)
-    const activeMajos = filterMajorations(majorations, age, acte, periode, mode, isVisite, deplacement);
+    const activeMajos = filterMajorations(majorations, age, acte, periode, mode, isVisite, deplacement, heure);
     for (const majoCode of activeMajos) {
       const majo = tarifs.majorations[majoCode];
       if (majo) {
@@ -254,7 +363,7 @@ const Engine = (() => {
 
     // 5. IK (visite uniquement — toujours cumulable, même en PDSA)
     if (isVisite && ikEnabled && ikKm > 0) {
-      const ikResult = calculateIK(ikKm);
+      const ikResult = calculateIK(ikKm, ikGeoOverride);
       if (ikResult.montant > 0) {
         const ikCode = `${ikResult.kmFactures}IK`;
         codes.push(ikCode);
@@ -267,9 +376,22 @@ const Engine = (() => {
       }
     }
 
-    // 6. Actes CCAM associés
+    // 6. Modificateurs CCAM (M/P/S/F — appliqués si actes CCAM présents)
+    if (ccamActes && ccamActes.length > 0 && ccamModificateurs && ccamModificateurs.length > 0) {
+      const modDefs = tarifs.ccamModificateurs || {};
+      for (const modCode of ccamModificateurs) {
+        const mod = modDefs[modCode];
+        if (mod) {
+          codes.push('Mod.' + modCode);
+          details.push({ code: 'Mod.' + modCode, label: mod.label + ' (modificateur CCAM)', montant: mod.montant });
+          total += mod.montant;
+        }
+      }
+    }
+
+    // 7. Actes CCAM associés
     if (ccamActes && ccamActes.length > 0) {
-      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif);
+      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
       for (const item of ccamResult.items) {
         codes.push(item.code);
         details.push(item);
@@ -284,12 +406,15 @@ const Engine = (() => {
     }
 
     // Calcul AMO/AMC
+    // RDV (bilan de prévention) rend aussi l'acte G 100% AMO
+    const hasRDV = details.some(d => d.code === 'RDV');
     let amo = 0;
     let amc = 0;
     for (const d of details) {
       if (d.montant === 0) continue;
       const code = d.code.replace(/[()]/g, '');
-      if (CODES_AMO100.includes(code)) {
+      const isAMO100 = CODES_AMO100.includes(code) || (hasRDV && code === 'G') || code.endsWith('IK');
+      if (isAMO100) {
         amo += d.montant;
       } else {
         amo += d.montant * 0.7;
@@ -308,8 +433,10 @@ const Engine = (() => {
 
   /**
    * Calcule les actes CCAM avec règles d'association
+   * baseOnly : actes cumulables à 100% uniquement avec G/VG de base
+   *   (convention 2024 — non valable avec consultations complexes ou MSH/MIC actifs)
    */
-  function calculateCCAM(ccamActes, consultCode, consultTarif) {
+  function calculateCCAM(ccamActes, consultCode, consultTarif, activeMajos) {
     const items = [];
     let replaceConsult = false;
 
@@ -317,7 +444,18 @@ const Engine = (() => {
 
     for (let i = 0; i < Math.min(sorted.length, 2); i++) {
       const acte = sorted[i];
-      const cumul = acte.cumulG || 'non';
+      let cumul = acte.cumulG || 'non';
+
+      // baseOnly : cumul 100% autorisé UNIQUEMENT avec G ou VG basique
+      // → devient non-cumulable si acte complexe ou MSH/MIC actif
+      if (cumul === 'oui' && acte.baseOnly) {
+        const isBaseConsult = (consultCode === 'G' || consultCode === 'VG');
+        const hasMicOrMsh = activeMajos &&
+          (activeMajos.includes('MIC') || activeMajos.includes('MSH'));
+        if (!isBaseConsult || hasMicOrMsh) {
+          cumul = 'non';
+        }
+      }
 
       if (cumul === 'oui') {
         const taux = i === 0 ? 1 : 0.5;
@@ -328,7 +466,11 @@ const Engine = (() => {
         const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
         items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
       } else {
-        if (acte.tarif > consultTarif) {
+        if (replaceConsult) {
+          // Acte précédent a déjà remplacé G — association à 50%
+          const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
+          items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
+        } else if (acte.tarif > consultTarif) {
           replaceConsult = true;
           items.push({ code: acte.code, label: acte.label, montant: acte.tarif });
         } else {
@@ -347,7 +489,7 @@ const Engine = (() => {
   /**
    * Filtre les majorations selon TOUTES les règles NGAP contextuelles
    */
-  function filterMajorations(selected, age, acte, periode, mode, isVisite, deplacement) {
+  function filterMajorations(selected, age, acte, periode, mode, isVisite, deplacement, heure) {
     if (!tarifs) return [];
     const isRegule = mode === 'regule';
     const isHorsJour = periode !== 'jour';
@@ -358,8 +500,11 @@ const Engine = (() => {
       const majo = tarifs.majorations[code];
       if (!majo) continue;
 
-      // MEG : enfant uniquement
+      // MEG : enfant (0-6 ans) uniquement
       if (code === 'MEG' && age !== 'enfant') continue;
+
+      // MOP : senior (>80 ans) uniquement
+      if (code === 'MOP' && age !== 'senior') continue;
 
       // applicableTo
       if (majo.applicableTo && !majo.applicableTo.includes(acte)) continue;
@@ -373,8 +518,9 @@ const Engine = (() => {
       // SNP : pas avec PDSA ni F/MN/MM
       if (code === 'SNP' && (isRegule || (isHorsJour && !isRegule))) continue;
 
-      // MHP : pas avec PDSA, F/MN/MM, MDN/MDD
+      // MHP : pas avec PDSA, F/MN/MM, MDN/MDD ; uniquement en horaires PDSA
       if (code === 'MHP') {
+        if (periode === 'jour') continue;
         if (isRegule) continue;
         if (isHorsJour && !isRegule) continue;
         if (isVisite && (deplacement === 'MDN' || deplacement === 'MDD')) continue;
@@ -386,10 +532,33 @@ const Engine = (() => {
       // MSH/MIC : pas avec MDN/MDD en visite
       if ((code === 'MSH' || code === 'MIC') && isVisite && (deplacement === 'MDN' || deplacement === 'MDD')) continue;
 
-      // Exclusifs mutuels (MSH/MIC/MIS, SNP/MCG, SNP/MHP)
+      // Exclusifs mutuels — vérification dans les deux sens (certains sont asymétriques)
       if (majo.exclusifs) {
         const hasConflict = result.some(r => majo.exclusifs.includes(r));
         if (hasConflict) continue;
+      }
+      // Sens inverse : un majo déjà dans result excluant ce code
+      if (result.some(r => tarifs.majorations[r]?.exclusifs?.includes(code))) continue;
+
+      // MU : visite de jour non-régulée uniquement + non cumulable avec MD
+      if (code === 'MU' && (isHorsJour || isRegule)) continue;
+      if (code === 'MU' && deplacement && deplacement.startsWith('MD')) continue;
+
+      // MVR : dans les 24h après régulation SAS de JOUR (non applicable la nuit PDSA)
+      // Nécessite SNP ou MRT dans result
+      if (code === 'MVR') {
+        const hasSnpOrMrt = result.includes('SNP') || result.includes('MRT');
+        if (!hasSnpOrMrt) continue;
+      }
+
+      // MRT : non avec PDSA, non avec F/MN/MM
+      if (code === 'MRT' && (isRegule || (isHorsJour && !isRegule))) continue;
+
+      // SHE : nécessite SNP ou MRT dans result + heure 19-21
+      if (code === 'SHE') {
+        const h = (heure !== undefined && heure !== null) ? heure : -1;
+        const hasSnpOrMrt = result.includes('SNP') || result.includes('MRT');
+        if (!hasSnpOrMrt || h < 19 || h >= 21) continue;
       }
 
       result.push(code);
@@ -404,7 +573,7 @@ const Engine = (() => {
     if (!tarifs) return null;
 
     if (isVisite && mode === 'regule') {
-      const map = { 'dimferie': 'VRD', 'nuit': 'VRN', 'nuitprofonde': 'VRM' };
+      const map = { 'dimferie': 'VRD', 'samediAM': 'VRS', 'nuit': 'VRN', 'nuitprofonde': 'VRM' };
       const code = map[periode];
       if (!code) return null;
       const entry = tarifs.majorationsHoraires.visiteRegulees[code];
@@ -412,7 +581,7 @@ const Engine = (() => {
     }
 
     if (mode === 'regule') {
-      const map = { 'dimferie': 'CRD', 'nuit': 'CRN', 'nuitprofonde': 'CRM' };
+      const map = { 'dimferie': 'CRD', 'samediAM': 'CRS', 'nuit': 'CRN', 'nuitprofonde': 'CRM' };
       const code = map[periode];
       if (!code) return null;
       const entry = tarifs.majorationsHoraires.regulees[code];
@@ -429,10 +598,10 @@ const Engine = (() => {
   /**
    * Calcule l'indemnité kilométrique
    */
-  function calculateIK(km) {
+  function calculateIK(km, geoOverride) {
     if (!tarifs) return { montant: 0, kmFactures: 0 };
 
-    const geo = getGeo();
+    const geo = geoOverride || getGeo();
     const zone = getZone();
     const ikData = tarifs.ik[geo] || tarifs.ik.plaine;
 
@@ -488,6 +657,9 @@ const Engine = (() => {
     isHoraireApplicable,
     isDeplacementApplicable,
     ACTES_COMPLEXES,
-    ACTES_PEDIATRIQUES
+    ACTES_ENFANT,
+    ACTES_JEUNE,
+    ACTES_PEDIATRIQUES,
+    ACTES_SENIOR
   };
 })();

@@ -10,7 +10,11 @@ const Visite = (() => {
     mode: 'nonregule',
     deplacement: 'MD',
     ikEnabled: false,
-    ikKm: 5
+    ikKm: 5,
+    ikGeoOverride: null,
+    heure: null,
+    relation: 'mt',
+    actesCourants: []
   };
 
   function init() {
@@ -30,6 +34,12 @@ const Visite = (() => {
     // Type de visite
     const acteGrid = document.getElementById('visite-acte-grid');
     acteGrid.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        showActeInfo(infoIcon.dataset.info);
+        return;
+      }
       const btn = e.target.closest('.acte-btn');
       if (!btn) return;
       acteGrid.querySelectorAll('.acte-btn').forEach(b => b.classList.remove('active'));
@@ -39,7 +49,7 @@ const Visite = (() => {
       recalculate();
     });
 
-    // Majorations
+    // Majorations (grille principale)
     const majoGrid = document.getElementById('visite-majo-grid');
     majoGrid.addEventListener('click', (e) => {
       const infoIcon = e.target.closest('.info-icon');
@@ -56,35 +66,21 @@ const Visite = (() => {
       recalculate();
     });
 
-    // Période horaire
-    const periodeGroup = document.querySelector('#tab-visite .toggle-group[data-field="periode-visite"]');
-    periodeGroup.addEventListener('click', (e) => {
-      const btn = e.target.closest('.toggle-btn');
-      if (!btn) return;
-      periodeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      state.periode = btn.dataset.value;
-      updateModeVisibility();
-      updateDeplacementForPeriode();
-      updateDeplacementVisibility();
+    // Coordination numérique (RQD)
+    const coordCard = document.getElementById('visite-coord-card');
+    coordCard.addEventListener('click', (e) => {
+      const infoIcon = e.target.closest('.info-icon');
+      if (infoIcon) {
+        e.stopPropagation();
+        showMajoInfo(infoIcon.dataset.info);
+        return;
+      }
+      const btn = e.target.closest('.majo-btn');
+      if (!btn || btn.classList.contains('disabled')) return;
+      toggleMajoration(btn.dataset.majo, btn);
       updateAllMajoStates();
       recalculate();
     });
-
-    // Mode de garde
-    const modeGroup = document.querySelector('#tab-visite .toggle-group[data-field="mode-visite"]');
-    if (modeGroup) {
-      modeGroup.addEventListener('click', (e) => {
-        const btn = e.target.closest('.toggle-btn');
-        if (!btn) return;
-        modeGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        state.mode = btn.dataset.value;
-        updateDeplacementVisibility();
-        updateAllMajoStates();
-        recalculate();
-      });
-    }
 
     // Déplacement
     const depGroup = document.querySelector('#tab-visite .toggle-group[data-field="deplacement"]');
@@ -103,6 +99,7 @@ const Visite = (() => {
     const ikControls = document.getElementById('ik-controls');
     ikCheckbox.addEventListener('change', () => {
       state.ikEnabled = ikCheckbox.checked;
+      if (!state.ikEnabled) state.ikGeoOverride = null;
       ikControls.style.display = state.ikEnabled ? '' : 'none';
       if (state.ikEnabled) updateIKInfo();
       recalculate();
@@ -130,6 +127,45 @@ const Visite = (() => {
       recalculate();
     });
 
+    // Actes courants visite (ECG + YYYY490 auto)
+    const courantsGrid = document.getElementById('visite-courants-grid');
+    if (courantsGrid) {
+      courantsGrid.addEventListener('click', (e) => {
+        const infoIcon = e.target.closest('.info-icon[data-courant-info]');
+        if (infoIcon) {
+          e.stopPropagation();
+          const ecg = CCAM.getActe('DEQP003');
+          const sup = CCAM.getActe('YYYY490');
+          if (ecg) {
+            const total = (ecg.tarif + (sup?.tarif || 0)).toFixed(2).replace('.', ',');
+            document.getElementById('modal-title').textContent = 'ECG — ' + ecg.label;
+            document.getElementById('modal-body').innerHTML =
+              `<p class="majo-detail-tarif">+${total}€</p>` +
+              `<p>${ecg.note || ''}</p>` +
+              (sup ? `<p style="margin-top:8px;font-size:12px;color:#5a6070">Inclut YYYY490 (+${sup.tarif.toFixed(2).replace('.', ',')}€) : ${sup.label}</p>` : '');
+            document.getElementById('modal-overlay').classList.add('active');
+          }
+          return;
+        }
+        const btn = e.target.closest('.majo-btn');
+        if (!btn || btn.classList.contains('disabled')) return;
+        const code = btn.dataset.courant;
+        if (!code) return;
+        const idx = state.actesCourants.indexOf(code);
+        if (idx >= 0) {
+          state.actesCourants.splice(idx, 1);
+          btn.classList.remove('active');
+        } else {
+          state.actesCourants.push(code);
+          btn.classList.add('active');
+        }
+        recalculate();
+      });
+    }
+
+    // IK géolocalisation
+    document.getElementById('ik-geolocate').addEventListener('click', handleGeolocate);
+
     updateActePrices();
     updateDeplacementPrices();
     updateAllMajoStates();
@@ -138,6 +174,8 @@ const Visite = (() => {
   function handleAgeChange() {
     const majoGrid = document.getElementById('visite-majo-grid');
     const megBtn = majoGrid.querySelector('[data-majo="MEG"]');
+
+    // MEG : auto-activer pour enfant 0-6 ans seulement
     if (state.age === 'enfant') {
       if (!state.majorations.includes('MEG')) {
         state.majorations.push('MEG');
@@ -160,7 +198,7 @@ const Visite = (() => {
       const excluded = Engine.getExcludedBy(code);
       for (const ex of excluded) {
         state.majorations = state.majorations.filter(m => m !== ex);
-        const exBtn = document.querySelector(`#visite-majo-grid [data-majo="${ex}"]`);
+        const exBtn = document.querySelector(`#tab-visite [data-majo="${ex}"]`);
         if (exBtn) exBtn.classList.remove('active');
       }
       // Vérifier les exclusions inverses
@@ -170,7 +208,7 @@ const Visite = (() => {
           const majo = tarifs.majorations[m];
           if (majo?.exclusifs?.includes(code)) {
             state.majorations = state.majorations.filter(x => x !== m);
-            const mBtn = document.querySelector(`#visite-majo-grid [data-majo="${m}"]`);
+            const mBtn = document.querySelector(`#tab-visite [data-majo="${m}"]`);
             if (mBtn) mBtn.classList.remove('active');
           }
         }
@@ -185,11 +223,10 @@ const Visite = (() => {
    */
   function updateAllMajoStates() {
     const availability = Engine.getAvailableMajos(
-      state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations
+      state.acte, state.age, state.periode, state.mode, true, state.deplacement, state.majorations, state.heure, state.relation
     );
-    const majoGrid = document.getElementById('visite-majo-grid');
 
-    majoGrid.querySelectorAll('.majo-btn').forEach(btn => {
+    document.querySelectorAll('#tab-visite .majo-btn').forEach(btn => {
       const code = btn.dataset.majo;
       const info = availability[code];
       if (!info) return;
@@ -211,12 +248,11 @@ const Visite = (() => {
   }
 
   function updateModeVisibility() {
-    const section = document.getElementById('visite-mode-section');
     if (state.periode === 'jour') {
-      section.style.display = 'none';
       state.mode = 'nonregule';
+      App.updateModeBar(false, state.mode);
     } else {
-      section.style.display = '';
+      App.updateModeBar(true, state.mode);
     }
   }
 
@@ -231,10 +267,12 @@ const Visite = (() => {
       depSection.style.opacity = '0.4';
       depSection.style.pointerEvents = 'none';
       depSection.title = 'Non cumulable avec majorations PDSA régulées (art. 22-3)';
+      depSection.classList.add('pdsa-disabled');
     } else {
       depSection.style.opacity = '';
       depSection.style.pointerEvents = '';
       depSection.title = '';
+      depSection.classList.remove('pdsa-disabled');
     }
   }
 
@@ -245,7 +283,7 @@ const Visite = (() => {
     const depGroup = document.querySelector('#tab-visite .toggle-group[data-field="deplacement"]');
     let targetDep = 'MD';
 
-    if (state.periode === 'dimferie') targetDep = 'MDD';
+    if (state.periode === 'dimferie' || state.periode === 'samediAM') targetDep = 'MDD';
     else if (state.periode === 'nuit') targetDep = 'MDN';
     else if (state.periode === 'nuitprofonde') targetDep = 'MDI';
     else {
@@ -291,13 +329,19 @@ const Visite = (() => {
       infoEl.textContent = '';
       return;
     }
-    const ik = Engine.calculateIK(state.ikKm);
-    const geo = Engine.getGeo();
-    const geoLabel = geo === 'montagne' ? 'montagne' : 'plaine';
+    const ik = Engine.calculateIK(state.ikKm, state.ikGeoOverride);
+    const geo = state.ikGeoOverride || Engine.getGeo();
+    const geoLabel = geo === 'montagne' ? '🏔️ montagne' : 'plaine';
     infoEl.textContent = `${geoLabel} — franchise ${ik.franchise} km — ${ik.kmFactures} km × ${ik.tarifKm.toFixed(2).replace('.', ',')}€ = ${ik.montant.toFixed(2).replace('.', ',')}€`;
   }
 
   function recalculate() {
+    // Actes courants visite : ECG (DEQP003) entraîne YYYY490 automatiquement
+    const courantObjects = state.actesCourants.map(c => CCAM.getActe(c)).filter(Boolean);
+    if (state.actesCourants.includes('DEQP003')) {
+      const yyyy490 = CCAM.getActe('YYYY490');
+      if (yyyy490) courantObjects.push(yyyy490);
+    }
     const result = Engine.calculate({
       acte: state.acte,
       age: state.age,
@@ -308,9 +352,22 @@ const Visite = (() => {
       deplacement: state.deplacement,
       ikEnabled: state.ikEnabled,
       ikKm: state.ikKm,
-      ccamActes: CCAM.getSelectedActes()
+      ikGeoOverride: state.ikGeoOverride,
+      heure: state.heure,
+      ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : [],
+      ccamActes: (() => {
+        const seen = new Set();
+        return [...CCAM.getSelectedActes(), ...courantObjects]
+          .filter(a => seen.has(a.code) ? false : seen.add(a.code));
+      })()
     });
     App.updateResult(result);
+  }
+
+  function setRelation(value) {
+    state.relation = value;
+    updateAllMajoStates();
+    recalculate();
   }
 
   function onShow() {
@@ -319,8 +376,140 @@ const Visite = (() => {
     updateDeplacementVisibility();
     updateIKInfo();
     updateAllMajoStates();
+    App.updateModeBar(state.periode !== 'jour', state.mode);
     recalculate();
   }
 
-  return { init, onShow, recalculate, updateActePrices, updateDeplacementPrices };
+  function setMode(value) {
+    state.mode = value;
+    updateDeplacementVisibility();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  function setPeriode(value) {
+    state.periode = value;
+    if (CCAM.updateModifFromPeriode) CCAM.updateModifFromPeriode(value);
+    updateModeVisibility();
+    updateDeplacementForPeriode();
+    updateDeplacementVisibility();
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  function setHeure(value) {
+    state.heure = value;
+    updateAllMajoStates();
+    recalculate();
+  }
+
+  // === Géolocalisation IK ===
+  async function handleGeolocate() {
+    const btn = document.getElementById('ik-geolocate');
+    const status = document.getElementById('ik-geo-status');
+
+    const cabinetAddr = localStorage.getItem('hon_cabinet_address') || '';
+    if (!cabinetAddr.trim()) {
+      status.textContent = '⚠️ Renseignez l\'adresse du cabinet dans Paramètres';
+      status.className = 'ik-geo-status warn';
+      return;
+    }
+
+    btn.disabled = true;
+    status.textContent = '📡 Géolocalisation en cours…';
+    status.className = 'ik-geo-status';
+
+    try {
+      // 1. Position GPS actuelle (= chez le patient)
+      const pos = await getGeolocation();
+      const patLat = pos.coords.latitude;
+      const patLng = pos.coords.longitude;
+
+      // 2. Géocodage de l'adresse du cabinet
+      status.textContent = '📍 Localisation du cabinet…';
+      const cab = await geocodeAddress(cabinetAddr);
+      if (!cab) {
+        status.textContent = '⚠️ Cabinet introuvable — vérifiez l\'adresse dans Paramètres';
+        status.className = 'ik-geo-status warn';
+        btn.disabled = false;
+        return;
+      }
+
+      // 3. Calcul de l'itinéraire routier (OSRM)
+      status.textContent = '🗺️ Calcul de l\'itinéraire…';
+      const distKm = await getRouteDistance(cab.lng, cab.lat, patLng, patLat);
+      if (distKm === null) {
+        status.textContent = '⚠️ Itinéraire introuvable';
+        status.className = 'ik-geo-status warn';
+        btn.disabled = false;
+        return;
+      }
+
+      // 4. Détecter si la commune du patient est en zone montagne
+      try {
+        const revUrl = `https://api-adresse.data.gouv.fr/reverse/?lon=${patLng}&lat=${patLat}&limit=1`;
+        const revRes = await fetch(revUrl);
+        const revData = await revRes.json();
+        const citycode = revData.features?.[0]?.properties?.citycode;
+        const isMontagne = citycode && (
+          citycode.startsWith('2A') || citycode.startsWith('2B') ||
+          (typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode))
+        );
+        state.ikGeoOverride = isMontagne ? 'montagne' : null;
+      } catch {
+        state.ikGeoOverride = null;
+      }
+
+      // 5. Remplir le champ km (aller simple, franchise gérée par le moteur)
+      const km = Math.round(distKm);
+      state.ikKm = km;
+      document.getElementById('ik-km').value = km;
+      updateIKInfo();
+      recalculate();
+      let statusMsg = `✅ ${distKm.toFixed(1)} km (aller) — franchise déduite automatiquement`;
+      if (state.ikGeoOverride === 'montagne') {
+        statusMsg += ' — 🏔️ zone montagne, IK montagne appliqués pour cette visite';
+      }
+      status.textContent = statusMsg;
+      status.className = 'ik-geo-status ok';
+    } catch (e) {
+      status.textContent = '❌ ' + (e.message || 'Erreur');
+      status.className = 'ik-geo-status warn';
+    }
+
+    btn.disabled = false;
+  }
+
+  function getGeolocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject(new Error('Géolocalisation non supportée par ce navigateur'));
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(resolve, () => {
+        reject(new Error('Accès à la position refusé ou indisponible'));
+      }, { timeout: 12000, maximumAge: 0, enableHighAccuracy: true });
+    });
+  }
+
+  async function geocodeAddress(address) {
+    const url = `https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(address)}&limit=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (!data.features || data.features.length === 0) return null;
+    const [lng, lat] = data.features[0].geometry.coordinates;
+    return { lat, lng };
+  }
+
+  async function getRouteDistance(lng1, lat1, lng2, lat2) {
+    const url = `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=false`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.code !== 'Ok' || !data.routes || data.routes.length === 0) return null;
+    return data.routes[0].distance / 1000;
+  }
+
+  function getState() { return state; }
+
+  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation };
 })();
