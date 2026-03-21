@@ -70,6 +70,9 @@ db.exec(`CREATE TABLE IF NOT EXISTS tab_usage (
 )`);
 db.exec(`CREATE INDEX IF NOT EXISTS idx_tu_created ON tab_usage(created_at)`);
 
+try { db.exec('ALTER TABLE page_views ADD COLUMN visitor_id TEXT'); } catch (e) {}
+db.exec('CREATE INDEX IF NOT EXISTS idx_pv_visitor ON page_views(visitor_id)');
+
 // Purge analytics > 90 jours au démarrage
 db.prepare("DELETE FROM page_views WHERE created_at < datetime('now', '-90 days')").run();
 db.prepare("DELETE FROM tab_usage WHERE created_at < datetime('now', '-90 days')").run();
@@ -405,7 +408,7 @@ function parseUA(ua) {
   return { device, os, browser };
 }
 
-const insertPageView = db.prepare('INSERT INTO page_views (user_id, session_hash, path, method, device_type, os, browser) VALUES (?, ?, ?, ?, ?, ?, ?)');
+const insertPageView = db.prepare('INSERT INTO page_views (user_id, session_hash, visitor_id, path, method, device_type, os, browser) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
 const insertTabUsage = db.prepare('INSERT INTO tab_usage (user_id, session_hash, tab_name) VALUES (?, ?, ?)');
 
 app.use((req, res, next) => {
@@ -413,8 +416,16 @@ app.use((req, res, next) => {
   try {
     const sid = req.sessionID || '';
     const sessionHash = crypto.createHash('sha256').update(sid).digest('hex').slice(0, 16);
+    // Cookie persistant pour visiteurs uniques (1 an)
+    const cookies = {};
+    (req.headers.cookie || '').split(';').forEach(c => { const [k, v] = c.trim().split('='); if (k) cookies[k] = v; });
+    let visitorId = cookies.vid;
+    if (!visitorId) {
+      visitorId = crypto.randomBytes(12).toString('hex');
+      res.cookie('vid', visitorId, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' });
+    }
     const { device, os, browser } = parseUA(req.headers['user-agent']);
-    insertPageView.run(req.session?.userId || null, sessionHash, req.path, req.method, device, os, browser);
+    insertPageView.run(req.session?.userId || null, sessionHash, visitorId, req.path, req.method, device, os, browser);
   } catch (e) { /* never block request */ }
   next();
 });
@@ -770,9 +781,9 @@ app.get('/api/admin/analytics/overview', requireAdmin, (req, res) => {
   const views7d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
   const views30d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
 
-  const visitorsToday = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
-  const visitors7d = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
-  const visitors30d = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+  const visitorsToday = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
+  const visitors7d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
+  const visitors30d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
 
   const signups7d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d7).n;
   const signups30d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d30).n;
@@ -789,7 +800,7 @@ app.get('/api/admin/analytics/chart', requireAdmin, (req, res) => {
   const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
 
   const rows = db.prepare(`
-    SELECT date(created_at) as day, COUNT(*) as views, COUNT(DISTINCT session_hash) as visitors,
+    SELECT date(created_at) as day, COUNT(*) as views, COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as visitors,
            COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as users
     FROM page_views WHERE date(created_at) >= ? GROUP BY day ORDER BY day
   `).all(since);
@@ -828,7 +839,7 @@ app.get('/api/admin/analytics/devices', requireAdmin, (req, res) => {
 app.get('/api/admin/analytics/pages', requireAdmin, (req, res) => {
   const days = parseInt(req.query.period) || 7;
   const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
-  const rows = db.prepare("SELECT path, COUNT(*) as views, COUNT(DISTINCT session_hash) as visitors FROM page_views WHERE date(created_at) >= ? GROUP BY path ORDER BY views DESC LIMIT 20").all(since);
+  const rows = db.prepare("SELECT path, COUNT(*) as views, COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as visitors FROM page_views WHERE date(created_at) >= ? GROUP BY path ORDER BY views DESC LIMIT 20").all(since);
   res.json(rows);
 });
 
