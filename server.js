@@ -46,6 +46,34 @@ db.exec(`CREATE TABLE IF NOT EXISTS password_resets (
 )`);
 db.prepare('DELETE FROM password_resets WHERE expires < ?').run(Date.now());
 
+// === Analytics ===
+db.exec(`CREATE TABLE IF NOT EXISTS page_views (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  session_hash TEXT NOT NULL,
+  path TEXT NOT NULL,
+  method TEXT DEFAULT 'GET',
+  device_type TEXT,
+  os TEXT,
+  browser TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_pv_created ON page_views(created_at)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_pv_session ON page_views(session_hash)`);
+
+db.exec(`CREATE TABLE IF NOT EXISTS tab_usage (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER,
+  session_hash TEXT NOT NULL,
+  tab_name TEXT NOT NULL,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_tu_created ON tab_usage(created_at)`);
+
+// Purge analytics > 90 jours au démarrage
+db.prepare("DELETE FROM page_views WHERE created_at < datetime('now', '-90 days')").run();
+db.prepare("DELETE FROM tab_usage WHERE created_at < datetime('now', '-90 days')").run();
+
 class SQLiteSessionStore extends session.Store {
   get(sid, cb) {
     const row = db.prepare('SELECT sess FROM sessions WHERE sid = ? AND expired > ?').get(sid, Date.now());
@@ -365,6 +393,31 @@ app.use(session({
   store: new SQLiteSessionStore(),
   cookie: { httpOnly: true, sameSite: 'strict' }
 }));
+
+// === Analytics middleware ===
+function parseUA(ua) {
+  ua = ua || '';
+  const device = /Mobi|Android/i.test(ua) ? 'mobile' : /Tablet|iPad/i.test(ua) ? 'tablet' : 'desktop';
+  const os = /iPhone|iPad/.test(ua) ? 'iOS' : /Macintosh/.test(ua) ? 'macOS'
+    : /Android/.test(ua) ? 'Android' : /Windows/.test(ua) ? 'Windows' : /Linux/.test(ua) ? 'Linux' : 'other';
+  const browser = /Edg\//.test(ua) ? 'Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari'
+    : /Firefox\//.test(ua) ? 'Firefox' : 'other';
+  return { device, os, browser };
+}
+
+const insertPageView = db.prepare('INSERT INTO page_views (user_id, session_hash, path, method, device_type, os, browser) VALUES (?, ?, ?, ?, ?, ?, ?)');
+const insertTabUsage = db.prepare('INSERT INTO tab_usage (user_id, session_hash, tab_name) VALUES (?, ?, ?)');
+
+app.use((req, res, next) => {
+  if (req.path.match(/\.(js|css|woff2?|png|jpg|ico|svg|json|webmanifest|map)$/) || req.path === '/api/stripe/webhook') return next();
+  try {
+    const sid = req.sessionID || '';
+    const sessionHash = crypto.createHash('sha256').update(sid).digest('hex').slice(0, 16);
+    const { device, os, browser } = parseUA(req.headers['user-agent']);
+    insertPageView.run(req.session?.userId || null, sessionHash, req.path, req.method, device, os, browser);
+  } catch (e) { /* never block request */ }
+  next();
+});
 
 // === Tarifs ===
 const tarifsPath = path.join(__dirname, 'data', 'tarifs.json');
@@ -687,6 +740,96 @@ app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
   const newEnd = base.toISOString();
   db.prepare("UPDATE users SET subscription_status = 'active', subscription_end = ? WHERE id = ?").run(newEnd, id);
   res.json({ ok: true, subscription_end: newEnd });
+});
+
+// === Analytics tab tracking ===
+app.post('/api/analytics/tab', (req, res) => {
+  const { tab } = req.body || {};
+  const validTabs = ['consultation', 'visite', 'ccam', 'params', 'account'];
+  if (!tab || !validTabs.includes(tab)) return res.status(400).json({ error: 'Invalid tab' });
+  try {
+    const sid = req.sessionID || '';
+    const sessionHash = crypto.createHash('sha256').update(sid).digest('hex').slice(0, 16);
+    insertTabUsage.run(req.session?.userId || null, sessionHash, tab);
+  } catch (e) { /* ignore */ }
+  res.json({ ok: true });
+});
+
+// === Analytics admin endpoints ===
+app.get('/api/admin/analytics/overview', requireAdmin, (req, res) => {
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+  const d7 = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
+  const d30 = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
+
+  const dau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
+  const wau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
+  const mau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+
+  const viewsToday = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
+  const views7d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
+  const views30d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+
+  const visitorsToday = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
+  const visitors7d = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
+  const visitors30d = db.prepare("SELECT COUNT(DISTINCT session_hash) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+
+  const signups7d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d7).n;
+  const signups30d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d30).n;
+
+  const totalUsers = db.prepare('SELECT COUNT(*) as n FROM users').get().n;
+  const totalActive = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'active'").get().n;
+  const conversionRate = totalUsers > 0 ? Math.round((totalActive / totalUsers) * 100) : 0;
+
+  res.json({ dau, wau, mau, viewsToday, views7d, views30d, visitorsToday, visitors7d, visitors30d, signups7d, signups30d, conversionRate });
+});
+
+app.get('/api/admin/analytics/chart', requireAdmin, (req, res) => {
+  const days = req.query.period === '90d' ? 90 : req.query.period === '30d' ? 30 : 7;
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+
+  const rows = db.prepare(`
+    SELECT date(created_at) as day, COUNT(*) as views, COUNT(DISTINCT session_hash) as visitors,
+           COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as users
+    FROM page_views WHERE date(created_at) >= ? GROUP BY day ORDER BY day
+  `).all(since);
+
+  const signups = db.prepare("SELECT date(created_at) as day, COUNT(*) as n FROM users WHERE date(created_at) >= ? GROUP BY day ORDER BY day").all(since);
+  const signupMap = {};
+  signups.forEach(s => signupMap[s.day] = s.n);
+
+  const result = [];
+  const d = new Date(since);
+  const end = new Date();
+  while (d <= end) {
+    const ds = d.toISOString().slice(0, 10);
+    const row = rows.find(r => r.day === ds);
+    result.push({ day: ds, views: row?.views || 0, visitors: row?.visitors || 0, users: row?.users || 0, signups: signupMap[ds] || 0 });
+    d.setDate(d.getDate() + 1);
+  }
+  res.json(result);
+});
+
+app.get('/api/admin/analytics/tabs', requireAdmin, (req, res) => {
+  const days = req.query.period === '30d' ? 30 : 7;
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const rows = db.prepare("SELECT tab_name, COUNT(*) as count FROM tab_usage WHERE date(created_at) >= ? GROUP BY tab_name ORDER BY count DESC").all(since);
+  res.json(rows);
+});
+
+app.get('/api/admin/analytics/devices', requireAdmin, (req, res) => {
+  const days = parseInt(req.query.period) || 30;
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const devices = db.prepare("SELECT device_type as name, COUNT(*) as n FROM page_views WHERE date(created_at) >= ? GROUP BY device_type ORDER BY n DESC").all(since);
+  const browsers = db.prepare("SELECT browser as name, COUNT(*) as n FROM page_views WHERE date(created_at) >= ? GROUP BY browser ORDER BY n DESC").all(since);
+  res.json({ devices, browsers });
+});
+
+app.get('/api/admin/analytics/pages', requireAdmin, (req, res) => {
+  const days = parseInt(req.query.period) || 7;
+  const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
+  const rows = db.prepare("SELECT path, COUNT(*) as views, COUNT(DISTINCT session_hash) as visitors FROM page_views WHERE date(created_at) >= ? GROUP BY path ORDER BY views DESC LIMIT 20").all(since);
+  res.json(rows);
 });
 
 app.get('/admin', (req, res) => {

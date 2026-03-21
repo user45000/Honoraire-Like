@@ -197,6 +197,7 @@ const App = (() => {
     const prevTab = currentTab;
     currentTab = tabName;
     window.scrollTo(0, 0);
+    fetch('/api/analytics/tab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab: tabName }) }).catch(() => {});
 
     // Mémoriser le contexte consultation/visite quand on entre dans CCAM
     if (tabName === 'ccam') {

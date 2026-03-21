@@ -16,6 +16,7 @@
       --success: #059669;
       --amber: #d97706;
       --danger: #dc2626;
+      --purple: #7c3aed;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
@@ -24,8 +25,6 @@
     header { background: var(--primary-dark); color: white; padding: 14px 24px; display: flex; align-items: center; gap: 12px; }
     header h1 { font-size: 16px; font-weight: 600; }
     .header-badge { font-size: 11px; background: rgba(255,255,255,0.15); padding: 2px 8px; border-radius: 100px; margin-left: 8px; }
-    .logout-btn { margin-left: auto; background: rgba(255,255,255,0.1); border: none; color: white; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-    .logout-btn:hover { background: rgba(255,255,255,0.2); }
 
     /* Accès non autorisé */
     #unauth-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 52px); }
@@ -33,22 +32,61 @@
     .unauth-card h2 { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: var(--primary-dark); }
     .unauth-card p { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
     .unauth-card a { display: inline-block; background: var(--primary); color: white; padding: 10px 24px; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
-    .unauth-card a:hover { background: #1d4ed8; }
 
     /* Dashboard */
-    #dashboard { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+    #dashboard { display: none; max-width: 1100px; margin: 0 auto; }
 
-    /* Stats */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
-    .stat-card { background: white; border-radius: 10px; padding: 16px 20px; border: 1px solid var(--border); }
-    .stat-card .stat-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
-    .stat-card .stat-value { font-size: 28px; font-weight: 700; color: var(--primary-dark); }
-    .stat-card.active .stat-value { color: var(--success); }
-    .stat-card.trial .stat-value { color: var(--amber); }
-    .stat-card.expired .stat-value { color: var(--danger); }
+    /* Tabs */
+    .admin-tabs { display: flex; border-bottom: 2px solid var(--border); padding: 0 24px; background: white; }
+    .admin-tab { padding: 12px 20px; font-size: 14px; font-weight: 600; color: var(--text-secondary); cursor: pointer; border: none; background: none; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+    .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .admin-tab:hover { color: var(--text); }
+    .tab-panel { display: none; padding: 24px; }
+    .tab-panel.active { display: block; }
+
+    /* Stats cards */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 24px; }
+    .stat-card { background: white; border-radius: 10px; padding: 14px 18px; border: 1px solid var(--border); }
+    .stat-card .stat-label { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .stat-card .stat-value { font-size: 26px; font-weight: 700; color: var(--primary-dark); }
+    .stat-card .stat-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+    .stat-card.green .stat-value { color: var(--success); }
+    .stat-card.amber .stat-value { color: var(--amber); }
+    .stat-card.red .stat-value { color: var(--danger); }
+    .stat-card.purple .stat-value { color: var(--purple); }
+
+    /* Section */
+    .section { margin-bottom: 24px; }
+    .section-title { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+    .section-card { background: white; border-radius: 10px; border: 1px solid var(--border); padding: 18px; }
+
+    /* Period selector */
+    .period-sel { display: flex; gap: 4px; margin-left: auto; }
+    .period-btn { padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: white; font-size: 12px; cursor: pointer; color: var(--text-secondary); font-weight: 500; }
+    .period-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+    /* Bar chart CSS */
+    .bar-chart { display: flex; align-items: flex-end; gap: 2px; height: 120px; padding-top: 8px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+    .bar { width: 100%; min-height: 2px; border-radius: 3px 3px 0 0; background: var(--primary); transition: height 0.3s; }
+    .bar.secondary { background: rgba(37,99,235,0.25); }
+    .bar-label { font-size: 9px; color: var(--text-secondary); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+    .bar-val { font-size: 9px; color: var(--text); font-weight: 600; margin-bottom: 2px; }
+    .chart-legend { display: flex; gap: 16px; margin-top: 10px; }
+    .chart-legend span { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 4px; }
+    .chart-legend span::before { content: ''; width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+    .chart-legend .leg-primary::before { background: var(--primary); }
+    .chart-legend .leg-secondary::before { background: rgba(37,99,235,0.25); }
+
+    /* Horizontal bars */
+    .h-bars { display: flex; flex-direction: column; gap: 8px; }
+    .h-bar-row { display: flex; align-items: center; gap: 10px; }
+    .h-bar-name { font-size: 12px; font-weight: 500; width: 100px; text-align: right; flex-shrink: 0; }
+    .h-bar-track { flex: 1; height: 24px; background: #f1f5f9; border-radius: 6px; overflow: hidden; position: relative; }
+    .h-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; padding: 0 8px; font-size: 11px; font-weight: 600; color: white; min-width: 30px; transition: width 0.3s; }
+    .h-bar-count { font-size: 12px; color: var(--text-secondary); width: 50px; flex-shrink: 0; }
 
     /* Users table */
-    .section-title { font-size: 15px; font-weight: 600; margin-bottom: 12px; color: var(--primary-dark); }
     .table-wrap { background: white; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
     table { width: 100%; border-collapse: collapse; }
     th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); background: #f8fafc; }
@@ -64,19 +102,29 @@
     .ext-btn:hover { background: rgba(5,150,105,0.08); }
     .del-btn { background: none; border: 1px solid var(--border); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .del-btn:hover { background: rgba(220,38,38,0.06); border-color: var(--danger); }
-
-    /* Search */
     .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .search-input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; width: 220px; }
     .search-input:focus { outline: none; border-color: var(--primary); }
-
     .refresh-btn { background: none; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); }
     .refresh-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* Top pages */
+    .pages-list { font-size: 13px; }
+    .pages-list .page-row { display: flex; align-items: center; padding: 6px 0; border-bottom: 1px solid #f1f5f9; }
+    .pages-list .page-row:last-child { border-bottom: none; }
+    .pages-list .page-path { flex: 1; font-family: monospace; font-size: 12px; color: var(--text); }
+    .pages-list .page-views { font-size: 12px; font-weight: 600; color: var(--primary-dark); width: 60px; text-align: right; }
+    .pages-list .page-visitors { font-size: 12px; color: var(--text-secondary); width: 60px; text-align: right; }
+
     @media (max-width: 600px) {
-      #dashboard { padding: 16px; }
+      .tab-panel { padding: 16px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .stat-card .stat-value { font-size: 22px; }
       table { font-size: 12px; }
       th, td { padding: 8px 10px; }
       .del-btn { display: none; }
+      .h-bar-name { width: 70px; font-size: 11px; }
+      .bar-chart { height: 80px; }
     }
   </style>
 </head>
@@ -104,46 +152,153 @@
 
   <!-- Dashboard -->
   <div id="dashboard">
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-label">Utilisateurs total</div>
-        <div class="stat-value" id="stat-total">—</div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" data-panel="analytics">Analytiques</button>
+      <button class="admin-tab" data-panel="users">Utilisateurs</button>
+    </div>
+
+    <!-- Analytics Panel -->
+    <div id="panel-analytics" class="tab-panel active">
+      <!-- KPI Cards -->
+      <div class="stats-grid" id="kpi-grid">
+        <div class="stat-card">
+          <div class="stat-label">Vues aujourd'hui</div>
+          <div class="stat-value" id="kpi-views-today">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Visiteurs aujourd'hui</div>
+          <div class="stat-value" id="kpi-visitors-today">—</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Utilisateurs actifs</div>
+          <div class="stat-value" id="kpi-dau">—</div>
+          <div class="stat-sub">aujourd'hui (DAU)</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Actifs 7j</div>
+          <div class="stat-value" id="kpi-wau">—</div>
+          <div class="stat-sub">WAU</div>
+        </div>
+        <div class="stat-card purple">
+          <div class="stat-label">Actifs 30j</div>
+          <div class="stat-value" id="kpi-mau">—</div>
+          <div class="stat-sub">MAU</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Inscriptions 7j</div>
+          <div class="stat-value" id="kpi-signups-7d">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Inscriptions 30j</div>
+          <div class="stat-value" id="kpi-signups-30d">—</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">Conversion</div>
+          <div class="stat-value" id="kpi-conversion">—</div>
+          <div class="stat-sub">essai → abonné</div>
+        </div>
       </div>
-      <div class="stat-card active">
-        <div class="stat-label">Abonnés actifs</div>
-        <div class="stat-value" id="stat-active">—</div>
+
+      <!-- Traffic chart -->
+      <div class="section">
+        <div class="section-title">
+          Trafic
+          <div class="period-sel" id="chart-period">
+            <button class="period-btn active" data-period="7d">7j</button>
+            <button class="period-btn" data-period="30d">30j</button>
+            <button class="period-btn" data-period="90d">90j</button>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="bar-chart" id="traffic-chart"></div>
+          <div class="chart-legend">
+            <span class="leg-primary">Vues</span>
+            <span class="leg-secondary">Visiteurs uniques</span>
+          </div>
+        </div>
       </div>
-      <div class="stat-card trial">
-        <div class="stat-label">En essai</div>
-        <div class="stat-value" id="stat-trial">—</div>
+
+      <!-- Two columns: Tabs + Devices -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+        <!-- Tab usage -->
+        <div class="section" style="margin-bottom:0">
+          <div class="section-title">Onglets les plus utilisés (7j)</div>
+          <div class="section-card">
+            <div class="h-bars" id="tab-bars"></div>
+          </div>
+        </div>
+        <!-- Devices -->
+        <div class="section" style="margin-bottom:0">
+          <div class="section-title">Appareils (30j)</div>
+          <div class="section-card">
+            <div class="h-bars" id="device-bars"></div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f1f5f9">
+              <div style="font-size:11px;font-weight:600;color:var(--text-secondary);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.03em">Navigateurs</div>
+              <div class="h-bars" id="browser-bars"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="stat-card expired">
-        <div class="stat-label">Expirés</div>
-        <div class="stat-value" id="stat-expired">—</div>
+
+      <!-- Top pages -->
+      <div class="section">
+        <div class="section-title">Pages les plus consultées (7j)</div>
+        <div class="section-card">
+          <div class="pages-list">
+            <div class="page-row" style="font-weight:600;font-size:11px;color:var(--text-secondary);border-bottom:1px solid var(--border)">
+              <span class="page-path">PAGE</span>
+              <span class="page-views">VUES</span>
+              <span class="page-visitors">VISIT.</span>
+            </div>
+            <div id="pages-list"></div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="table-header">
-      <span class="section-title">Utilisateurs</span>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input type="search" id="search-input" class="search-input" placeholder="Rechercher un email…">
-        <button class="refresh-btn" id="refresh-btn">↻ Actualiser</button>
+    <!-- Users Panel -->
+    <div id="panel-users" class="tab-panel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Utilisateurs total</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-label">Abonnés actifs</div>
+          <div class="stat-value" id="stat-active">—</div>
+        </div>
+        <div class="stat-card amber">
+          <div class="stat-label">En essai</div>
+          <div class="stat-value" id="stat-trial">—</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-label">Expirés</div>
+          <div class="stat-value" id="stat-expired">—</div>
+        </div>
       </div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Email</th>
-            <th>Statut</th>
-            <th>Créé le</th>
-            <th>Fin abonnement</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody id="users-tbody"></tbody>
-      </table>
+
+      <div class="table-header">
+        <span class="section-title">Utilisateurs</span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="search" id="search-input" class="search-input" placeholder="Rechercher un email…">
+          <button class="refresh-btn" id="refresh-btn">↻ Actualiser</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Email</th>
+              <th>Statut</th>
+              <th>Créé le</th>
+              <th>Fin abonnement</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
