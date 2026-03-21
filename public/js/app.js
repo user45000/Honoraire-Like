@@ -390,10 +390,10 @@ const App = (() => {
       zoneTarget = 'antilles'; zoneEmoji = '🌴';
       zoneNom = dep === '971' ? 'Guadeloupe' : 'Martinique';
       zoneQuestion = 'Appliquer la zone tarifaire Antilles ?';
-    } else if (dep === '973' || dep === '974') {
+    } else if (dep === '973' || dep === '974' || dep === '976') {
       zoneTarget = 'reunion'; zoneEmoji = '🌴';
-      zoneNom = dep === '973' ? 'Guyane' : 'La Réunion';
-      zoneQuestion = 'Appliquer la zone tarifaire Réunion/Guyane ?';
+      zoneNom = dep === '973' ? 'Guyane' : dep === '976' ? 'Mayotte' : 'La Réunion';
+      zoneQuestion = 'Appliquer la zone tarifaire Réunion/Guyane/Mayotte ?';
     }
 
     if (zoneTarget && (localStorage.getItem('hon_zone') || 'metro') !== zoneTarget) {
