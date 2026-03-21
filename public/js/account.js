@@ -118,6 +118,9 @@ const Account = (() => {
 
     if (payment === 'success') {
       const sessionId = params.get('session_id');
+      // Cacher le paywall tout de suite pour éviter le flash
+      const overlay = document.getElementById('paywall-overlay');
+      if (overlay) overlay.style.display = 'none';
       // Auto-login via Stripe session si pas déjà connecté
       setTimeout(async () => {
         try {
