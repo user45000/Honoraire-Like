@@ -378,16 +378,20 @@ const Engine = (() => {
 
     // 6. Modificateurs CCAM (M/P/S/F — appliqués si actes CCAM présents)
     // F/P/S ne sont applicables que si M (urgence) est présent — règle CCAM
+    // M/P/S/F ne s'appliquent pas aux actes baseOnly (gestes programmés : DIU, spirométrie, infiltrations…)
     if (ccamActes && ccamActes.length > 0 && ccamModificateurs && ccamModificateurs.length > 0) {
-      const modDefs = tarifs.ccamModificateurs || {};
-      const hasM = ccamModificateurs.includes('M');
-      for (const modCode of ccamModificateurs) {
-        if (['P','S','F'].includes(modCode) && !hasM) continue;
-        const mod = modDefs[modCode];
-        if (mod) {
-          codes.push('Mod.' + modCode);
-          details.push({ code: 'Mod.' + modCode, label: mod.label + ' (modificateur CCAM)', montant: mod.montant });
-          total += mod.montant;
+      const allBaseOnly = ccamActes.every(a => a.baseOnly);
+      if (!allBaseOnly) {
+        const modDefs = tarifs.ccamModificateurs || {};
+        const hasM = ccamModificateurs.includes('M');
+        for (const modCode of ccamModificateurs) {
+          if (['P','S','F'].includes(modCode) && !hasM) continue;
+          const mod = modDefs[modCode];
+          if (mod) {
+            codes.push('Mod.' + modCode);
+            details.push({ code: 'Mod.' + modCode, label: mod.label + ' (modificateur CCAM)', montant: mod.montant });
+            total += mod.montant;
+          }
         }
       }
     }

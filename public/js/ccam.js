@@ -98,7 +98,17 @@ const CCAM = (() => {
 
     updateSelectionBanner();
     const modifCard = document.getElementById('ccam-modif-card');
-    if (modifCard) modifCard.style.display = selectedActes.length > 0 ? '' : 'none';
+    if (modifCard) {
+      const hasNonBaseOnly = selectedActes.some(a => !a.baseOnly);
+      // Masquer les modificateurs si aucun acte ou uniquement des actes programmés (baseOnly)
+      modifCard.style.display = (selectedActes.length > 0 && hasNonBaseOnly) ? '' : 'none';
+      if (!hasNonBaseOnly) {
+        // Retirer les modificateurs actifs quand il n'y a que des actes programmés
+        activeModificateurs = [];
+        const modifToggles = document.getElementById('ccam-modif-toggles');
+        if (modifToggles) modifToggles.querySelectorAll('.ccam-modif-btn').forEach(b => b.classList.remove('active'));
+      }
+    }
   }
 
   function renderItem(acte) {
