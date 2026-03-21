@@ -279,5 +279,45 @@ document.getElementById('refresh-btn').addEventListener('click', async () => {
   await loadUsers();
 });
 
+// --- Login form ---
+document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  const email = document.getElementById('login-email').value.trim();
+  const password = document.getElementById('login-password').value;
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      errEl.textContent = data.error || 'Erreur de connexion';
+      errEl.style.display = 'block';
+      return;
+    }
+    // Re-check admin access
+    const adminRes = await fetch('/api/admin/stats');
+    if (!adminRes.ok) {
+      errEl.textContent = 'Ce compte n\'a pas accès à l\'admin.';
+      errEl.style.display = 'block';
+      return;
+    }
+    const stats = await adminRes.json();
+    showDashboard();
+    document.getElementById('stat-total').textContent = stats.total;
+    document.getElementById('stat-active').textContent = stats.active;
+    document.getElementById('stat-trial').textContent = stats.trial;
+    document.getElementById('stat-expired').textContent = stats.expired;
+    loadAnalytics();
+    loadUsers();
+  } catch (err) {
+    errEl.textContent = 'Erreur réseau';
+    errEl.style.display = 'block';
+  }
+});
+
 // --- Init ---
 tryLoadDashboard();

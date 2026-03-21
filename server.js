@@ -691,7 +691,7 @@ app.post('/api/auth/login-by-stripe', async (req, res) => {
 });
 
 // === Admin ===
-const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || '').toLowerCase();
+const ADMIN_EMAILS = (process.env.ADMIN_EMAIL || '').toLowerCase().split(',').map(e => e.trim()).filter(Boolean);
 
 function requireSubscription(req, res, next) {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
@@ -701,10 +701,10 @@ function requireSubscription(req, res, next) {
 }
 
 function requireAdmin(req, res, next) {
-  if (!ADMIN_EMAIL) return res.status(503).json({ error: 'Admin non configuré' });
+  if (!ADMIN_EMAILS.length) return res.status(503).json({ error: 'Admin non configuré' });
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
   const user = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
-  if (!user || user.email.toLowerCase() !== ADMIN_EMAIL) return res.status(403).json({ error: 'Accès non autorisé' });
+  if (!user || !ADMIN_EMAILS.includes(user.email.toLowerCase())) return res.status(403).json({ error: 'Accès non autorisé' });
   next();
 }
 

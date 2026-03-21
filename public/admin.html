@@ -144,9 +144,14 @@
   <!-- Accès non autorisé -->
   <div id="unauth-screen" style="display:none">
     <div class="unauth-card">
-      <h2>Accès réservé</h2>
-      <p>Connectez-vous avec votre compte admin depuis l'application, puis revenez ici.</p>
-      <a href="/">Aller à l'application</a>
+      <h2>Espace admin</h2>
+      <p id="unauth-msg">Connectez-vous avec votre compte admin.</p>
+      <form id="admin-login-form" autocomplete="on">
+        <input type="email" id="login-email" placeholder="Email" required autocomplete="email" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;margin-bottom:10px">
+        <input type="password" id="login-password" placeholder="Mot de passe" required autocomplete="current-password" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;margin-bottom:14px">
+        <button type="submit" style="width:100%;background:#2563EB;color:white;padding:11px;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">Se connecter</button>
+        <div id="login-error" style="color:#dc2626;font-size:13px;margin-top:10px;display:none"></div>
+      </form>
     </div>
   </div>
 
