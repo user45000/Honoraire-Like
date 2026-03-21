@@ -742,7 +742,7 @@ app.delete('/api/admin/users/:id', requireAdmin, (req, res) => {
 app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
   const id = parseInt(req.params.id);
   const months = Math.max(1, Math.min(24, parseInt(req.body.months) || 1));
-  const user = db.prepare('SELECT subscription_end FROM users WHERE id = ?').get(id);
+  const user = db.prepare('SELECT email, subscription_end FROM users WHERE id = ?').get(id);
   if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
   const base = user.subscription_end && new Date(user.subscription_end) > new Date()
     ? new Date(user.subscription_end)
@@ -750,6 +750,48 @@ app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
   base.setMonth(base.getMonth() + months);
   const newEnd = base.toISOString();
   db.prepare("UPDATE users SET subscription_status = 'active', subscription_end = ? WHERE id = ?").run(newEnd, id);
+
+  // Email de notification
+  const endDate = new Date(newEnd).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const duree = months === 1 ? '1 mois' : months + ' mois';
+  sendEmail(user.email, `${duree} offert${months > 1 ? 's' : ''} sur Honoraires MG`, buildEmail(`
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+      <tr><td align="center">
+        <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr>
+            <td width="68" height="68" style="background-color:#059669;border-radius:34px;text-align:center;vertical-align:middle">
+              <span style="color:#ffffff;font-size:30px;line-height:68px;display:block">&#127873;</span>
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+
+    <h1 style="margin:0 0 6px;font-size:26px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em;text-align:center">${duree} offert${months > 1 ? 's' : ''} !</h1>
+    <p style="margin:0 0 28px;font-size:15px;color:#64748b;text-align:center">Votre acc&egrave;s &agrave; Honoraires MG a &eacute;t&eacute; prolong&eacute;.</p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
+      <tr>
+        <td style="background-color:#F0F5FF;border-radius:12px;padding:20px 24px;text-align:center">
+          <div style="font-size:13px;color:#64748b;margin-bottom:6px">Votre abonnement est actif jusqu'au</div>
+          <div style="font-size:22px;font-weight:700;color:#1B2D4F">${endDate}</div>
+        </td>
+      </tr>
+    </table>
+
+    <p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.65;text-align:center">
+      Profitez de l'acc&egrave;s illimit&eacute; pour calculer vos honoraires &mdash; consultations, visites, actes CCAM.
+    </p>
+
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
+      <tr>
+        <td align="center">
+          <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Ouvrir l'application &rarr;</a>
+        </td>
+      </tr>
+    </table>
+  `));
+
   res.json({ ok: true, subscription_end: newEnd });
 });
 
