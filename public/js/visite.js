@@ -139,10 +139,11 @@ const Visite = (() => {
           if (ecg) {
             const total = (ecg.tarif + (sup?.tarif || 0)).toFixed(2).replace('.', ',');
             document.getElementById('modal-title').textContent = 'ECG — ' + ecg.label;
-            document.getElementById('modal-body').innerHTML =
-              `<p class="majo-detail-tarif">+${total}€</p>` +
-              `<p>${ecg.note || ''}</p>` +
-              (sup ? `<p style="margin-top:8px;font-size:12px;color:#5a6070">Inclut YYYY490 (+${sup.tarif.toFixed(2).replace('.', ',')}€) : ${sup.label}</p>` : '');
+            const _body = document.getElementById('modal-body');
+            _body.innerHTML = '';
+            const _pT = document.createElement('p'); _pT.className = 'majo-detail-tarif'; _pT.textContent = '+' + total + '€'; _body.appendChild(_pT);
+            const _pN = document.createElement('p'); _pN.textContent = ecg.note || ''; _body.appendChild(_pN);
+            if (sup) { const _pS = document.createElement('p'); _pS.style.cssText = 'margin-top:8px;font-size:12px;color:#5a6070'; _pS.textContent = `Inclut YYYY490 (+${sup.tarif.toFixed(2).replace('.', ',')}€) : ${sup.label}`; _body.appendChild(_pS); }
             document.getElementById('modal-overlay').classList.add('active');
           }
           return;

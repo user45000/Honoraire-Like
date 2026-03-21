@@ -118,21 +118,22 @@ const CCAM = (() => {
         : '<span class="ccam-rank rank-secondary">② 50%</span>';
     }
 
+    const esc = escapeHTML;
     return `
-      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : ''}" data-code="${acte.code}">
-        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${acte.code}">
+      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : ''}" data-code="${esc(acte.code)}">
+        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${esc(acte.code)}">
           ${isFav ? '&#9733;' : '&#9734;'}
         </button>
         <div class="ccam-info">
           <div class="ccam-top-row">
-            <span class="ccam-code">${acte.code}</span>
+            <span class="ccam-code">${esc(acte.code)}</span>
             ${cumulBadge}
             ${rankBadge}
           </div>
-          <span class="ccam-label">${acte.label}</span>
+          <span class="ccam-label">${esc(acte.label)}</span>
         </div>
         <span class="ccam-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</span>
-        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${acte.code}"
+        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${esc(acte.code)}"
           title="${isSelected ? 'Retirer' : maxReached ? '2 actes maximum' : 'Ajouter au calcul'}">
           ${isSelected ? '✓' : maxReached ? '–' : '+'}
         </button>
@@ -210,6 +211,7 @@ const CCAM = (() => {
     const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
     const has2 = selectedActes.length === 2;
 
+    const esc = escapeHTML;
     const acteLines = sorted.map((a, idx) => {
       const rankIcon = has2 ? (idx === 0 ? '① ' : '② ') : '';
       let tauxLabel = '';
@@ -224,9 +226,9 @@ const CCAM = (() => {
         else { tauxLabel = 'remplace G si + rémunérateur'; tauxClass = ''; }
       }
       return `<div class="ccam-sel-item">
-        <strong>${rankIcon}${a.code}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
-        <span class="ccam-sel-taux ${tauxClass}">${tauxLabel}</span>
-        <button class="ccam-sel-remove" data-remove="${a.code}">&times;</button>
+        <strong>${rankIcon}${esc(a.code)}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
+        <span class="ccam-sel-taux ${esc(tauxClass)}">${esc(tauxLabel)}</span>
+        <button class="ccam-sel-remove" data-remove="${esc(a.code)}">&times;</button>
       </div>`;
     }).join('');
 

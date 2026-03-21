@@ -98,7 +98,10 @@ const Consultation = (() => {
         const acte = CCAM.getActe(infoBtn.dataset.courantInfo);
         if (acte) {
           document.getElementById('modal-title').textContent = `${acte.code} — ${acte.label}`;
-          document.getElementById('modal-body').innerHTML = `<p class="majo-detail-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</p><p>${acte.note || ''}</p>`;
+          const _body = document.getElementById('modal-body');
+          _body.innerHTML = '';
+          const _pT = document.createElement('p'); _pT.className = 'majo-detail-tarif'; _pT.textContent = acte.tarif.toFixed(2).replace('.', ',') + '€'; _body.appendChild(_pT);
+          const _pN = document.createElement('p'); _pN.textContent = acte.note || ''; _body.appendChild(_pN);
           document.getElementById('modal-overlay').classList.add('active');
         }
         return;
