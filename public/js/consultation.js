@@ -319,13 +319,13 @@ const Consultation = (() => {
     }
     updateActeStates();
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'consultation') recalculate();
   }
 
   function setMode(value) {
     state.mode = value;
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'consultation') recalculate();
   }
 
   function getState() {
@@ -338,7 +338,7 @@ const Consultation = (() => {
     updateModeVisibility();
     updateActeStates();
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'consultation') recalculate();
   }
 
   function setHeure(value) {

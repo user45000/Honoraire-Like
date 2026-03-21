@@ -368,7 +368,7 @@ const Visite = (() => {
   function setRelation(value) {
     state.relation = value;
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'visite') recalculate();
   }
 
   function onShow() {
@@ -385,7 +385,7 @@ const Visite = (() => {
     state.mode = value;
     updateDeplacementVisibility();
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'visite') recalculate();
   }
 
   function setPeriode(value) {
@@ -395,7 +395,7 @@ const Visite = (() => {
     updateDeplacementForPeriode();
     updateDeplacementVisibility();
     updateAllMajoStates();
-    recalculate();
+    if (App.getCurrentTab() === 'visite') recalculate();
   }
 
   function setHeure(value) {
