@@ -689,7 +689,7 @@ app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
   res.json({ ok: true, subscription_end: newEnd });
 });
 
-app.get('/admin', requireAdmin, (req, res) => {
+app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
