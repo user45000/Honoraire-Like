@@ -544,7 +544,7 @@ app.post('/api/stripe/create-checkout-session', async (req, res) => {
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { userId: user.id.toString() },
-      success_url: `${appUrl}/?payment=success`,
+      success_url: `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/?payment=cancel`,
     };
     // Réutiliser le customer Stripe existant si possible
@@ -594,13 +594,46 @@ app.post('/api/stripe/guest-checkout', async (req, res) => {
       mode: 'subscription',
       payment_method_types: ['card'],
       line_items: [{ price: priceId, quantity: 1 }],
-      success_url: `${appUrl}/?payment=success`,
+      success_url: `${appUrl}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/?payment=cancel`,
     });
     res.json({ url: session.url });
   } catch (e) {
     console.error('Guest checkout error:', e);
     res.status(500).json({ error: e.message });
+  }
+});
+
+// Auto-login après guest checkout via Stripe session_id
+app.post('/api/auth/login-by-stripe', async (req, res) => {
+  const { sessionId } = req.body || {};
+  if (!sessionId || !stripe) return res.status(400).json({ error: 'Paramètres manquants' });
+
+  try {
+    const stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
+    if (!stripeSession || stripeSession.payment_status !== 'paid') {
+      return res.status(400).json({ error: 'Session de paiement invalide' });
+    }
+    const email = (stripeSession.customer_details?.email || '').toLowerCase().trim();
+    if (!email) return res.status(400).json({ error: 'Email non trouvé dans la session Stripe' });
+
+    // Attendre que le webhook ait créé le compte (retry jusqu'à 10s)
+    let user = null;
+    for (let i = 0; i < 10; i++) {
+      user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+      if (user && user.subscription_status === 'active') break;
+      user = null;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+
+    if (!user) return res.status(404).json({ error: 'Compte en cours de création, réessayez' });
+
+    req.session.userId = user.id;
+    const { password_hash, ...safeU } = user;
+    res.json({ user: safeU });
+  } catch (e) {
+    console.error('Login by Stripe error:', e);
+    res.status(500).json({ error: 'Erreur de vérification' });
   }
 });
 

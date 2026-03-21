@@ -117,18 +117,33 @@ const Account = (() => {
     window.history.replaceState({}, '', window.location.pathname);
 
     if (payment === 'success') {
-      // Recharger le statut utilisateur depuis le serveur
+      const sessionId = params.get('session_id');
+      // Auto-login via Stripe session si pas déjà connecté
       setTimeout(async () => {
         try {
           const basePath = App.getBasePath();
-          const res = await fetch(`${basePath}api/auth/me`);
-          const data = await res.json();
-          currentUser = data.user;
+          if (!currentUser && sessionId) {
+            const loginRes = await fetch(`${basePath}api/auth/login-by-stripe`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ sessionId })
+            });
+            const loginData = await loginRes.json();
+            if (loginData.user) currentUser = loginData.user;
+          }
+          if (!currentUser) {
+            const res = await fetch(`${basePath}api/auth/me`);
+            const data = await res.json();
+            currentUser = data.user;
+          }
         } catch (e) {}
+        // Cacher le paywall immédiatement
+        const overlay = document.getElementById('paywall-overlay');
+        if (overlay) overlay.style.display = 'none';
         App.switchTab('compte');
         render();
         showBanner('Abonnement activé — merci !', 'success');
-      }, 1000);
+      }, 1500);
     } else if (payment === 'cancel') {
       App.switchTab('compte');
     }
