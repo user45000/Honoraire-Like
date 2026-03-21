@@ -70,6 +70,7 @@ const CCAM = (() => {
     const isSelected = selectedActes.some(a => a.code === acte.code);
     const cumul = acte.cumulG || 'non';
 
+    const esc = escapeHTML;
     let cumulBadge = '';
     if (cumul === 'oui') {
       cumulBadge = '<span class="ccam-cumul yes">+ G</span>';
@@ -80,19 +81,19 @@ const CCAM = (() => {
     }
 
     return `
-      <div class="ccam-item ${isSelected ? 'selected' : ''}" data-code="${acte.code}">
-        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${acte.code}">
+      <div class="ccam-item ${isSelected ? 'selected' : ''}" data-code="${esc(acte.code)}">
+        <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${esc(acte.code)}">
           ${isFav ? '&#9733;' : '&#9734;'}
         </button>
         <div class="ccam-info">
           <div class="ccam-top-row">
-            <span class="ccam-code">${acte.code}</span>
+            <span class="ccam-code">${esc(acte.code)}</span>
             ${cumulBadge}
           </div>
-          <span class="ccam-label">${acte.label}</span>
+          <span class="ccam-label">${esc(acte.label)}</span>
         </div>
         <span class="ccam-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</span>
-        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${acte.code}" title="${isSelected ? 'Retirer' : 'Ajouter au calcul'}">
+        <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${esc(acte.code)}" title="${isSelected ? 'Retirer' : 'Ajouter au calcul'}">
           ${isSelected ? '✓' : '+'}
         </button>
       </div>
@@ -167,6 +168,7 @@ const CCAM = (() => {
     }
 
     banner.style.display = '';
+    const esc = escapeHTML;
     const acteLines = selectedActes.map(a => {
       const cumul = a.cumulG || 'non';
       let ruleText = '';
@@ -174,9 +176,9 @@ const CCAM = (() => {
       else if (cumul === '50%') ruleText = 'cumulable à 50% avec G';
       else ruleText = 'non cumulable — le plus rémunérateur sera facturé';
       return `<div class="ccam-sel-item">
-        <strong>${a.code}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
-        <span class="ccam-sel-rule">${ruleText}</span>
-        <button class="ccam-sel-remove" data-remove="${a.code}">&times;</button>
+        <strong>${esc(a.code)}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
+        <span class="ccam-sel-rule">${esc(ruleText)}</span>
+        <button class="ccam-sel-remove" data-remove="${esc(a.code)}">&times;</button>
       </div>`;
     }).join('');
 

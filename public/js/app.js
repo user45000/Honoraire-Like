@@ -190,6 +190,12 @@ const App = (() => {
 /**
  * Affiche une modale d'info pour un acte (GL1, GL2, GL3)
  */
+function escapeHTML(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
 function showActeInfo(code) {
   const tarifs = Engine.getTarifs();
   if (!tarifs) return;
@@ -201,10 +207,15 @@ function showActeInfo(code) {
   const prix = acte.tarifs[zone] || acte.tarifs.metro || 0;
 
   document.getElementById('modal-title').textContent = `${code} — ${acte.label}`;
-  document.getElementById('modal-body').innerHTML = `
-    <p class="majo-detail-tarif">${prix.toFixed(2).replace('.', ',')}€</p>
-    <p>${acte.description}</p>
-  `;
+  const body = document.getElementById('modal-body');
+  body.innerHTML = '';
+  const pTarif = document.createElement('p');
+  pTarif.className = 'majo-detail-tarif';
+  pTarif.textContent = prix.toFixed(2).replace('.', ',') + '€';
+  const pDesc = document.createElement('p');
+  pDesc.textContent = acte.description;
+  body.appendChild(pTarif);
+  body.appendChild(pDesc);
   document.getElementById('modal-overlay').classList.add('active');
 }
 
@@ -219,12 +230,34 @@ function showMajoInfo(code) {
   if (!majo) return;
 
   document.getElementById('modal-title').textContent = `${code} — ${majo.label}`;
-  document.getElementById('modal-body').innerHTML = `
-    <p class="majo-detail-tarif">+${majo.tarif.toFixed(2).replace('.', ',')}€</p>
-    <p>${majo.description || ''}</p>
-    ${majo.exclusifs ? `<p style="margin-top:8px;font-size:12px;color:#e74c3c">Non cumulable avec : ${majo.exclusifs.join(', ')}</p>` : ''}
-    ${majo.applicableTo ? `<p style="margin-top:4px;font-size:12px;color:#5a6070">Applicable à : ${majo.applicableTo.join(', ')}</p>` : ''}
-  `;
+  const body = document.getElementById('modal-body');
+  body.innerHTML = '';
+
+  const pTarif = document.createElement('p');
+  pTarif.className = 'majo-detail-tarif';
+  pTarif.textContent = '+' + majo.tarif.toFixed(2).replace('.', ',') + '€';
+  body.appendChild(pTarif);
+
+  if (majo.description) {
+    const pDesc = document.createElement('p');
+    pDesc.textContent = majo.description;
+    body.appendChild(pDesc);
+  }
+
+  if (majo.exclusifs) {
+    const pExcl = document.createElement('p');
+    pExcl.style.cssText = 'margin-top:8px;font-size:12px;color:#e74c3c';
+    pExcl.textContent = 'Non cumulable avec : ' + majo.exclusifs.join(', ');
+    body.appendChild(pExcl);
+  }
+
+  if (majo.applicableTo) {
+    const pAppl = document.createElement('p');
+    pAppl.style.cssText = 'margin-top:4px;font-size:12px;color:#5a6070';
+    pAppl.textContent = 'Applicable à : ' + majo.applicableTo.join(', ');
+    body.appendChild(pAppl);
+  }
+
   document.getElementById('modal-overlay').classList.add('active');
 }
 

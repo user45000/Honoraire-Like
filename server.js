@@ -1,9 +1,36 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+
+// --- Security headers ---
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      fontSrc: ["'self'"],
+      imgSrc: ["'self'", "data:"],
+      connectSrc: ["'self'"]
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
+
+// --- Rate limiting ---
+const apiLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Trop de requêtes, réessayez dans une minute' }
+});
+app.use('/api/', apiLimiter);
 
 // --- Tarifs API ---
 const tarifsPath = path.join(__dirname, 'data', 'tarifs.json');
@@ -29,8 +56,11 @@ app.get('/api/ccam', (req, res) => {
   res.json(results);
 });
 
-// SPA fallback
+// SPA fallback — uniquement les routes non-API
 app.get('*', (req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Route introuvable' });
+  }
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
