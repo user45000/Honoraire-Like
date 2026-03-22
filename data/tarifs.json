@@ -668,28 +668,31 @@
       "code": "MZLB001",
       "label": "Infiltration articulaire membre supérieur",
       "tarif": 27.3,
-      "cumulG": "non",
-      "note": "Acte isolé — non cumulable avec G (convention 2024)",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 27.3,
-      "tarif_non_optam": 27.3
+      "tarif_non_optam": 27.3,
+      "baseOnly": true
     },
     {
       "code": "NZLB001",
       "label": "Infiltration articulaire membre inférieur",
       "tarif": 32.2,
-      "cumulG": "non",
-      "note": "Acte isolé — non cumulable avec G (convention 2024)",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 32.2,
-      "tarif_non_optam": 32.2
+      "tarif_non_optam": 32.2,
+      "baseOnly": true
     },
     {
       "code": "LHLB001",
       "label": "Infiltration vertébrale postérieure",
       "tarif": 35.7,
-      "cumulG": "non",
-      "note": "Acte isolé — non cumulable avec G (convention 2024)",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 35.7,
-      "tarif_non_optam": 35.7
+      "tarif_non_optam": 35.7,
+      "baseOnly": true
     },
     {
       "code": "QZJA002",
@@ -847,8 +850,8 @@
       "code": "QZHA001",
       "label": "Biopsie dermo-épidermique",
       "tarif": 20.49,
-      "cumulG": "non",
-      "note": "Acte isolé",
+      "cumulG": "50%",
+      "note": "Cumulable à 50% avec G/VG. Max 2 biopsies par consultation.",
       "tarif_optam": 21.43,
       "tarif_non_optam": 20.49
     },
@@ -1268,8 +1271,8 @@
       "code": "QZHA005",
       "label": "Biopsie des tissus sous-cutanés",
       "tarif": 21.07,
-      "cumulG": "non",
-      "note": "Acte isolé.",
+      "cumulG": "50%",
+      "note": "Cumulable à 50% avec G/VG. Max 2 biopsies par consultation.",
       "tarif_optam": 26.6,
       "tarif_non_optam": 21.07
     },
@@ -1421,37 +1424,41 @@
       "code": "MZHB002",
       "label": "Ponction articulaire membre supérieur",
       "tarif": 21.49,
-      "cumulG": "non",
-      "note": "Sans guidage. Acte isolé.",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 30.1,
-      "tarif_non_optam": 21.49
+      "tarif_non_optam": 21.49,
+      "baseOnly": true
     },
     {
       "code": "NZHB002",
       "label": "Ponction articulaire membre inférieur",
       "tarif": 23.51,
-      "cumulG": "non",
-      "note": "Sans guidage. Acte isolé.",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 30.1,
-      "tarif_non_optam": 23.51
+      "tarif_non_optam": 23.51,
+      "baseOnly": true
     },
     {
       "code": "NZJB001",
       "label": "Évacuation collection articulaire membre inférieur",
       "tarif": 48.64,
-      "cumulG": "non",
-      "note": "Acte isolé — non cumulable avec G (convention 2024)",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 63,
-      "tarif_non_optam": 48.64
+      "tarif_non_optam": 48.64,
+      "baseOnly": true
     },
     {
       "code": "MZJB001",
       "label": "Évacuation collection articulaire membre supérieur",
       "tarif": 83.60000000000001,
-      "cumulG": "non",
-      "note": "Acte isolé — non cumulable avec G (convention 2024)",
+      "cumulG": "oui",
+      "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 83.60000000000001,
-      "tarif_non_optam": 83.60000000000001
+      "tarif_non_optam": 83.60000000000001,
+      "baseOnly": true
     },
     {
       "code": "MZMP001",
@@ -1812,6 +1819,16 @@
       "tarif_non_optam": 60.85,
       "cumulG": "non",
       "note": "Acte isolé. Réduction orthopédique sans chirurgie"
+    },
+    {
+      "code": "JLQE002",
+      "label": "Colposcopie",
+      "tarif": 38.21,
+      "tarif_optam": 51.98,
+      "tarif_non_optam": 38.21,
+      "cumulG": "oui",
+      "baseOnly": true,
+      "note": "Cumulable à 100% avec G/VG (décision UNCAM 07/11/2025). Non cumulable avec consultations complexes."
     }
   ],
   "ccamModificateurs": {
