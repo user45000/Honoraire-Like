@@ -54,10 +54,16 @@ const CCAM = (() => {
     };
 
     // P, S, F : autorisés si l'acte le permet ET la période correspond
+    // ET pas de cumul avec les majorations horaires NGAP (art. III-3 CCAM)
+    const ctx = App.getCCAMContext();
+    const state = ctx === 'visite' ? Visite.getState() : Consultation.getState();
+    const hasNgapHoraire = periode !== 'jour'; // si hors jour, la consultation G aura une majoration horaire NGAP
+
     function timeModifResult(code, label) {
       const actAllowed = isModifAllowedByActs(code);
       if (!actAllowed) return { available: false, reason: 'Non autorisé pour cet acte' };
       if (periode === 'jour') return { available: false, reason: 'Pas ' + label + ' en journée' };
+      if (hasNgapHoraire) return { available: false, reason: 'Majoration horaire déjà sur la consultation NGAP (art. III-3)' };
       if (validTimeModif !== code) return { available: false, reason: 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')' };
       return { available: true, reason: '' };
     }

@@ -432,9 +432,16 @@ const Engine = (() => {
     }
 
     // Modificateurs CCAM (M/P/S/F) — seulement si au moins un acte CCAM est facturé
+    // P/S/F non cumulables avec majorations horaires NGAP sur la consultation (art. III-3)
     if (ccamBilled && ccamModificateurs && ccamModificateurs.length > 0) {
       const modDefs = tarifs.ccamModificateurs || {};
+      // Vérifier si une majoration horaire NGAP est facturée (non annulée)
+      const ngapHoraireCodes = ['CRN','CRM','CRD','CRS','VRN','VRM','VRD','VRS','F','MN','MM'];
+      const hasNgapHoraire = details.some(d => ngapHoraireCodes.includes(d.code) && d.montant > 0);
+
       for (const modCode of ccamModificateurs) {
+        // Bloquer P/S/F si majoration horaire NGAP déjà facturée
+        if (['P','S','F'].includes(modCode) && hasNgapHoraire) continue;
         const allowed = ccamActes.some(a => a.modificateurs && a.modificateurs.includes(modCode));
         if (!allowed) continue;
         const mod = modDefs[modCode];
