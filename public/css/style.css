@@ -1497,8 +1497,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .result-expand {
-  font-size: 14px;
-  opacity: 0.4;
+  font-size: 20px;
+  opacity: 0.5;
   margin-right: 10px;
   flex-shrink: 0;
   transition: transform 0.2s;
