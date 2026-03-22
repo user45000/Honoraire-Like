@@ -351,12 +351,16 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
         <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:24px">
           <tr>
             <td style="background-color:#F0F5FF;border-radius:12px;padding:20px 24px;text-align:center">
-              <div style="font-size:13px;color:#64748b;margin-bottom:6px">Montant payé</div>
+              <div style="font-size:13px;color:#64748b;margin-bottom:6px">Montant pay&eacute;</div>
               <div style="font-size:28px;font-weight:700;color:#1B2D4F">${amount} &euro;</div>
               <div style="font-size:12px;color:#94a3b8;margin-top:4px">${invoice.lines?.data?.[0]?.description || 'Abonnement Honoraires MG'}</div>
             </td>
           </tr>
         </table>
+
+        <p style="margin:0 0 24px;font-size:15px;color:#334155;line-height:1.65;text-align:center">
+          Merci pour votre confiance et votre soutien.&nbsp;Votre abonnement nous permet de maintenir Honoraires&nbsp;MG &agrave; jour et de continuer &agrave; am&eacute;liorer l'outil au quotidien.
+        </p>
 
         <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
           <tr><td align="center">
