@@ -609,30 +609,30 @@
     {
       "code": "DEQP003",
       "label": "ECG 12 dérivations",
-      "tarif": 13.52,
+      "tarif": 13.81,
       "cumulG": "oui",
       "note": "Cumulable à 100% avec G/VG (convention 2024)",
-      "tarif_optam": 14.26,
-      "tarif_non_optam": 13.52
+      "tarif_optam": 14.77,
+      "tarif_non_optam": 13.81
     },
     {
       "code": "JKHD001",
       "label": "Frottis cervico-vaginal",
-      "tarif": 9.64,
+      "tarif": 9.96,
       "cumulG": "oui",
       "note": "Cumulable à 100% avec G/VG depuis 2017",
-      "tarif_optam": 12.46,
-      "tarif_non_optam": 9.64
+      "tarif_optam": 13,
+      "tarif_non_optam": 9.96
     },
     {
       "code": "GLQP012",
       "label": "Spirométrie",
-      "tarif": 37.88,
+      "tarif": 38.8,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes (VL, APC, GL…) ni avec MSH/MIC actifs.",
-      "tarif_optam": 40.28,
-      "tarif_non_optam": 37.88
+      "tarif_optam": 41.87,
+      "tarif_non_optam": 38.8
     },
     {
       "code": "JKLD001",
@@ -667,41 +667,41 @@
     {
       "code": "MZLB001",
       "label": "Infiltration articulaire membre supérieur",
-      "tarif": 26.13,
+      "tarif": 27.3,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
-      "tarif_optam": 26.13,
-      "tarif_non_optam": 26.13
+      "tarif_optam": 27.3,
+      "tarif_non_optam": 27.3
     },
     {
       "code": "NZLB001",
       "label": "Infiltration articulaire membre inférieur",
-      "tarif": 30.82,
+      "tarif": 32.2,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
-      "tarif_optam": 30.82,
-      "tarif_non_optam": 30.82
+      "tarif_optam": 32.2,
+      "tarif_non_optam": 32.2
     },
     {
       "code": "LHLB001",
       "label": "Infiltration vertébrale postérieure",
-      "tarif": 34.17,
+      "tarif": 35.7,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
-      "tarif_optam": 34.17,
-      "tarif_non_optam": 34.17
+      "tarif_optam": 35.7,
+      "tarif_non_optam": 35.7
     },
     {
       "code": "QZJA002",
       "label": "Suture plaie superficielle < 3cm",
-      "tarif": 23.59,
+      "tarif": 24.21,
       "cumulG": "non",
       "note": "Acte isolé : facturer G ou CCAM, le plus rémunérateur",
-      "tarif_optam": 25.52,
-      "tarif_non_optam": 23.59
+      "tarif_optam": 26.6,
+      "tarif_non_optam": 24.21
     },
     {
       "code": "QZJA005",
@@ -713,11 +713,11 @@
     {
       "code": "QZJA017",
       "label": "Suture plaie profonde",
-      "tarif": 38.79,
+      "tarif": 40.07,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 51.76,
-      "tarif_non_optam": 38.79
+      "tarif_optam": 53.95,
+      "tarif_non_optam": 40.07
     },
     {
       "code": "YYYY036",
@@ -743,11 +743,11 @@
     {
       "code": "QZFA031",
       "label": "Cryothérapie / azote liquide (2-5 lésions)",
-      "tarif": 36.87,
+      "tarif": 37.92,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 42.72,
-      "tarif_non_optam": 36.87
+      "tarif_optam": 44.52,
+      "tarif_non_optam": 37.92
     },
     {
       "code": "BAQP001",
@@ -759,11 +759,11 @@
     {
       "code": "CDQP010",
       "label": "Audiométrie tonale ou vocale",
-      "tarif": 23.25,
+      "tarif": 23.84,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 26.18,
-      "tarif_non_optam": 23.25
+      "tarif_optam": 27.2,
+      "tarif_non_optam": 23.84
     },
     {
       "code": "GEQP002",
@@ -775,20 +775,20 @@
     {
       "code": "QZHA002",
       "label": "Pose d'implant contraceptif",
-      "tarif": 36.93,
+      "tarif": 38.08,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 46.99,
-      "tarif_non_optam": 36.93
+      "tarif_optam": 48.97,
+      "tarif_non_optam": 38.08
     },
     {
       "code": "QZGA004",
       "label": "Retrait d'implant contraceptif",
-      "tarif": 30.99,
+      "tarif": 31.93,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 38.29,
-      "tarif_non_optam": 30.99
+      "tarif_optam": 39.91,
+      "tarif_non_optam": 31.93
     },
     {
       "code": "YYYY190",
@@ -807,11 +807,11 @@
     {
       "code": "CDQP010",
       "label": "Échographie thyroïdienne",
-      "tarif": 23.25,
+      "tarif": 23.84,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 26.18,
-      "tarif_non_optam": 23.25
+      "tarif_optam": 27.2,
+      "tarif_non_optam": 23.84
     },
     {
       "code": "JQQP002",
@@ -837,11 +837,11 @@
     {
       "code": "CBQD001",
       "label": "Tympanométrie",
-      "tarif": 21.01,
+      "tarif": 21.52,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 22.33,
-      "tarif_non_optam": 21.01
+      "tarif_optam": 23.2,
+      "tarif_non_optam": 21.52
     },
     {
       "code": "ALQP003",
@@ -855,38 +855,38 @@
     {
       "code": "CDQP012",
       "label": "Audiométrie tonale et vocale",
-      "tarif": 34.88,
+      "tarif": 35.76,
       "cumulG": "non",
       "note": "Acte isolé",
-      "tarif_optam": 39.27,
-      "tarif_non_optam": 34.88
+      "tarif_optam": 40.8,
+      "tarif_non_optam": 35.76
     },
     {
       "code": "CDQP015",
       "label": "Audiométrie tonale + tympanométrie",
-      "tarif": 40.81,
+      "tarif": 42.4,
       "cumulG": "non",
       "note": "Acte isolé. Inclut audiométrie tonale et tympanométrie (ne pas cumuler CBQD001)",
-      "tarif_optam": 40.81,
-      "tarif_non_optam": 40.81
+      "tarif_optam": 42.4,
+      "tarif_non_optam": 42.4
     },
     {
       "code": "CDQP002",
       "label": "Audiométrie tonale + vocale + tympanométrie",
-      "tarif": 52.25,
+      "tarif": 53.98,
       "cumulG": "non",
       "note": "Acte isolé. Examen complet audiométrie + tympanométrie (ne pas cumuler CBQD001 ni CDQP012)",
-      "tarif_optam": 53.13,
-      "tarif_non_optam": 52.25
+      "tarif_optam": 55.2,
+      "tarif_non_optam": 53.98
     },
     {
       "code": "QZHA001",
       "label": "Biopsie dermo-épidermique",
-      "tarif": 19.99,
+      "tarif": 20.49,
       "cumulG": "50%",
       "note": "Cumulable à 50% avec G/VG (biopsie)",
-      "tarif_optam": 20.56,
-      "tarif_non_optam": 19.99
+      "tarif_optam": 21.43,
+      "tarif_non_optam": 20.49
     },
     {
       "code": "FSD",
@@ -907,11 +907,11 @@
     {
       "code": "GLQP007",
       "label": "Polygraphie respiratoire nocturne",
-      "tarif": 119.31,
+      "tarif": 122.65,
       "cumulG": "non",
       "note": "Dépistage SAHOS. Acte isolé.",
-      "tarif_optam": 145.92,
-      "tarif_non_optam": 119.31
+      "tarif_optam": 151.68,
+      "tarif_non_optam": 122.65
     },
     {
       "code": "YYYY010",
@@ -925,83 +925,83 @@
     {
       "code": "QZJA001",
       "label": "Suture plaie profonde >10cm (hors face)",
-      "tarif": 66.9,
+      "tarif": 68.99,
       "cumulG": "non",
       "note": "Cabinet uniquement.",
-      "tarif_optam": 85.08,
-      "tarif_non_optam": 66.9
+      "tarif_optam": 88.68,
+      "tarif_non_optam": 68.99
     },
     {
       "code": "QZJA009",
       "label": "Évacuation collection superficielle cutanée",
-      "tarif": 26.6,
+      "tarif": 27.54,
       "cumulG": "non",
       "note": "Abcès, kyste superficiel.",
-      "tarif_optam": 38.29,
-      "tarif_non_optam": 26.6
+      "tarif_optam": 39.91,
+      "tarif_non_optam": 27.54
     },
     {
       "code": "QZJA012",
       "label": "Suture plaie profonde 3-10cm (hors face/main)",
-      "tarif": 53.33,
+      "tarif": 54.84,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 61.68,
-      "tarif_non_optam": 53.33
+      "tarif_optam": 64.29,
+      "tarif_non_optam": 54.84
     },
     {
       "code": "QZJA015",
       "label": "Suture plaie superficielle >10cm (hors face)",
-      "tarif": 44.56,
+      "tarif": 46.07,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 61.68,
-      "tarif_non_optam": 44.56
+      "tarif_optam": 64.29,
+      "tarif_non_optam": 46.07
     },
     {
       "code": "QZJA016",
       "label": "Suture plaie profonde <3cm (hors face/main)",
-      "tarif": 45.93,
+      "tarif": 47.13,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 48.92,
-      "tarif_non_optam": 45.93
+      "tarif_optam": 50.99,
+      "tarif_non_optam": 47.13
     },
     {
       "code": "QZJA021",
       "label": "Suture plusieurs plaies pulpo-unguéales",
-      "tarif": 104.19,
+      "tarif": 107.67,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 141.8,
-      "tarif_non_optam": 104.19
+      "tarif_optam": 147.8,
+      "tarif_non_optam": 107.67
     },
     {
       "code": "QZJA022",
       "label": "Suture plaie pulpo-unguéale",
-      "tarif": 64.44,
+      "tarif": 66.42,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 80.83,
-      "tarif_non_optam": 64.44
+      "tarif_optam": 84.25,
+      "tarif_non_optam": 66.42
     },
     {
       "code": "QZJB002",
       "label": "Évacuation collection superficielle et/ou profonde",
-      "tarif": 23.59,
+      "tarif": 24.21,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 25.52,
-      "tarif_non_optam": 23.59
+      "tarif_optam": 26.6,
+      "tarif_non_optam": 24.21
     },
     {
       "code": "QAJA002",
       "label": "Suture plaie superficielle face >10cm",
-      "tarif": 61.28,
+      "tarif": 63.31,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 82.95,
-      "tarif_non_optam": 61.28
+      "tarif_optam": 86.46,
+      "tarif_non_optam": 63.31
     },
     {
       "code": "QAJA004",
@@ -1015,11 +1015,11 @@
     {
       "code": "QAJA005",
       "label": "Suture plaie superficielle face 3-10cm",
-      "tarif": 56.34,
+      "tarif": 58.18,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 74.45,
-      "tarif_non_optam": 56.34
+      "tarif_optam": 77.6,
+      "tarif_non_optam": 58.18
     },
     {
       "code": "QAJA013",
@@ -1033,119 +1033,119 @@
     {
       "code": "HAJA003",
       "label": "Suture plaie cutanée lèvre non transfixiante",
-      "tarif": 26.32,
+      "tarif": 27.16,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 34.03,
-      "tarif_non_optam": 26.32
+      "tarif_optam": 35.47,
+      "tarif_non_optam": 27.16
     },
     {
       "code": "HAJA006",
       "label": "Suture plaie transfixiante de lèvre",
-      "tarif": 38.66,
+      "tarif": 40.01,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 55.3,
-      "tarif_non_optam": 38.66
+      "tarif_optam": 57.64,
+      "tarif_non_optam": 40.01
     },
     {
       "code": "HAJA010",
       "label": "Suture plaie muqueuse intrabuccale",
-      "tarif": 23.3,
+      "tarif": 24.1,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 32.61,
-      "tarif_non_optam": 23.3
+      "tarif_optam": 33.99,
+      "tarif_non_optam": 24.1
     },
     {
       "code": "GAJA002",
       "label": "Suture plaie du nez",
-      "tarif": 37.83,
+      "tarif": 39.16,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 53.88,
-      "tarif_non_optam": 37.83
+      "tarif_optam": 56.16,
+      "tarif_non_optam": 39.16
     },
     {
       "code": "CAJA002",
       "label": "Suture plaie de l'auricule",
-      "tarif": 33.72,
+      "tarif": 34.87,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 46.79,
-      "tarif_non_optam": 33.72
+      "tarif_optam": 48.77,
+      "tarif_non_optam": 34.87
     },
     {
       "code": "QZFA001",
       "label": "Exérèse 2-5 lésions sous-cutanées (malignes)",
-      "tarif": 53.22,
+      "tarif": 54.96,
       "cumulG": "non",
       "note": "Associé au FSD si exérèse ambulatoire.",
-      "tarif_optam": 70.9,
-      "tarif_non_optam": 53.22
+      "tarif_optam": 73.9,
+      "tarif_non_optam": 54.96
     },
     {
       "code": "QZFA002",
       "label": "Exérèse 1 lésion sous-cutanée (maligne)",
-      "tarif": 39.45,
+      "tarif": 40.77,
       "cumulG": "non",
       "note": "Associé au FSD si exérèse ambulatoire.",
-      "tarif_optam": 54.11,
-      "tarif_non_optam": 39.45
+      "tarif_optam": 56.39,
+      "tarif_non_optam": 40.77
     },
     {
       "code": "QZFA010",
       "label": "Exérèse tangentielle 1-20 molluscum contagiosum",
-      "tarif": 21.69,
+      "tarif": 22.27,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 23.5,
-      "tarif_non_optam": 21.69
+      "tarif_optam": 24.49,
+      "tarif_non_optam": 22.27
     },
     {
       "code": "QZFA013",
       "label": "Curetage 1-5 lésions cutanées",
-      "tarif": 23.03,
+      "tarif": 23.83,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 32.75,
-      "tarif_non_optam": 23.03
+      "tarif_optam": 34.13,
+      "tarif_non_optam": 23.83
     },
     {
       "code": "QZFA015",
       "label": "Exérèse tangentielle ≥21 molluscum contagiosum",
-      "tarif": 29.13,
+      "tarif": 30.01,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 36.31,
-      "tarif_non_optam": 29.13
+      "tarif_optam": 37.84,
+      "tarif_non_optam": 30.01
     },
     {
       "code": "QZFA021",
       "label": "Exérèse tangentielle ≥6 lésions cutanées",
-      "tarif": 28.3,
+      "tarif": 29.15,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 34.89,
-      "tarif_non_optam": 28.3
+      "tarif_optam": 36.36,
+      "tarif_non_optam": 29.15
     },
     {
       "code": "QZFA022",
       "label": "Curetage >6 lésions cutanées",
-      "tarif": 28.81,
+      "tarif": 29.85,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 42.72,
-      "tarif_non_optam": 28.81
+      "tarif_optam": 44.52,
+      "tarif_non_optam": 29.85
     },
     {
       "code": "QZFA028",
       "label": "Exérèse tangentielle 1-5 lésions cutanées",
-      "tarif": 25,
+      "tarif": 25.71,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 29.19,
-      "tarif_non_optam": 25
+      "tarif_optam": 30.42,
+      "tarif_non_optam": 25.71
     },
     {
       "code": "QZFA036",
@@ -1159,29 +1159,29 @@
     {
       "code": "QZNP004",
       "label": "Cryothérapie 1-10 lésions (corps)",
-      "tarif": 21.28,
+      "tarif": 21.83,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 22.78,
-      "tarif_non_optam": 21.28
+      "tarif_optam": 23.74,
+      "tarif_non_optam": 21.83
     },
     {
       "code": "QZNP012",
       "label": "Cryothérapie 11-50 lésions (corps)",
-      "tarif": 25.41,
+      "tarif": 26.14,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 29.9,
-      "tarif_non_optam": 25.41
+      "tarif_optam": 31.16,
+      "tarif_non_optam": 26.14
     },
     {
       "code": "QZNP005",
       "label": "Cryothérapie >50 lésions (corps)",
-      "tarif": 30.36,
+      "tarif": 31.3,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 38.45,
-      "tarif_non_optam": 30.36
+      "tarif_optam": 40.07,
+      "tarif_non_optam": 31.3
     },
     {
       "code": "QANP007",
@@ -1195,146 +1195,146 @@
     {
       "code": "QANP005",
       "label": "Cryothérapie >11 lésions (visage)",
-      "tarif": 32.33,
+      "tarif": 33.18,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 34.89,
-      "tarif_non_optam": 32.33
+      "tarif_optam": 36.36,
+      "tarif_non_optam": 33.18
     },
     {
       "code": "QZNP013",
       "label": "Électrocoagulation 1-5 lésions",
-      "tarif": 22.1,
+      "tarif": 22.7,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 24.21,
-      "tarif_non_optam": 22.1
+      "tarif_optam": 25.23,
+      "tarif_non_optam": 22.7
     },
     {
       "code": "QZNP025",
       "label": "Électrocoagulation ≥6 lésions",
-      "tarif": 27.06,
+      "tarif": 27.86,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 32.75,
-      "tarif_non_optam": 27.06
+      "tarif_optam": 34.13,
+      "tarif_non_optam": 27.86
     },
     {
       "code": "QAGA001",
       "label": "Ablation plusieurs corps étrangers profonds (visage/mains)",
-      "tarif": 88.43,
+      "tarif": 91.06,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 107.06,
-      "tarif_non_optam": 88.43
+      "tarif_optam": 111.59,
+      "tarif_non_optam": 91.06
     },
     {
       "code": "QAGA002",
       "label": "Ablation plusieurs corps étrangers superficiels (visage/mains)",
-      "tarif": 63.75,
+      "tarif": 65.61,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 75.86,
-      "tarif_non_optam": 63.75
+      "tarif_optam": 79.07,
+      "tarif_non_optam": 65.61
     },
     {
       "code": "QAGA003",
       "label": "Ablation corps étranger superficiel (visage/main)",
-      "tarif": 40.72,
+      "tarif": 41.88,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 47.5,
-      "tarif_non_optam": 40.72
+      "tarif_optam": 49.51,
+      "tarif_non_optam": 41.88
     },
     {
       "code": "QAGA004",
       "label": "Ablation corps étranger profond (visage/main)",
-      "tarif": 64.44,
+      "tarif": 66.42,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 80.83,
-      "tarif_non_optam": 64.44
+      "tarif_optam": 84.25,
+      "tarif_non_optam": 66.42
     },
     {
       "code": "QZGA003",
       "label": "Ablation corps étranger profond (hors visage/mains)",
-      "tarif": 52.51,
+      "tarif": 53.99,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 60.27,
-      "tarif_non_optam": 52.51
+      "tarif_optam": 62.82,
+      "tarif_non_optam": 53.99
     },
     {
       "code": "QZGA006",
       "label": "Ablation plusieurs corps étrangers profonds (hors visage)",
-      "tarif": 75.27,
+      "tarif": 77.34,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 84.37,
-      "tarif_non_optam": 75.27
+      "tarif_optam": 87.94,
+      "tarif_non_optam": 77.34
     },
     {
       "code": "QZGA007",
       "label": "Ablation plusieurs corps étrangers superficiels (hors visage)",
-      "tarif": 52.23,
+      "tarif": 53.89,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 67.36,
-      "tarif_non_optam": 52.23
+      "tarif_optam": 70.21,
+      "tarif_non_optam": 53.89
     },
     {
       "code": "GAGD002",
       "label": "Ablation corps étranger de la cavité nasale",
-      "tarif": 24.58,
+      "tarif": 25.38,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 35.42,
-      "tarif_non_optam": 24.58
+      "tarif_optam": 36.8,
+      "tarif_non_optam": 25.38
     },
     {
       "code": "QZHA003",
       "label": "Biopsie tablette/lit de l'ongle",
-      "tarif": 34.87,
+      "tarif": 35.93,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 43.43,
-      "tarif_non_optam": 34.87
+      "tarif_optam": 45.26,
+      "tarif_non_optam": 35.93
     },
     {
       "code": "QZHA005",
       "label": "Biopsie des tissus sous-cutanés",
-      "tarif": 20.45,
+      "tarif": 21.07,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 25.52,
-      "tarif_non_optam": 20.45
+      "tarif_optam": 26.6,
+      "tarif_non_optam": 21.07
     },
     {
       "code": "JMHA001",
       "label": "Biopsie de la vulve",
-      "tarif": 18.48,
+      "tarif": 19.11,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 24.91,
-      "tarif_non_optam": 18.48
+      "tarif_optam": 25.99,
+      "tarif_non_optam": 19.11
     },
     {
       "code": "QZGA002",
       "label": "Ablation ou changement d'un implant hormonal",
-      "tarif": 41.8,
+      "tarif": 41.800000000000004,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 41.8,
-      "tarif_non_optam": 41.8
+      "tarif_optam": 41.800000000000004,
+      "tarif_non_optam": 41.800000000000004
     },
     {
       "code": "QZLA004",
       "label": "Pose d'implant hormonal",
-      "tarif": 14.47,
+      "tarif": 14.92,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 17.99,
-      "tarif_non_optam": 14.47
+      "tarif_optam": 18.77,
+      "tarif_non_optam": 14.92
     },
     {
       "code": "QZQP001",
@@ -1366,130 +1366,130 @@
     {
       "code": "JZNP001",
       "label": "Destruction 10-50 lésions périnéales / organes génitaux",
-      "tarif": 45.45,
+      "tarif": 46.68,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 50.55,
-      "tarif_non_optam": 45.45
+      "tarif_optam": 52.68,
+      "tarif_non_optam": 46.68
     },
     {
       "code": "JZNP002",
       "label": "Destruction <10 lésions périnéales / organes génitaux",
-      "tarif": 28.3,
+      "tarif": 29.15,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 34.89,
-      "tarif_non_optam": 28.3
+      "tarif_optam": 36.36,
+      "tarif_non_optam": 29.15
     },
     {
       "code": "JZNP003",
       "label": "Destruction ≥51 lésions périnéales ou lésion >30cm²",
-      "tarif": 58.25,
+      "tarif": 60.02,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 72.62,
-      "tarif_non_optam": 58.25
+      "tarif_optam": 75.68,
+      "tarif_non_optam": 60.02
     },
     {
       "code": "JMFA002",
       "label": "Exérèse de lésion vulvopérinéale",
-      "tarif": 38.45,
+      "tarif": 39.55,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 43.6,
-      "tarif_non_optam": 38.45
+      "tarif_optam": 45.49,
+      "tarif_non_optam": 39.55
     },
     {
       "code": "JHNP001",
       "label": "Destruction de lésion du gland et/ou du prépuce",
-      "tarif": 34.71,
+      "tarif": 35.67,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 39,
-      "tarif_non_optam": 34.71
+      "tarif_optam": 40.65,
+      "tarif_non_optam": 35.67
     },
     {
       "code": "JHFA015",
       "label": "Exérèse de lésion de la peau du pénis",
-      "tarif": 36.85,
+      "tarif": 38.07,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 49.63,
-      "tarif_non_optam": 36.85
+      "tarif_optam": 51.73,
+      "tarif_non_optam": 38.07
     },
     {
       "code": "CAGD001",
       "label": "Ablation bouchon de cérumen simple (uni/bilatéral)",
-      "tarif": 17.21,
+      "tarif": 17.65,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 19.25,
-      "tarif_non_optam": 17.21
+      "tarif_optam": 20,
+      "tarif_non_optam": 17.65
     },
     {
       "code": "CAGD002",
       "label": "Ablation bouchon de cérumen épidermique (uni/bilatéral)",
-      "tarif": 21.45,
+      "tarif": 22.13,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 30.03,
-      "tarif_non_optam": 21.45
+      "tarif_optam": 31.2,
+      "tarif_non_optam": 22.13
     },
     {
       "code": "GABD001",
       "label": "Tamponnement nasal antérieur et postérieur",
-      "tarif": 40.66,
+      "tarif": 41.94,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 56.21,
-      "tarif_non_optam": 40.66
+      "tarif_optam": 58.4,
+      "tarif_non_optam": 41.94
     },
     {
       "code": "GABD002",
       "label": "Tamponnement nasal antérieur",
-      "tarif": 24.14,
+      "tarif": 24.77,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 27.72,
-      "tarif_non_optam": 24.14
+      "tarif_optam": 28.8,
+      "tarif_non_optam": 24.77
     },
     {
       "code": "MZHB002",
       "label": "Ponction articulaire membre supérieur",
-      "tarif": 20.74,
+      "tarif": 21.49,
       "cumulG": "non",
       "note": "Sans guidage. Acte isolé.",
-      "tarif_optam": 28.81,
-      "tarif_non_optam": 20.74
+      "tarif_optam": 30.1,
+      "tarif_non_optam": 21.49
     },
     {
       "code": "NZHB002",
       "label": "Ponction articulaire membre inférieur",
-      "tarif": 22.76,
+      "tarif": 23.51,
       "cumulG": "non",
       "note": "Sans guidage. Acte isolé.",
-      "tarif_optam": 28.81,
-      "tarif_non_optam": 22.76
+      "tarif_optam": 30.1,
+      "tarif_non_optam": 23.51
     },
     {
       "code": "NZJB001",
       "label": "Évacuation collection articulaire membre inférieur",
-      "tarif": 47.08,
+      "tarif": 48.64,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement.",
-      "tarif_optam": 60.3,
-      "tarif_non_optam": 47.08
+      "tarif_optam": 63,
+      "tarif_non_optam": 48.64
     },
     {
       "code": "MZJB001",
       "label": "Évacuation collection articulaire membre supérieur",
-      "tarif": 83.6,
+      "tarif": 83.60000000000001,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement.",
-      "tarif_optam": 83.6,
-      "tarif_non_optam": 83.6
+      "tarif_optam": 83.60000000000001,
+      "tarif_non_optam": 83.60000000000001
     },
     {
       "code": "MZMP001",
@@ -1503,38 +1503,38 @@
     {
       "code": "MZMP004",
       "label": "Attelle rigide poignet/main (fracture sans réduction)",
-      "tarif": 25.64,
+      "tarif": 26.35,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 29.07,
-      "tarif_non_optam": 25.64
+      "tarif_optam": 30.3,
+      "tarif_non_optam": 26.35
     },
     {
       "code": "MZMP006",
       "label": "Attelle rigide avant-bras/poignet/main (sans coude)",
-      "tarif": 25.23,
+      "tarif": 26.12,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 26.23,
-      "tarif_non_optam": 25.23
+      "tarif_optam": 27.34,
+      "tarif_non_optam": 26.12
     },
     {
       "code": "MZMP013",
       "label": "Attelle antébrachio-palmaire (fracture sans réduction)",
-      "tarif": 28.52,
+      "tarif": 29.35,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 34.03,
-      "tarif_non_optam": 28.52
+      "tarif_optam": 35.47,
+      "tarif_non_optam": 29.35
     },
     {
       "code": "MGMP001",
       "label": "Attelle de posture poignet et/ou main",
-      "tarif": 34.82,
+      "tarif": 35.98,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 44.89,
-      "tarif_non_optam": 34.82
+      "tarif_optam": 46.9,
+      "tarif_non_optam": 35.98
     },
     {
       "code": "MHMP007",
@@ -1548,20 +1548,20 @@
     {
       "code": "NFMP001",
       "label": "Contention souple du genou",
-      "tarif": 41.8,
+      "tarif": 41.800000000000004,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 41.8,
-      "tarif_non_optam": 41.8
+      "tarif_optam": 41.800000000000004,
+      "tarif_non_optam": 41.800000000000004
     },
     {
       "code": "NGMP001",
       "label": "Contention souple cheville/pied ou semelle plâtrée",
-      "tarif": 20.9,
+      "tarif": 20.900000000000002,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 20.9,
-      "tarif_non_optam": 20.9
+      "tarif_optam": 20.900000000000002,
+      "tarif_non_optam": 20.900000000000002
     },
     {
       "code": "NZMP003",
@@ -1575,29 +1575,29 @@
     {
       "code": "NZMP006",
       "label": "Attelle rigide fémoro-jambière (fracture sans réduction)",
-      "tarif": 42.23,
+      "tarif": 43.27,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 42.54,
-      "tarif_non_optam": 42.23
+      "tarif_optam": 44.34,
+      "tarif_non_optam": 43.27
     },
     {
       "code": "NZMP014",
       "label": "Attelle rigide jambier-pédieuse (fracture sans réduction)",
-      "tarif": 27.57,
+      "tarif": 28.45,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 31.2,
-      "tarif_non_optam": 27.57
+      "tarif_optam": 32.52,
+      "tarif_non_optam": 28.45
     },
     {
       "code": "MADP001",
       "label": "Contention orthopédique fracture de clavicule",
-      "tarif": 41.8,
+      "tarif": 41.800000000000004,
       "cumulG": "non",
       "note": "Acte isolé.",
-      "tarif_optam": 41.8,
-      "tarif_non_optam": 41.8
+      "tarif_optam": 41.800000000000004,
+      "tarif_non_optam": 41.800000000000004
     },
     {
       "code": "ALQP006",
@@ -1611,20 +1611,20 @@
     {
       "code": "QZJA011",
       "label": "Évacuation abcès profond",
-      "tarif": 45.11,
+      "tarif": 46.27,
       "cumulG": "non",
       "note": "Évacuation chirurgicale d'une collection profonde sous-cutanée.",
-      "tarif_optam": 47.5,
-      "tarif_non_optam": 45.11
+      "tarif_optam": 49.51,
+      "tarif_non_optam": 46.27
     },
     {
       "code": "MJPA010",
       "label": "Incision de panaris superficiel",
-      "tarif": 30.99,
+      "tarif": 31.93,
       "cumulG": "non",
       "note": "Incision et drainage d'un panaris pulpaire ou sous-unguéal.",
-      "tarif_optam": 38.29,
-      "tarif_non_optam": 30.99
+      "tarif_optam": 39.91,
+      "tarif_non_optam": 31.93
     },
     {
       "code": "QCJA001",
@@ -1638,58 +1638,58 @@
     {
       "code": "BACA008",
       "label": "Suture du sourcil",
-      "tarif": 25.64,
+      "tarif": 26.35,
       "cumulG": "non",
       "note": "Suture d'une plaie du sourcil.",
-      "tarif_optam": 29.07,
-      "tarif_non_optam": 25.64
+      "tarif_optam": 30.3,
+      "tarif_non_optam": 26.35
     },
     {
       "code": "BACA002",
       "label": "Suture de la paupière",
-      "tarif": 25.64,
+      "tarif": 26.35,
       "cumulG": "non",
       "note": "Suture d'une plaie superficielle de la paupière.",
-      "tarif_optam": 29.07,
-      "tarif_non_optam": 25.64
+      "tarif_optam": 30.3,
+      "tarif_non_optam": 26.35
     },
     {
       "code": "NGMP002",
       "label": "Attelle postérieure de cheville",
-      "tarif": 32.48,
+      "tarif": 33.54,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Confection d'une attelle plâtrée ou résine de cheville.",
-      "tarif_optam": 40.87,
-      "tarif_non_optam": 32.48
+      "tarif_optam": 42.7,
+      "tarif_non_optam": 33.54
     },
     {
       "code": "AHLB006",
       "label": "Infiltration du canal carpien",
-      "tarif": 29.48,
+      "tarif": 30.8,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Injection dans la gaine du nerf médian au canal carpien.",
-      "tarif_optam": 29.48,
-      "tarif_non_optam": 29.48
+      "tarif_optam": 30.8,
+      "tarif_non_optam": 30.8
     },
     {
       "code": "QZFA004",
       "label": "Exérèse cutanée 5–10 cm²",
-      "tarif": 42.93,
+      "tarif": 44.25,
       "cumulG": "non",
       "note": "Exérèse d'une lésion cutanée de 5 à 10 cm².",
-      "tarif_optam": 53.18,
-      "tarif_non_optam": 42.93
+      "tarif_optam": 55.43,
+      "tarif_non_optam": 44.25
     },
     {
       "code": "QZFA011",
       "label": "Exérèse cutanée 10–50 cm²",
-      "tarif": 67.61,
+      "tarif": 69.96,
       "cumulG": "non",
       "note": "Exérèse d'une lésion cutanée de 10 à 50 cm².",
-      "tarif_optam": 95.72,
-      "tarif_non_optam": 67.61
+      "tarif_optam": 99.77,
+      "tarif_non_optam": 69.96
     },
     {
       "code": "YYYY011",
@@ -1712,12 +1712,12 @@
     {
       "code": "LHRP001",
       "label": "Médecine manuelle-ostéopathique (colonne)",
-      "tarif": 25.08,
+      "tarif": 25.94,
       "cumulG": "oui",
       "baseOnly": true,
       "note": "Manipulation vertébrale ostéopathique médicale.",
-      "tarif_optam": 33.5,
-      "tarif_non_optam": 25.08
+      "tarif_optam": 35,
+      "tarif_non_optam": 25.94
     },
     {
       "code": "QZRB001",
@@ -1732,20 +1732,20 @@
     {
       "code": "CDRP002",
       "label": "Dépistage surdité nourrisson (<3 ans)",
-      "tarif": 40.23,
+      "tarif": 41.33,
       "cumulG": "oui",
       "note": "Dépistage auditif du nourrisson de moins de 3 ans.",
-      "tarif_optam": 48.51,
-      "tarif_non_optam": 40.23
+      "tarif_optam": 50.4,
+      "tarif_non_optam": 41.33
     },
     {
       "code": "BLQP010",
       "label": "Test vision binoculaire Lang",
-      "tarif": 25.32,
+      "tarif": 26.02,
       "cumulG": "oui",
       "note": "Test de Lang — vision stéréoscopique enfant.",
-      "tarif_optam": 25.32,
-      "tarif_non_optam": 25.32
+      "tarif_optam": 26.02,
+      "tarif_non_optam": 26.02
     }
   ],
   "ccamModificateurs": {
