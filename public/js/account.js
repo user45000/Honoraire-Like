@@ -16,6 +16,63 @@ const Account = (() => {
     }
   }
 
+  const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_cabinet_address','hon_cabinet_citycode','hon_ccam_favs'];
+  let prefsSaving = false;
+
+  // Charge les préférences depuis le serveur → localStorage
+  function loadPrefsFromServer() {
+    if (!currentUser?.preferences) return;
+    const prefs = currentUser.preferences;
+    let changed = false;
+    for (const key of PREF_KEYS) {
+      if (prefs[key] !== undefined && prefs[key] !== null) {
+        const current = localStorage.getItem(key);
+        const serverVal = String(prefs[key]);
+        if (current !== serverVal) {
+          localStorage.setItem(key, serverVal);
+          changed = true;
+        }
+      }
+    }
+    if (changed) location.reload(); // recharger pour appliquer les préférences
+  }
+
+  // Sauvegarde les préférences localStorage → serveur (debounced)
+  let saveTimer = null;
+  function savePrefsToServer() {
+    if (!currentUser) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      const prefs = {};
+      for (const key of PREF_KEYS) {
+        const val = localStorage.getItem(key);
+        if (val !== null) prefs[key] = val;
+      }
+      try {
+        const basePath = App.getBasePath();
+        await fetch(`${basePath}api/preferences`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(prefs)
+        });
+      } catch (e) { /* silencieux */ }
+    }, 1000);
+  }
+
+  // Écouter les changements localStorage pour sync auto
+  window.addEventListener('storage', (e) => {
+    if (PREF_KEYS.includes(e.key)) savePrefsToServer();
+  });
+
+  // Patch localStorage.setItem pour détecter les changements dans le même onglet
+  const _origSetItem = localStorage.setItem.bind(localStorage);
+  localStorage.setItem = function(key, value) {
+    _origSetItem(key, value);
+    if (PREF_KEYS.includes(key) && currentUser && !prefsSaving) {
+      savePrefsToServer();
+    }
+  };
+
   async function init() {
     try {
       const basePath = App.getBasePath();
@@ -26,6 +83,7 @@ const Account = (() => {
       currentUser = null;
     }
     syncSubStatus();
+    if (currentUser) loadPrefsFromServer();
     attachListeners();
     handlePaymentReturn();
     initPaywall();
@@ -111,6 +169,7 @@ const Account = (() => {
         if (!res.ok) { errEl.textContent = data.error || 'Erreur'; return; }
         currentUser = data.user;
         syncSubStatus();
+        loadPrefsFromServer();
         overlay.classList.remove('visible');
         if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
         render();
@@ -387,6 +446,7 @@ const Account = (() => {
         if (!res.ok) { errEl.textContent = data.error; return; }
         currentUser = data.user;
         syncSubStatus();
+        loadPrefsFromServer();
         const btn = document.getElementById('login-submit');
         btn.textContent = '✓';
         btn.classList.add('login-success');
@@ -416,6 +476,7 @@ const Account = (() => {
         if (!res.ok) { errEl.textContent = data.error; return; }
         currentUser = data.user;
         syncSubStatus();
+        savePrefsToServer();
         render();
       } catch (e) {
         errEl.textContent = 'Erreur lors de la création du compte';

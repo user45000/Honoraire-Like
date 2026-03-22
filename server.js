@@ -28,6 +28,7 @@ db.exec(`
 `);
 // Migration : ajouter les colonnes si elles n'existent pas
 try { db.exec('ALTER TABLE users ADD COLUMN accepted_terms INTEGER DEFAULT 0'); } catch (e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN preferences TEXT'); } catch (e) {}
 
 // === Store de session SQLite (persist across restarts) ===
 db.exec(`CREATE TABLE IF NOT EXISTS sessions (
@@ -487,6 +488,9 @@ app.get('/api/ccam', rateLimit(60, 60000), (req, res) => {
 // === Auth helper ===
 function safeUser(user) {
   const { password_hash, ...rest } = user;
+  if (rest.preferences) {
+    try { rest.preferences = JSON.parse(rest.preferences); } catch (e) { rest.preferences = null; }
+  }
   return rest;
 }
 
@@ -608,6 +612,29 @@ app.post('/api/auth/change-password', (req, res) => {
   const { password } = req.body || {};
   if (!password || password.length < 6) return res.status(400).json({ error: 'Mot de passe minimum 6 caractères' });
   db.prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), req.session.userId);
+  res.json({ ok: true });
+});
+
+// === Préférences utilisateur (sync localStorage ↔ serveur) ===
+const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_cabinet_address','hon_cabinet_citycode','hon_ccam_favs'];
+
+app.get('/api/preferences', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const user = db.prepare('SELECT preferences FROM users WHERE id = ?').get(req.session.userId);
+  if (!user || !user.preferences) return res.json({});
+  try { res.json(JSON.parse(user.preferences)); }
+  catch (e) { res.json({}); }
+});
+
+app.put('/api/preferences', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const prefs = req.body || {};
+  // Ne garder que les clés autorisées
+  const clean = {};
+  for (const key of PREF_KEYS) {
+    if (prefs[key] !== undefined) clean[key] = prefs[key];
+  }
+  db.prepare('UPDATE users SET preferences = ? WHERE id = ?').run(JSON.stringify(clean), req.session.userId);
   res.json({ ok: true });
 });
 
