@@ -1375,8 +1375,8 @@
       "code": "ALQP006",
       "label": "Test trouble cognitif (MMS/MMSE)",
       "tarif": 69.12,
-      "cumulG": "oui",
-      "note": "Évaluation cognitive MMSE. Cumulable avec G/VG. 1 fois par an."
+      "cumulG": "non",
+      "note": "Acte isolé. Non cumulable avec G/VG. 1 fois par an."
     },
     {
       "code": "QZJA011",
