@@ -28,10 +28,11 @@ const Engine = (() => {
 
   /**
    * Retourne le tarif CCAM adapté au secteur du praticien
+   * AMELI CCAM V82 : col "S1 / OPTAM" = S1 + S2 OPTAM, col "hors S1 / hors OPTAM" = S2 hors OPTAM
    */
   function getCCAMTarif(acte) {
-    if (isOptam() && acte.tarif_optam != null) return acte.tarif_optam;
-    if (acte.tarif_non_optam != null) return acte.tarif_non_optam;
+    if (getSecteur() === 's2hors' && acte.tarif_non_optam != null) return acte.tarif_non_optam;
+    if (acte.tarif_optam != null) return acte.tarif_optam;
     return acte.tarif || 0;
   }
 
