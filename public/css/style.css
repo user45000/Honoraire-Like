@@ -2467,25 +2467,20 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   animation: modif-shake 0.35s ease;
 }
 
-.ccam-modif-tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--text);
-  color: white;
-  font-size: 11px;
-  padding: 6px 10px;
-  border-radius: 6px;
-  white-space: nowrap;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.15s;
-  z-index: 10;
+.ccam-modif-tooltip-bar {
+  background: rgba(37,99,235,0.08);
+  border: 1px solid rgba(37,99,235,0.15);
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 8px;
+  text-align: center;
+  margin-top: 8px;
+  line-height: 1.4;
+  display: none;
+  grid-column: 1 / -1;
 }
-.ccam-modif-tooltip.visible {
-  opacity: 1;
-}
-.ccam-modif-btn {
-  position: relative;
+.ccam-modif-tooltip-bar.visible {
+  display: block;
 }

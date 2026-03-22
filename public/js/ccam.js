@@ -92,25 +92,32 @@ const CCAM = (() => {
   }
 
   // Animation shake + tooltip quand on clique sur un bouton désactivé
+  let tooltipTimer = null;
+
   function shakeWithTooltip(btn, reason) {
     btn.classList.remove('shake');
-    void btn.offsetWidth; // force reflow
+    void btn.offsetWidth;
     btn.classList.add('shake');
 
-    // Tooltip
-    let tip = btn.querySelector('.ccam-modif-tooltip');
-    if (!tip) {
-      tip = document.createElement('span');
-      tip.className = 'ccam-modif-tooltip';
-      btn.appendChild(tip);
+    // Message bar under the buttons
+    const toggles = document.getElementById('ccam-modif-toggles');
+    let bar = toggles?.querySelector('.ccam-modif-tooltip-bar');
+    if (!bar && toggles) {
+      bar = document.createElement('div');
+      bar.className = 'ccam-modif-tooltip-bar';
+      toggles.appendChild(bar);
     }
-    tip.textContent = reason;
-    tip.classList.add('visible');
-
-    setTimeout(() => {
-      btn.classList.remove('shake');
-      tip.classList.remove('visible');
-    }, 1800);
+    if (bar) {
+      bar.textContent = reason;
+      bar.classList.add('visible');
+      clearTimeout(tooltipTimer);
+      tooltipTimer = setTimeout(() => {
+        bar.classList.remove('visible');
+        btn.classList.remove('shake');
+      }, 2500);
+    } else {
+      setTimeout(() => btn.classList.remove('shake'), 350);
+    }
   }
 
   function init() {
