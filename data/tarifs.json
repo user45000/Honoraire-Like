@@ -761,9 +761,9 @@
       "note": "Acte isolé"
     },
     {
-      "code": "AHQP001",
-      "label": "Audiométrie tonale",
-      "tarif": 25.1,
+      "code": "CDQP010",
+      "label": "Audiométrie tonale ou vocale",
+      "tarif": 23.54,
       "cumulG": "non",
       "note": "Acte isolé"
     },
@@ -831,11 +831,32 @@
       "note": "Acte isolé"
     },
     {
-      "code": "ALQP003",
+      "code": "CBQD001",
       "label": "Tympanométrie",
-      "tarif": 26.4,
+      "tarif": 21.27,
       "cumulG": "non",
       "note": "Acte isolé"
+    },
+    {
+      "code": "CDQP012",
+      "label": "Audiométrie tonale et vocale",
+      "tarif": 35.32,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "CDQP015",
+      "label": "Audiométrie tonale + tympanométrie",
+      "tarif": 41.61,
+      "cumulG": "non",
+      "note": "Acte isolé. Inclut audiométrie tonale et tympanométrie (ne pas cumuler CBQD001)"
+    },
+    {
+      "code": "CDQP002",
+      "label": "Audiométrie tonale + vocale + tympanométrie",
+      "tarif": 53.12,
+      "cumulG": "non",
+      "note": "Acte isolé. Examen complet audiométrie + tympanométrie (ne pas cumuler CBQD001 ni CDQP012)"
     },
     {
       "code": "QZHA001",
