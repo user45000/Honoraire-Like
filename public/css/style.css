@@ -1719,6 +1719,17 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .plan-btn-primary:disabled { opacity: 0.6; }
 .paywall-skip { background: none; border: none; color: rgba(255,255,255,0.3); font-family: var(--font-body); font-size: 13px; font-weight: 300; cursor: pointer; padding: 6px; display: block; margin: 0 auto; }
 
+.paywall-login-section { margin-top: 16px; text-align: center; }
+.paywall-login-toggle { background: none; border: none; color: rgba(255,255,255,0.55); font-family: var(--font-body); font-size: 13px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.paywall-login-toggle:hover { color: rgba(255,255,255,0.8); }
+.paywall-login-form { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+.paywall-login-form input { padding: 10px 14px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 8px; background: rgba(255,255,255,0.08); color: white; font-size: 14px; font-family: var(--font-body); }
+.paywall-login-form input::placeholder { color: rgba(255,255,255,0.35); }
+.paywall-login-form input:focus { outline: none; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.12); }
+.paywall-login-submit { padding: 10px; border: none; border-radius: 8px; background: rgba(255,255,255,0.15); color: white; font-size: 14px; font-weight: 600; cursor: pointer; font-family: var(--font-body); }
+.paywall-login-submit:hover { background: rgba(255,255,255,0.22); }
+.paywall-login-error { color: #f87171; font-size: 13px; min-height: 18px; }
+
 /* === Compte / Auth === */
 .auth-form {
   display: flex;

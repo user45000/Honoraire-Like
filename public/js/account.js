@@ -51,9 +51,9 @@ const Account = (() => {
     const overlay = document.getElementById('paywall-overlay');
     if (!overlay) return;
 
-    // Abonné actif → cacher le paywall, bannière cookies immédiate
+    // Abonné actif → pas de paywall
     if (currentUser && currentUser.subscription_status === 'active') {
-      overlay.style.display = 'none';
+      overlay.classList.remove('visible');
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
       return;
     }
@@ -61,14 +61,14 @@ const Account = (() => {
     const count = parseInt(localStorage.getItem(PAYWALL_KEY) || '0') + 1;
     localStorage.setItem(PAYWALL_KEY, count.toString());
     if (count < PAYWALL_THRESHOLD) {
-      // Pas de paywall → cacher, bannière cookies immédiate
-      overlay.style.display = 'none';
+      // Pas encore de paywall
+      overlay.classList.remove('visible');
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
       return;
     }
 
-    // Paywall nécessaire → déjà visible par défaut dans le HTML, juste attacher les listeners
-    overlay.style.display = 'flex';
+    // Paywall nécessaire → afficher
+    overlay.classList.add('visible');
 
     // Sélection du plan
     overlay.querySelectorAll('.paywall-plan').forEach(btn => {
@@ -82,8 +82,41 @@ const Account = (() => {
     });
 
     document.getElementById('paywall-skip-btn')?.addEventListener('click', () => {
-      overlay.style.display = 'none';
+      overlay.classList.remove('visible');
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+    });
+
+    // Toggle formulaire login sur le paywall
+    document.getElementById('paywall-login-toggle')?.addEventListener('click', () => {
+      const form = document.getElementById('paywall-login-form');
+      if (form) form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+    });
+
+    // Login depuis le paywall
+    document.getElementById('paywall-login-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('paywall-login-email').value.trim();
+      const password = document.getElementById('paywall-login-password').value;
+      const errEl = document.getElementById('paywall-login-error');
+      errEl.textContent = '';
+      if (!email || !password) { errEl.textContent = 'Remplissez tous les champs'; return; }
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, rememberMe: true })
+        });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error || 'Erreur'; return; }
+        currentUser = data.user;
+        syncSubStatus();
+        overlay.classList.remove('visible');
+        if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+        render();
+      } catch (err) {
+        errEl.textContent = 'Erreur de connexion';
+      }
     });
 
     document.getElementById('paywall-subscribe-btn')?.addEventListener('click', async () => {
@@ -132,7 +165,7 @@ const Account = (() => {
       const sessionId = params.get('session_id');
       // Cacher le paywall tout de suite pour éviter le flash
       const overlay = document.getElementById('paywall-overlay');
-      if (overlay) overlay.style.display = 'none';
+      if (overlay) overlay.classList.remove('visible');
       // Auto-login via Stripe session si pas déjà connecté
       setTimeout(async () => {
         try {
@@ -155,7 +188,7 @@ const Account = (() => {
         syncSubStatus();
         // Cacher le paywall immédiatement
         const overlay = document.getElementById('paywall-overlay');
-        if (overlay) overlay.style.display = 'none';
+        if (overlay) overlay.classList.remove('visible');
         App.switchTab('compte');
         render();
         showBanner('Abonnement activé — merci !', 'success');

@@ -31,16 +31,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <!-- CSS critique : paywall visible immédiatement, caché si abonné -->
+  <!-- CSS critique : paywall caché par défaut, affiché par JS si nécessaire -->
   <style>
-    #paywall-overlay { position:fixed; inset:0; z-index:1000; background:#1B2D4F; display:flex; }
-    html.hmg-sub #paywall-overlay { display:none !important; }
+    #paywall-overlay { position:fixed; inset:0; z-index:1000; background:#1B2D4F; display:none; }
+    #paywall-overlay.visible { display:flex; }
   </style>
-  <script>
-    if (localStorage.getItem('hon_sub_status') === 'active') {
-      document.documentElement.classList.add('hmg-sub');
-    }
-  </script>
 </head>
 <body>
   <header class="app-header">
@@ -746,6 +741,15 @@
       </div>
       <button class="plan-btn-primary" id="paywall-subscribe-btn">S'abonner — 0,99€/mois</button>
       <button class="paywall-skip" id="paywall-skip-btn">Continuer sans s'abonner →</button>
+      <div class="paywall-login-section">
+        <button class="paywall-login-toggle" id="paywall-login-toggle">Déjà un compte ? Se connecter</button>
+        <form id="paywall-login-form" class="paywall-login-form" style="display:none" autocomplete="on">
+          <input type="email" id="paywall-login-email" placeholder="Email" required autocomplete="email">
+          <input type="password" id="paywall-login-password" placeholder="Mot de passe" required autocomplete="current-password">
+          <button type="submit" class="paywall-login-submit">Se connecter</button>
+          <div id="paywall-login-error" class="paywall-login-error"></div>
+        </form>
+      </div>
     </div>
   </div>
 
