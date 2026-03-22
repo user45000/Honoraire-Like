@@ -22,10 +22,14 @@ const CCAM = (() => {
     return null; // jour → aucun
   }
 
+  // Vérifie si un modificateur est autorisé sur au moins un acte sélectionné
+  function isModifAllowedByActs(modCode) {
+    return selectedActes.some(a => a.modificateurs && a.modificateurs.includes(modCode));
+  }
+
   // Calcule la disponibilité de chaque modificateur + raison si bloqué
   function getModifAvailability() {
     const periode = getContextPeriode();
-    const hasM = activeModificateurs.includes('M');
     const validTimeModif = getTimeModifForPeriode(periode);
     const periodeLabels = {
       jour: 'en journée', nuit: 'de nuit', nuitprofonde: 'de nuit profonde',
@@ -33,40 +37,33 @@ const CCAM = (() => {
     };
     const pLabel = periodeLabels[periode] || '';
 
-    // Pas d'acte sélectionné ou actes programmés (baseOnly)
+    // Pas d'acte sélectionné
     if (selectedActes.length === 0) {
       const reason = 'Sélectionnez un acte CCAM d\'abord';
       return { M: { available: false, reason }, P: { available: false, reason }, S: { available: false, reason }, F: { available: false, reason } };
     }
-    const allBaseOnly = selectedActes.every(a => a.baseOnly);
-    if (allBaseOnly) {
-      const reason = 'Acte programmé — pas de modificateur d\'urgence';
-      return { M: { available: false, reason }, P: { available: false, reason }, S: { available: false, reason }, F: { available: false, reason } };
+
+    // M : autorisé si au moins un acte le permet
+    const mAllowed = isModifAllowedByActs('M');
+    const mResult = {
+      available: mAllowed,
+      reason: mAllowed ? '' : 'Non autorisé pour cet acte (urgence cabinet uniquement sur sutures, immobilisations...)'
+    };
+
+    // P, S, F : autorisés si l'acte le permet ET la période correspond
+    function timeModifResult(code, label) {
+      const actAllowed = isModifAllowedByActs(code);
+      if (!actAllowed) return { available: false, reason: 'Non autorisé pour cet acte' };
+      if (periode === 'jour') return { available: false, reason: 'Pas ' + label + ' en journée' };
+      if (validTimeModif !== code) return { available: false, reason: 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')' };
+      return { available: true, reason: '' };
     }
 
     return {
-      M: { available: true, reason: '' },
-      P: {
-        available: hasM && validTimeModif === 'P',
-        reason: !hasM ? 'Cochez M (urgence) d\'abord'
-          : periode === 'jour' ? 'Pas de nuit en journée'
-          : validTimeModif !== 'P' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
-          : ''
-      },
-      S: {
-        available: hasM && validTimeModif === 'S',
-        reason: !hasM ? 'Cochez M (urgence) d\'abord'
-          : periode === 'jour' ? 'Pas de nuit profonde en journée'
-          : validTimeModif !== 'S' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
-          : ''
-      },
-      F: {
-        available: hasM && validTimeModif === 'F',
-        reason: !hasM ? 'Cochez M (urgence) d\'abord'
-          : periode === 'jour' ? 'Pas de dim/férié en journée'
-          : validTimeModif !== 'F' ? 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')'
-          : ''
-      }
+      M: mResult,
+      P: timeModifResult('P', 'de nuit'),
+      S: timeModifResult('S', 'de nuit profonde'),
+      F: timeModifResult('F', 'de dim/férié')
     };
   }
 
@@ -141,15 +138,9 @@ const CCAM = (() => {
           // Décochage
           activeModificateurs.splice(idx, 1);
           btn.classList.remove('active');
-          // Si on décoche M → retirer aussi P/S/F
-          if (code === 'M') {
-            activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
-            modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
-          }
         } else {
-          // Cochage
+          // Cochage — P/S/F sont mutuellement exclusifs entre eux
           if (['P','S','F'].includes(code)) {
-            // Retirer les autres P/S/F
             activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
             modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
           }
@@ -217,17 +208,7 @@ const CCAM = (() => {
     if (modifCard) {
       // Toujours afficher les modificateurs
       modifCard.style.display = '';
-      const allBaseOnly = selectedActes.length > 0 && selectedActes.every(a => a.baseOnly);
-      if (selectedActes.length === 0 || allBaseOnly) {
-        activeModificateurs = [];
-        const modifToggles = document.getElementById('ccam-modif-toggles');
-        if (modifToggles) modifToggles.querySelectorAll('.ccam-modif-btn').forEach(b => {
-          b.classList.remove('active');
-          b.classList.add('disabled');
-        });
-      } else {
-        updateModifStates();
-      }
+      updateModifStates();
     }
   }
 
@@ -384,16 +365,16 @@ const CCAM = (() => {
   }
 
   function updateModifFromPeriode(periode) {
-    // Quand la période change, réajuster les modificateurs actifs
-    const hasM = activeModificateurs.includes('M');
-    // Retirer P/S/F — on va remettre le bon si M est coché
-    activeModificateurs = activeModificateurs.filter(m => m === 'M');
+    // Quand la période change, retirer P/S/F et remettre le bon si autorisé
+    const hadTimeMod = activeModificateurs.some(m => ['P','S','F'].includes(m));
+    activeModificateurs = activeModificateurs.filter(m => !['P','S','F'].includes(m));
     const modifToggles = document.getElementById('ccam-modif-toggles');
     if (modifToggles) {
       modifToggles.querySelectorAll('[data-modif="P"],[data-modif="S"],[data-modif="F"]').forEach(b => b.classList.remove('active'));
-      if (hasM) {
+      // Auto-sélectionner le bon modificateur horaire si on avait un P/S/F avant
+      if (hadTimeMod) {
         const autoCode = getTimeModifForPeriode(periode);
-        if (autoCode) {
+        if (autoCode && isModifAllowedByActs(autoCode)) {
           activeModificateurs.push(autoCode);
           const btn = modifToggles.querySelector('[data-modif="' + autoCode + '"]');
           if (btn) btn.classList.add('active');

@@ -613,7 +613,12 @@
       "cumulG": "oui",
       "note": "Cumulable à 100% avec G/VG (convention 2024)",
       "tarif_optam": 14.77,
-      "tarif_non_optam": 13.81
+      "tarif_non_optam": 13.81,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "JKHD001",
@@ -662,7 +667,12 @@
       "baseOnly": true,
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
       "tarif_optam": 62.7,
-      "tarif_non_optam": 62.7
+      "tarif_non_optam": 62.7,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZLB001",
@@ -701,7 +711,13 @@
       "cumulG": "non",
       "note": "Acte isolé : facturer G ou CCAM, le plus rémunérateur",
       "tarif_optam": 26.6,
-      "tarif_non_optam": 24.21
+      "tarif_non_optam": 24.21,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA017",
@@ -710,7 +726,13 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 53.95,
-      "tarif_non_optam": 40.07
+      "tarif_non_optam": 40.07,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "YYYY036",
@@ -726,7 +748,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 44.52,
-      "tarif_non_optam": 37.92
+      "tarif_non_optam": 37.92,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "BGQP002",
@@ -744,7 +771,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 27.2,
-      "tarif_non_optam": 23.84
+      "tarif_non_optam": 23.84,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "GEQP002",
@@ -769,7 +801,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 39.91,
-      "tarif_non_optam": 31.93
+      "tarif_non_optam": 31.93,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "ZZQP042",
@@ -785,7 +822,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 27.2,
-      "tarif_non_optam": 23.84
+      "tarif_non_optam": 23.84,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "JQQP002",
@@ -808,7 +850,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 23.2,
-      "tarif_non_optam": 21.52
+      "tarif_non_optam": 21.52,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "ALQP003",
@@ -826,7 +873,12 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 40.8,
-      "tarif_non_optam": 35.76
+      "tarif_non_optam": 35.76,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "CDQP015",
@@ -835,7 +887,12 @@
       "cumulG": "non",
       "note": "Acte isolé. Inclut audiométrie tonale et tympanométrie (ne pas cumuler CBQD001)",
       "tarif_optam": 42.4,
-      "tarif_non_optam": 42.4
+      "tarif_non_optam": 42.4,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "CDQP002",
@@ -887,7 +944,13 @@
       "cumulG": "non",
       "note": "Traitement nécessitant actes techniques et présence prolongée.",
       "tarif_optam": 48,
-      "tarif_non_optam": 48
+      "tarif_non_optam": 48,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA001",
@@ -896,7 +959,13 @@
       "cumulG": "non",
       "note": "Cabinet uniquement.",
       "tarif_optam": 88.68,
-      "tarif_non_optam": 68.99
+      "tarif_non_optam": 68.99,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA009",
@@ -905,7 +974,12 @@
       "cumulG": "non",
       "note": "Abcès, kyste superficiel.",
       "tarif_optam": 39.91,
-      "tarif_non_optam": 27.54
+      "tarif_non_optam": 27.54,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA012",
@@ -914,7 +988,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 64.29,
-      "tarif_non_optam": 54.84
+      "tarif_non_optam": 54.84,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA015",
@@ -923,7 +1003,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 64.29,
-      "tarif_non_optam": 46.07
+      "tarif_non_optam": 46.07,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA016",
@@ -932,7 +1018,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 50.99,
-      "tarif_non_optam": 47.13
+      "tarif_non_optam": 47.13,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA021",
@@ -941,7 +1033,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 147.8,
-      "tarif_non_optam": 107.67
+      "tarif_non_optam": 107.67,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJA022",
@@ -950,7 +1048,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 84.25,
-      "tarif_non_optam": 66.42
+      "tarif_non_optam": 66.42,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJB002",
@@ -959,7 +1063,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 26.6,
-      "tarif_non_optam": 24.21
+      "tarif_non_optam": 24.21,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAJA002",
@@ -968,7 +1077,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 86.46,
-      "tarif_non_optam": 63.31
+      "tarif_non_optam": 63.31,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAJA004",
@@ -977,7 +1092,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 62.7,
-      "tarif_non_optam": 62.7
+      "tarif_non_optam": 62.7,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAJA005",
@@ -986,7 +1107,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 77.6,
-      "tarif_non_optam": 58.18
+      "tarif_non_optam": 58.18,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAJA013",
@@ -995,7 +1122,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 31.35,
-      "tarif_non_optam": 31.35
+      "tarif_non_optam": 31.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "HAJA003",
@@ -1004,7 +1137,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 35.47,
-      "tarif_non_optam": 27.16
+      "tarif_non_optam": 27.16,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "HAJA006",
@@ -1013,7 +1152,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 57.64,
-      "tarif_non_optam": 40.01
+      "tarif_non_optam": 40.01,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "HAJA010",
@@ -1022,7 +1167,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 33.99,
-      "tarif_non_optam": 24.1
+      "tarif_non_optam": 24.1,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "GAJA002",
@@ -1031,7 +1182,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 56.16,
-      "tarif_non_optam": 39.16
+      "tarif_non_optam": 39.16,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "CAJA002",
@@ -1040,7 +1197,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 48.77,
-      "tarif_non_optam": 34.87
+      "tarif_non_optam": 34.87,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA001",
@@ -1049,7 +1212,12 @@
       "cumulG": "non",
       "note": "Associé au FSD si exérèse ambulatoire.",
       "tarif_optam": 73.9,
-      "tarif_non_optam": 54.96
+      "tarif_non_optam": 54.96,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA002",
@@ -1058,7 +1226,12 @@
       "cumulG": "non",
       "note": "Associé au FSD si exérèse ambulatoire.",
       "tarif_optam": 56.39,
-      "tarif_non_optam": 40.77
+      "tarif_non_optam": 40.77,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA010",
@@ -1112,7 +1285,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 30.42,
-      "tarif_non_optam": 25.71
+      "tarif_non_optam": 25.71,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA036",
@@ -1121,7 +1299,12 @@
       "cumulG": "non",
       "note": "Associé au FSD si exérèse ambulatoire.",
       "tarif_optam": 28.8,
-      "tarif_non_optam": 28.8
+      "tarif_non_optam": 28.8,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZNP004",
@@ -1193,7 +1376,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 111.59,
-      "tarif_non_optam": 91.06
+      "tarif_non_optam": 91.06,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAGA002",
@@ -1202,7 +1390,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 79.07,
-      "tarif_non_optam": 65.61
+      "tarif_non_optam": 65.61,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAGA003",
@@ -1211,7 +1404,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 49.51,
-      "tarif_non_optam": 41.88
+      "tarif_non_optam": 41.88,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QAGA004",
@@ -1220,7 +1418,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 84.25,
-      "tarif_non_optam": 66.42
+      "tarif_non_optam": 66.42,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZGA003",
@@ -1229,7 +1432,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 62.82,
-      "tarif_non_optam": 53.99
+      "tarif_non_optam": 53.99,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZGA006",
@@ -1238,7 +1446,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 87.94,
-      "tarif_non_optam": 77.34
+      "tarif_non_optam": 77.34,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZGA007",
@@ -1247,7 +1460,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 70.21,
-      "tarif_non_optam": 53.89
+      "tarif_non_optam": 53.89,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "GAGD002",
@@ -1256,7 +1474,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 36.8,
-      "tarif_non_optam": 25.38
+      "tarif_non_optam": 25.38,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZHA003",
@@ -1292,7 +1515,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 41.800000000000004,
-      "tarif_non_optam": 41.800000000000004
+      "tarif_non_optam": 41.800000000000004,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZLA004",
@@ -1319,7 +1547,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 62.7,
-      "tarif_non_optam": 62.7
+      "tarif_non_optam": 62.7,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "HKFA008",
@@ -1391,7 +1624,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 20,
-      "tarif_non_optam": 17.65
+      "tarif_non_optam": 17.65,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "CAGD002",
@@ -1400,7 +1638,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 31.2,
-      "tarif_non_optam": 22.13
+      "tarif_non_optam": 22.13,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "GABD001",
@@ -1409,7 +1652,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 58.4,
-      "tarif_non_optam": 41.94
+      "tarif_non_optam": 41.94,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "GABD002",
@@ -1418,7 +1667,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 28.8,
-      "tarif_non_optam": 24.77
+      "tarif_non_optam": 24.77,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZHB002",
@@ -1448,7 +1703,12 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 63,
       "tarif_non_optam": 48.64,
-      "baseOnly": true
+      "baseOnly": true,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZJB001",
@@ -1458,7 +1718,12 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 83.60000000000001,
       "tarif_non_optam": 83.60000000000001,
-      "baseOnly": true
+      "baseOnly": true,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZMP001",
@@ -1467,7 +1732,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 31.35,
-      "tarif_non_optam": 31.35
+      "tarif_non_optam": 31.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZMP004",
@@ -1476,7 +1747,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 30.3,
-      "tarif_non_optam": 26.35
+      "tarif_non_optam": 26.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZMP006",
@@ -1485,7 +1762,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 27.34,
-      "tarif_non_optam": 26.12
+      "tarif_non_optam": 26.12,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MZMP013",
@@ -1494,7 +1777,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 35.47,
-      "tarif_non_optam": 29.35
+      "tarif_non_optam": 29.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MGMP001",
@@ -1503,7 +1792,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 46.9,
-      "tarif_non_optam": 35.98
+      "tarif_non_optam": 35.98,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MHMP007",
@@ -1512,7 +1806,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 38.4,
-      "tarif_non_optam": 38.4
+      "tarif_non_optam": 38.4,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NFMP001",
@@ -1521,7 +1820,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 41.800000000000004,
-      "tarif_non_optam": 41.800000000000004
+      "tarif_non_optam": 41.800000000000004,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NGMP001",
@@ -1530,7 +1835,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 20.900000000000002,
-      "tarif_non_optam": 20.900000000000002
+      "tarif_non_optam": 20.900000000000002,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NZMP003",
@@ -1539,7 +1850,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 27.57,
-      "tarif_non_optam": 27.57
+      "tarif_non_optam": 27.57,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NZMP006",
@@ -1548,7 +1865,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 44.34,
-      "tarif_non_optam": 43.27
+      "tarif_non_optam": 43.27,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NZMP014",
@@ -1557,7 +1880,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 32.52,
-      "tarif_non_optam": 28.45
+      "tarif_non_optam": 28.45,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MADP001",
@@ -1566,7 +1895,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 41.800000000000004,
-      "tarif_non_optam": 41.800000000000004
+      "tarif_non_optam": 41.800000000000004,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "ALQP006",
@@ -1584,7 +1919,12 @@
       "cumulG": "non",
       "note": "Évacuation chirurgicale d'une collection profonde sous-cutanée.",
       "tarif_optam": 49.51,
-      "tarif_non_optam": 46.27
+      "tarif_non_optam": 46.27,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MJPA010",
@@ -1593,7 +1933,13 @@
       "cumulG": "non",
       "note": "Incision et drainage d'un panaris pulpaire ou sous-unguéal.",
       "tarif_optam": 39.91,
-      "tarif_non_optam": 31.93
+      "tarif_non_optam": 31.93,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QCJA001",
@@ -1602,7 +1948,13 @@
       "cumulG": "non",
       "note": "Suture de plaie de la paume ou des doigts.",
       "tarif_optam": 62.7,
-      "tarif_non_optam": 62.7
+      "tarif_non_optam": 62.7,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "BACA008",
@@ -1611,7 +1963,13 @@
       "cumulG": "non",
       "note": "Suture d'une plaie du sourcil.",
       "tarif_optam": 30.3,
-      "tarif_non_optam": 26.35
+      "tarif_non_optam": 26.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "BACA002",
@@ -1620,7 +1978,13 @@
       "cumulG": "non",
       "note": "Suture d'une plaie superficielle de la paupière.",
       "tarif_optam": 30.3,
-      "tarif_non_optam": 26.35
+      "tarif_non_optam": 26.35,
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NGMP002",
@@ -1629,7 +1993,12 @@
       "cumulG": "non",
       "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 42.7,
-      "tarif_non_optam": 33.54
+      "tarif_non_optam": 33.54,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "AHLB006",
@@ -1647,7 +2016,12 @@
       "cumulG": "non",
       "note": "Exérèse d'une lésion cutanée de 5 à 10 cm².",
       "tarif_optam": 55.43,
-      "tarif_non_optam": 44.25
+      "tarif_non_optam": 44.25,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA011",
@@ -1656,7 +2030,12 @@
       "cumulG": "non",
       "note": "Exérèse d'une lésion cutanée de 10 à 50 cm².",
       "tarif_optam": 99.77,
-      "tarif_non_optam": 69.96
+      "tarif_non_optam": 69.96,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "YYYY011",
@@ -1665,7 +2044,12 @@
       "cumulG": "oui",
       "note": "Forfait prise en charge d'une lésion traumatique simple.",
       "tarif_optam": 20.16,
-      "tarif_non_optam": 20.16
+      "tarif_non_optam": 20.16,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "YYYY008",
@@ -1710,7 +2094,12 @@
       "cumulG": "oui",
       "note": "Test de Lang — vision stéréoscopique enfant.",
       "tarif_optam": 26.02,
-      "tarif_non_optam": 26.02
+      "tarif_non_optam": 26.02,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZNP022",
@@ -1755,7 +2144,12 @@
       "tarif_optam": 48.77,
       "tarif_non_optam": 37.06,
       "cumulG": "non",
-      "note": "Acte isolé. Ongle incarné, onychomycose"
+      "note": "Acte isolé. Ongle incarné, onychomycose",
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA039",
@@ -1764,7 +2158,12 @@
       "tarif_optam": 36.95,
       "tarif_non_optam": 30.21,
       "cumulG": "non",
-      "note": "Acte isolé. Ongle incarné avec matricectomie partielle"
+      "note": "Acte isolé. Ongle incarné avec matricectomie partielle",
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZFA029",
@@ -1773,7 +2172,12 @@
       "tarif_optam": 53.95,
       "tarif_non_optam": 40.07,
       "cumulG": "non",
-      "note": "Acte isolé. Avulsion totale ongle + matrice"
+      "note": "Acte isolé. Avulsion totale ongle + matrice",
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "QZJB001",
@@ -1782,7 +2186,12 @@
       "tarif_optam": 11.82,
       "tarif_non_optam": 10.91,
       "cumulG": "non",
-      "note": "Acte isolé. Trépanation de l'ongle"
+      "note": "Acte isolé. Trépanation de l'ongle",
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NDFA005",
@@ -1791,7 +2200,10 @@
       "tarif_optam": 79.81,
       "tarif_non_optam": 63.85,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "modificateurs": [
+        "M"
+      ]
     },
     {
       "code": "MJFA003",
@@ -1800,7 +2212,13 @@
       "tarif_optam": 75.38,
       "tarif_non_optam": 61.28,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "MDEP002",
@@ -1809,7 +2227,13 @@
       "tarif_optam": 41.8,
       "tarif_non_optam": 41.8,
       "cumulG": "non",
-      "note": "Acte isolé. Réduction orthopédique sans chirurgie"
+      "note": "Acte isolé. Réduction orthopédique sans chirurgie",
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "NDEP001",
@@ -1818,7 +2242,13 @@
       "tarif_optam": 74.64,
       "tarif_non_optam": 60.85,
       "cumulG": "non",
-      "note": "Acte isolé. Réduction orthopédique sans chirurgie"
+      "note": "Acte isolé. Réduction orthopédique sans chirurgie",
+      "modificateurs": [
+        "F",
+        "M",
+        "P",
+        "S"
+      ]
     },
     {
       "code": "JLQE002",
