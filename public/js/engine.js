@@ -89,8 +89,9 @@ const Engine = (() => {
     'COE', 'COB', 'COD', 'CCP',
     // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
     'RDV',
-    // Consultations spécialisées à tarif national 100% AMO
-    'ASE', 'CSE', 'CSO', 'CTE', 'MPH', 'C2,5',
+    // Consultations exonérées de ticket modérateur (100% AMO)
+    'ASE', 'CSO', 'C2,5',
+    // CSE, CTE, MPH : 70/30 standard (sauf ALD du patient)
     // IMT : intégration nouveau MT en ALD → 100% AMO
     'IMT'
   ];
