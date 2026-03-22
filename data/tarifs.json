@@ -668,9 +668,8 @@
       "code": "MZLB001",
       "label": "Infiltration articulaire membre supérieur",
       "tarif": 27.3,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 27.3,
       "tarif_non_optam": 27.3
     },
@@ -678,9 +677,8 @@
       "code": "NZLB001",
       "label": "Infiltration articulaire membre inférieur",
       "tarif": 32.2,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 32.2,
       "tarif_non_optam": 32.2
     },
@@ -688,9 +686,8 @@
       "code": "LHLB001",
       "label": "Infiltration vertébrale postérieure",
       "tarif": 35.7,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Sans guidage. Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 35.7,
       "tarif_non_optam": 35.7
     },
@@ -702,13 +699,6 @@
       "note": "Acte isolé : facturer G ou CCAM, le plus rémunérateur",
       "tarif_optam": 26.6,
       "tarif_non_optam": 24.21
-    },
-    {
-      "code": "QZJA005",
-      "label": "Suture plaie superficielle 3-10cm",
-      "tarif": 39.78,
-      "cumulG": "non",
-      "note": "Acte isolé"
     },
     {
       "code": "QZJA017",
@@ -727,20 +717,6 @@
       "note": "Acte isolé"
     },
     {
-      "code": "QZEA002",
-      "label": "Ablation corps étranger sous-cutané",
-      "tarif": 27.06,
-      "cumulG": "non",
-      "note": "Acte isolé"
-    },
-    {
-      "code": "QZFA006",
-      "label": "Cryothérapie / azote liquide (1 lésion)",
-      "tarif": 24.4,
-      "cumulG": "non",
-      "note": "Acte isolé"
-    },
-    {
       "code": "QZFA031",
       "label": "Cryothérapie / azote liquide (2-5 lésions)",
       "tarif": 37.92,
@@ -750,11 +726,13 @@
       "tarif_non_optam": 37.92
     },
     {
-      "code": "BAQP001",
-      "label": "Examen du fond d'œil",
-      "tarif": 20.66,
+      "code": "BGQP002",
+      "label": "Examen du fond d'œil (biomicroscopie)",
+      "tarif": 29.07,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "tarif_optam": 29.07,
+      "tarif_non_optam": 29.07
     },
     {
       "code": "CDQP010",
@@ -791,13 +769,6 @@
       "tarif_non_optam": 31.93
     },
     {
-      "code": "YYYY190",
-      "label": "Vaccination (injection vaccinale)",
-      "tarif": 7.2,
-      "cumulG": "non",
-      "note": "Vaccination incluse dans G si réalisée pendant la consultation"
-    },
-    {
       "code": "ZZQP042",
       "label": "Échographie abdominale",
       "tarif": 53.06,
@@ -824,13 +795,6 @@
       "code": "MGQP002",
       "label": "Écho-doppler veineux membre inférieur",
       "tarif": 49.26,
-      "cumulG": "non",
-      "note": "Acte isolé"
-    },
-    {
-      "code": "ZZLP025",
-      "label": "Test CRP rapide",
-      "tarif": 7,
       "cumulG": "non",
       "note": "Acte isolé"
     },
@@ -883,8 +847,8 @@
       "code": "QZHA001",
       "label": "Biopsie dermo-épidermique",
       "tarif": 20.49,
-      "cumulG": "50%",
-      "note": "Cumulable à 50% avec G/VG (biopsie)",
+      "cumulG": "non",
+      "note": "Acte isolé",
       "tarif_optam": 21.43,
       "tarif_non_optam": 20.49
     },
@@ -1475,9 +1439,8 @@
       "code": "NZJB001",
       "label": "Évacuation collection articulaire membre inférieur",
       "tarif": 48.64,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 63,
       "tarif_non_optam": 48.64
     },
@@ -1485,9 +1448,8 @@
       "code": "MZJB001",
       "label": "Évacuation collection articulaire membre supérieur",
       "tarif": 83.60000000000001,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Par voie transcutanée sans guidage. Cumulable à 100% avec G/VG uniquement.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 83.60000000000001,
       "tarif_non_optam": 83.60000000000001
     },
@@ -1657,9 +1619,8 @@
       "code": "NGMP002",
       "label": "Attelle postérieure de cheville",
       "tarif": 33.54,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Confection d'une attelle plâtrée ou résine de cheville.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 42.7,
       "tarif_non_optam": 33.54
     },
@@ -1667,9 +1628,8 @@
       "code": "AHLB006",
       "label": "Infiltration du canal carpien",
       "tarif": 30.8,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Injection dans la gaine du nerf médian au canal carpien.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 30.8,
       "tarif_non_optam": 30.8
     },
@@ -1713,9 +1673,8 @@
       "code": "LHRP001",
       "label": "Médecine manuelle-ostéopathique (colonne)",
       "tarif": 25.94,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Manipulation vertébrale ostéopathique médicale.",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 35,
       "tarif_non_optam": 25.94
     },
@@ -1723,9 +1682,8 @@
       "code": "QZRB001",
       "label": "Séance d'acupuncture",
       "tarif": 18,
-      "cumulG": "oui",
-      "baseOnly": true,
-      "note": "Séance d'acupuncture médicale (médecins formés).",
+      "cumulG": "non",
+      "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 18,
       "tarif_non_optam": 18
     },
