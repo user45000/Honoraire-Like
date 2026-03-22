@@ -318,6 +318,7 @@ const App = (() => {
       panel.innerHTML = html;
       panel.classList.add('open');
       backdrop.classList.add('open');
+      document.getElementById('result-bar').classList.add('detail-open');
     }
   }
 
@@ -326,6 +327,7 @@ const App = (() => {
     const backdrop = document.getElementById('result-detail-backdrop');
     if (panel) panel.classList.remove('open');
     if (backdrop) backdrop.classList.remove('open');
+    document.getElementById('result-bar')?.classList.remove('detail-open');
   }
 
   function updateModeBar(visible, mode) {

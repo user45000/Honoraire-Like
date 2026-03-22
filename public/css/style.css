@@ -1496,6 +1496,17 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   cursor: pointer;
 }
 
+.result-expand {
+  font-size: 14px;
+  opacity: 0.4;
+  margin-right: 10px;
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.result-bar.detail-open .result-expand {
+  transform: rotate(180deg);
+}
+
 .result-main {
   flex: 1;
   min-width: 0;
