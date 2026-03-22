@@ -138,7 +138,7 @@ function buildEmail(content) {
       <!-- EN-TÊTE -->
       <tr>
         <td style="background-color:#1B2D4F;border-radius:16px 16px 0 0;padding:32px 40px;text-align:center">
-          <img src="https://honorairesmg.fr/icons/icon-192.png" width="60" height="60" alt="" style="display:block;margin:0 auto 16px;border-radius:15px">
+          <img src="https://www.honorairesmg.fr/icons/icon-192.png" width="60" height="60" alt="" style="display:block;margin:0 auto 16px;border-radius:15px">
           <div style="color:#ffffff;font-size:20px;font-weight:700;letter-spacing:-0.025em">Honoraires MG</div>
           <div style="color:#93c5fd;font-size:13px;margin-top:3px">Calcul d'honoraires pour médecins généralistes</div>
         </td>
@@ -156,7 +156,7 @@ function buildEmail(content) {
         <td style="background-color:#F0F5FF;border-radius:0 0 16px 16px;border-top:1px solid #e2e8f0;padding:20px 40px 32px;text-align:center">
           <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.8">
             RiBang Studio &nbsp;·&nbsp;
-            <a href="https://honorairesmg.fr" style="color:#60A5FA;text-decoration:none">honorairesmg.fr</a>
+            <a href="https://www.honorairesmg.fr" style="color:#60A5FA;text-decoration:none">honorairesmg.fr</a>
             &nbsp;·&nbsp;
             <a href="mailto:contact@honorairesmg.fr" style="color:#60A5FA;text-decoration:none">contact@honorairesmg.fr</a><br>
             <span style="font-size:11px">Vous recevez cet email car vous avez créé un compte sur honorairesmg.fr</span>
@@ -255,7 +255,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
             <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
               <tr>
                 <td align="center">
-                  <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Se connecter &rarr;</a>
+                  <a href="https://www.honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Se connecter &rarr;</a>
                 </td>
               </tr>
             </table>
@@ -310,7 +310,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
         <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
           <tr>
             <td align="center">
-              <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Accéder à l'application &rarr;</a>
+              <a href="https://www.honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Accéder à l'application &rarr;</a>
             </td>
           </tr>
         </table>
@@ -490,7 +490,7 @@ app.post('/api/auth/register', rateLimit(10, 15 * 60 * 1000), (req, res) => {
       <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
         <tr>
           <td align="center">
-            <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em">Ouvrir l'application &rarr;</a>
+            <a href="https://www.honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none;letter-spacing:-0.01em">Ouvrir l'application &rarr;</a>
           </td>
         </tr>
       </table>
@@ -786,7 +786,7 @@ app.post('/api/admin/users/:id/extend', requireAdmin, (req, res) => {
     <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
       <tr>
         <td align="center">
-          <a href="https://honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Ouvrir l'application &rarr;</a>
+          <a href="https://www.honorairesmg.fr" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Ouvrir l'application &rarr;</a>
         </td>
       </tr>
     </table>
@@ -920,7 +920,7 @@ app.get('/robots.txt', (req, res) => {
     'Allow: /\n' +
     'Disallow: /api/\n' +
     'Disallow: /admin\n\n' +
-    'Sitemap: https://honorairesmg.fr/sitemap.xml\n'
+    'Sitemap: https://www.honorairesmg.fr/sitemap.xml\n'
   );
 });
 
@@ -930,13 +930,13 @@ app.get('/sitemap.xml', (req, res) => {
   res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://honorairesmg.fr/</loc>
+    <loc>https://www.honorairesmg.fr/</loc>
     <lastmod>${now}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://honorairesmg.fr/legal</loc>
+    <loc>https://www.honorairesmg.fr/legal</loc>
     <lastmod>${now}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
