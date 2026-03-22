@@ -395,9 +395,44 @@ const Engine = (() => {
       }
     }
 
-    // 6. Modificateurs CCAM (M/P/S/F — selon les modificateurs autorisés par acte)
-    if (ccamActes && ccamActes.length > 0 && ccamModificateurs && ccamModificateurs.length > 0) {
-      // Un modificateur est applicable s'il est autorisé sur au moins un acte sélectionné
+    // 6-7. Actes CCAM + modificateurs — traités ensemble pour gérer les exclusions
+    let ccamBilled = false; // au moins un acte CCAM est facturé
+    let replaceConsult = false;
+
+    if (ccamActes && ccamActes.length > 0) {
+      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
+      for (const item of ccamResult.items) {
+        codes.push(item.code);
+        details.push(item);
+        total += item.montant;
+        if (item.montant > 0) ccamBilled = true;
+      }
+      replaceConsult = ccamResult.replaceConsult;
+
+      if (replaceConsult) {
+        // G remplacé par CCAM → annuler G et ses majorations NGAP
+        total -= acteTarif;
+        details[0].montant = 0;
+        details[0].label += ' (non facturé — acte CCAM plus rémunérateur)';
+        codes[0] = '(' + codes[0] + ')';
+
+        // Annuler les majorations NGAP (liées à la consultation)
+        for (let i = 1; i < details.length; i++) {
+          const d = details[i];
+          const code = d.code;
+          // Majorations NGAP et horaires : liées à la consultation
+          if (tarifs.majorations[code] || ['CRN','CRM','CRD','CRS','VRN','VRM','VRD','VRS','F','MN','MM'].includes(code)) {
+            total -= d.montant;
+            d.montant = 0;
+            d.label += ' (non facturé)';
+            codes[i] = '(' + codes[i] + ')';
+          }
+        }
+      }
+    }
+
+    // Modificateurs CCAM (M/P/S/F) — seulement si au moins un acte CCAM est facturé
+    if (ccamBilled && ccamModificateurs && ccamModificateurs.length > 0) {
       const modDefs = tarifs.ccamModificateurs || {};
       for (const modCode of ccamModificateurs) {
         const allowed = ccamActes.some(a => a.modificateurs && a.modificateurs.includes(modCode));
@@ -408,22 +443,6 @@ const Engine = (() => {
           details.push({ code: 'Mod.' + modCode, label: mod.label + ' (modificateur CCAM)', montant: mod.montant });
           total += mod.montant;
         }
-      }
-    }
-
-    // 7. Actes CCAM associés
-    if (ccamActes && ccamActes.length > 0) {
-      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
-      for (const item of ccamResult.items) {
-        codes.push(item.code);
-        details.push(item);
-        total += item.montant;
-      }
-      if (ccamResult.replaceConsult) {
-        total -= acteTarif;
-        details[0].montant = 0;
-        details[0].label += ' (non facturé — acte CCAM plus rémunérateur)';
-        codes[0] = '(' + codes[0] + ')';
       }
     }
 
