@@ -43,6 +43,14 @@ const CCAM = (() => {
       return { M: { available: false, reason }, P: { available: false, reason }, S: { available: false, reason }, F: { available: false, reason } };
     }
 
+    // Si hors horaires de jour, la consultation NGAP porte déjà une majoration horaire
+    // → aucun modificateur CCAM ne peut s'ajouter (art. III-3)
+    const hasNgapHoraire = periode !== 'jour';
+    if (hasNgapHoraire) {
+      const reason = 'Majoration horaire déjà sur la consultation NGAP (art. III-3)';
+      return { M: { available: false, reason }, P: { available: false, reason }, S: { available: false, reason }, F: { available: false, reason } };
+    }
+
     // M : autorisé si au moins un acte le permet ET contexte cabinet (pas visite)
     const isVisite = App.getCCAMContext() === 'visite';
     const mAllowed = isModifAllowedByActs('M') && !isVisite;
@@ -53,19 +61,11 @@ const CCAM = (() => {
         : ''
     };
 
-    // P, S, F : autorisés si l'acte le permet ET la période correspond
-    // ET pas de cumul avec les majorations horaires NGAP (art. III-3 CCAM)
-    const ctx = App.getCCAMContext();
-    const state = ctx === 'visite' ? Visite.getState() : Consultation.getState();
-    const hasNgapHoraire = periode !== 'jour'; // si hors jour, la consultation G aura une majoration horaire NGAP
-
+    // P, S, F : en journée, pas de modificateur horaire
     function timeModifResult(code, label) {
       const actAllowed = isModifAllowedByActs(code);
       if (!actAllowed) return { available: false, reason: 'Non autorisé pour cet acte' };
-      if (periode === 'jour') return { available: false, reason: 'Pas ' + label + ' en journée' };
-      if (hasNgapHoraire) return { available: false, reason: 'Majoration horaire déjà sur la consultation NGAP (art. III-3)' };
-      if (validTimeModif !== code) return { available: false, reason: 'Incompatible ' + pLabel + ' (utilisez ' + validTimeModif + ')' };
-      return { available: true, reason: '' };
+      return { available: false, reason: 'Pas ' + label + ' en journée' };
     }
 
     return {

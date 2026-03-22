@@ -440,8 +440,8 @@ const Engine = (() => {
       const hasNgapHoraire = details.some(d => ngapHoraireCodes.includes(d.code) && d.montant > 0);
 
       for (const modCode of ccamModificateurs) {
-        // Bloquer P/S/F si majoration horaire NGAP déjà facturée
-        if (['P','S','F'].includes(modCode) && hasNgapHoraire) continue;
+        // Bloquer tous les modificateurs CCAM si majoration horaire NGAP déjà facturée (art. III-3)
+        if (hasNgapHoraire) continue;
         const allowed = ccamActes.some(a => a.modificateurs && a.modificateurs.includes(modCode));
         if (!allowed) continue;
         const mod = modDefs[modCode];
