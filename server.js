@@ -830,11 +830,35 @@ app.get('/api/admin/analytics/overview', requireAdmin, (req, res) => {
   const signups7d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d7).n;
   const signups30d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d30).n;
 
+  // Mois en cours
+  const monthStart = now.toISOString().slice(0, 7) + '-01';
+  const viewsMonth = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
+  const visitorsMonth = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
+  const usersMonth = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
+  const signupsMonth = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(monthStart).n;
+
+  // Année en cours
+  const yearStart = now.getFullYear() + '-01-01';
+  const viewsYear = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
+  const visitorsYear = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
+  const usersYear = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
+  const signupsYear = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(yearStart).n;
+
+  // Tout temps
+  const viewsAll = db.prepare("SELECT COUNT(*) as n FROM page_views").get().n;
+  const visitorsAll = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views").get().n;
+  const usersAll = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE user_id IS NOT NULL").get().n;
+
   const totalUsers = db.prepare('SELECT COUNT(*) as n FROM users').get().n;
   const totalActive = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'active'").get().n;
   const conversionRate = totalUsers > 0 ? Math.round((totalActive / totalUsers) * 100) : 0;
 
-  res.json({ dau, wau, mau, viewsToday, views7d, views30d, visitorsToday, visitors7d, visitors30d, signups7d, signups30d, conversionRate });
+  res.json({
+    dau, wau, mau, viewsToday, views7d, views30d, visitorsToday, visitors7d, visitors30d, signups7d, signups30d, conversionRate,
+    viewsMonth, visitorsMonth, usersMonth, signupsMonth,
+    viewsYear, visitorsYear, usersYear, signupsYear,
+    viewsAll, visitorsAll, usersAll, totalUsers
+  });
 });
 
 app.get('/api/admin/analytics/chart', requireAdmin, (req, res) => {

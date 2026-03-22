@@ -54,14 +54,33 @@ async function loadOverview() {
   try {
     const res = await fetch('/api/admin/analytics/overview');
     const d = await res.json();
-    document.getElementById('kpi-views-today').textContent = d.viewsToday;
-    document.getElementById('kpi-visitors-today').textContent = d.visitorsToday;
-    document.getElementById('kpi-dau').textContent = d.dau;
-    document.getElementById('kpi-wau').textContent = d.wau;
-    document.getElementById('kpi-mau').textContent = d.mau;
-    document.getElementById('kpi-signups-7d').textContent = d.signups7d;
-    document.getElementById('kpi-signups-30d').textContent = d.signups30d;
-    document.getElementById('kpi-conversion').textContent = d.conversionRate + '%';
+
+    function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+
+    // Table récapitulative
+    set('kpi-views-today', d.viewsToday);
+    set('kpi-views-month', d.viewsMonth);
+    set('kpi-views-year', d.viewsYear);
+    set('kpi-views-all', d.viewsAll);
+
+    set('kpi-visitors-today', d.visitorsToday);
+    set('kpi-visitors-month', d.visitorsMonth);
+    set('kpi-visitors-year', d.visitorsYear);
+    set('kpi-visitors-all', d.visitorsAll);
+
+    set('kpi-dau', d.dau);
+    set('kpi-users-month', d.usersMonth);
+    set('kpi-users-year', d.usersYear);
+    set('kpi-users-all', d.usersAll);
+
+    set('kpi-signups-month', d.signupsMonth);
+    set('kpi-signups-year', d.signupsYear);
+    set('kpi-signups-total', d.totalUsers);
+
+    // Quick stats
+    set('kpi-wau', d.wau);
+    set('kpi-mau', d.mau);
+    set('kpi-conversion', d.conversionRate + '%');
   } catch (e) { console.error('Overview error:', e); }
 }
 
