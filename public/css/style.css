@@ -1507,7 +1507,9 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-family: var(--font-mono);
   opacity: 0.9;
   line-height: 1.5;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -webkit-line-clamp: unset;
 }
 
 .result-amo-amc {
@@ -2302,17 +2304,22 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   align-items: center;
   gap: 4px;
   padding: 10px 6px;
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
   cursor: pointer;
-  transition: all 0.18s ease;
+  transition: all 0.2s ease;
   text-align: center;
+  position: relative;
 }
 
 .ccam-modif-btn.active {
   border-color: var(--primary);
-  background: rgba(27, 45, 79, 0.08);
+  background: rgba(37,99,235,0.08);
+}
+
+.ccam-modif-btn:active {
+  transform: scale(0.96);
 }
 
 .ccam-modif-code {
