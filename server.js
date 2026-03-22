@@ -339,6 +339,38 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
       }
       break;
     }
+    case 'invoice.paid': {
+      const invoice = event.data.object;
+      if (!invoice.customer_email || !invoice.hosted_invoice_url) break;
+      const amount = (invoice.amount_paid / 100).toFixed(2).replace('.', ',');
+      const date = new Date(invoice.created * 1000).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+      sendEmail(invoice.customer_email, `Facture Honoraires MG — ${amount} €`, buildEmail(`
+        <h1 style="margin:0 0 6px;font-size:24px;font-weight:700;color:#1B2D4F;letter-spacing:-0.03em;text-align:center">Votre facture</h1>
+        <p style="margin:0 0 24px;font-size:15px;color:#64748b;text-align:center">${date}</p>
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:24px">
+          <tr>
+            <td style="background-color:#F0F5FF;border-radius:12px;padding:20px 24px;text-align:center">
+              <div style="font-size:13px;color:#64748b;margin-bottom:6px">Montant payé</div>
+              <div style="font-size:28px;font-weight:700;color:#1B2D4F">${amount} &euro;</div>
+              <div style="font-size:12px;color:#94a3b8;margin-top:4px">${invoice.lines?.data?.[0]?.description || 'Abonnement Honoraires MG'}</div>
+            </td>
+          </tr>
+        </table>
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px">
+          <tr><td align="center">
+            <a href="${invoice.hosted_invoice_url}" style="display:inline-block;background-color:#2563EB;color:#ffffff;font-size:15px;font-weight:600;padding:14px 38px;border-radius:10px;text-decoration:none">Voir la facture &rarr;</a>
+          </td></tr>
+        </table>
+
+        <p style="margin:0;font-size:12px;color:#94a3b8;text-align:center">
+          ${invoice.invoice_pdf ? '<a href="' + invoice.invoice_pdf + '" style="color:#2563EB;text-decoration:none">T&eacute;l&eacute;charger le PDF</a> &nbsp;·&nbsp;' : ''}
+          Facture n&deg; ${invoice.number || '—'}
+        </p>
+      `));
+      break;
+    }
   }
   res.json({ received: true });
 });
