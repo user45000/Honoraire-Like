@@ -915,7 +915,33 @@ app.get('/admin', (req, res) => {
 
 // === robots.txt ===
 app.get('/robots.txt', (req, res) => {
-  res.type('text/plain').send('User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /admin\n');
+  res.type('text/plain').send(
+    'User-agent: *\n' +
+    'Allow: /\n' +
+    'Disallow: /api/\n' +
+    'Disallow: /admin\n\n' +
+    'Sitemap: https://honorairesmg.fr/sitemap.xml\n'
+  );
+});
+
+// === sitemap.xml ===
+app.get('/sitemap.xml', (req, res) => {
+  const now = new Date().toISOString().slice(0, 10);
+  res.type('application/xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://honorairesmg.fr/</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://honorairesmg.fr/legal</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>`);
 });
 
 // === security.txt ===
