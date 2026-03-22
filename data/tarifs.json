@@ -1704,6 +1704,114 @@
       "note": "Test de Lang — vision stéréoscopique enfant.",
       "tarif_optam": 26.02,
       "tarif_non_optam": 26.02
+    },
+    {
+      "code": "QZNP022",
+      "label": "Destruction lésion cutanée par cryode (cryochirurgie)",
+      "tarif": 32.16,
+      "tarif_optam": 41.55,
+      "tarif_non_optam": 32.16,
+      "cumulG": "non",
+      "note": "Acte isolé. Cryochirurgie par contact (azote liquide cryode)"
+    },
+    {
+      "code": "QCNP003",
+      "label": "Destruction 1 verrue (laser CO2)",
+      "tarif": 41.800000000000004,
+      "tarif_optam": 41.8,
+      "tarif_non_optam": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé. Verrue palmaire, plantaire ou périunguéale"
+    },
+    {
+      "code": "QCNP002",
+      "label": "Destruction 2-5 verrues (laser CO2)",
+      "tarif": 41.800000000000004,
+      "tarif_optam": 41.8,
+      "tarif_non_optam": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé. Verrues palmaires, plantaires et/ou périunguéales"
+    },
+    {
+      "code": "QCNP001",
+      "label": "Destruction ≥6 verrues (laser CO2)",
+      "tarif": 46.82,
+      "tarif_optam": 50.46,
+      "tarif_non_optam": 46.82,
+      "cumulG": "non",
+      "note": "Acte isolé. 6 verrues ou plus"
+    },
+    {
+      "code": "QZFA020",
+      "label": "Exérèse partielle/totale tablette ongle",
+      "tarif": 37.06,
+      "tarif_optam": 48.77,
+      "tarif_non_optam": 37.06,
+      "cumulG": "non",
+      "note": "Acte isolé. Ongle incarné, onychomycose"
+    },
+    {
+      "code": "QZFA039",
+      "label": "Exérèse partielle appareil unguéal",
+      "tarif": 30.21,
+      "tarif_optam": 36.95,
+      "tarif_non_optam": 30.21,
+      "cumulG": "non",
+      "note": "Acte isolé. Ongle incarné avec matricectomie partielle"
+    },
+    {
+      "code": "QZFA029",
+      "label": "Exérèse totale appareil unguéal",
+      "tarif": 40.07,
+      "tarif_optam": 53.95,
+      "tarif_non_optam": 40.07,
+      "cumulG": "non",
+      "note": "Acte isolé. Avulsion totale ongle + matrice"
+    },
+    {
+      "code": "QZJB001",
+      "label": "Évacuation hématome sous-unguéal",
+      "tarif": 10.91,
+      "tarif_optam": 11.82,
+      "tarif_non_optam": 10.91,
+      "cumulG": "non",
+      "note": "Acte isolé. Trépanation de l'ongle"
+    },
+    {
+      "code": "NDFA005",
+      "label": "Résection exostose sous-unguéale orteil",
+      "tarif": 63.85,
+      "tarif_optam": 79.81,
+      "tarif_non_optam": 63.85,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "MJFA003",
+      "label": "Excision panaris profond (phlegmon pulpaire)",
+      "tarif": 61.28,
+      "tarif_optam": 75.38,
+      "tarif_non_optam": 61.28,
+      "cumulG": "non",
+      "note": "Acte isolé"
+    },
+    {
+      "code": "MDEP002",
+      "label": "Réduction fracture os de la main",
+      "tarif": 41.8,
+      "tarif_optam": 41.8,
+      "tarif_non_optam": 41.8,
+      "cumulG": "non",
+      "note": "Acte isolé. Réduction orthopédique sans chirurgie"
+    },
+    {
+      "code": "NDEP001",
+      "label": "Réduction fracture/luxation avant-pied",
+      "tarif": 60.85,
+      "tarif_optam": 74.64,
+      "tarif_non_optam": 60.85,
+      "cumulG": "non",
+      "note": "Acte isolé. Réduction orthopédique sans chirurgie"
     }
   ],
   "ccamModificateurs": {
