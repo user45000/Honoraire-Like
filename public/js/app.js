@@ -291,7 +291,7 @@ const App = (() => {
   // === Paramètres ===
   function initParams() {
     // Secteur
-    initToggleParam('secteur', 'hon_secteur', 's1');
+    initToggleParam('secteur', 'hon_secteur', 's1', onSecteurChange);
     // Zone tarification
     initToggleParam('zone', 'hon_zone', 'metro', onZoneChange);
     // Géo
@@ -451,6 +451,14 @@ const App = (() => {
         renderCabinetZoneSuggest(el._suggestions);
       });
     });
+  }
+
+  function onSecteurChange() {
+    // Le secteur change les tarifs CCAM (OPTAM / non-OPTAM)
+    // Recalculer l'onglet actif
+    if (currentTab === 'consultation') Consultation.recalculate();
+    else if (currentTab === 'visite') Visite.recalculate();
+    else if (currentTab === 'ccam') onCCAMChanged();
   }
 
   function onZoneChange() {

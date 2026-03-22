@@ -237,7 +237,7 @@ const CCAM = (() => {
     // Badge de rang quand 2 actes sont sélectionnés
     let rankBadge = '';
     if (isSelected && selectedActes.length === 2) {
-      const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+      const sorted = [...selectedActes].sort((a, b) => Engine.getCCAMTarif(b) - Engine.getCCAMTarif(a));
       const rank = sorted.findIndex(a => a.code === acte.code);
       rankBadge = rank === 0
         ? '<span class="ccam-rank rank-primary">① principal</span>'
@@ -258,7 +258,7 @@ const CCAM = (() => {
           </div>
           <span class="ccam-label">${esc(acte.label)}</span>
         </div>
-        <span class="ccam-tarif">${acte.tarif.toFixed(2).replace('.', ',')}€</span>
+        <span class="ccam-tarif">${Engine.getCCAMTarif(acte).toFixed(2).replace('.', ',')}€</span>
         <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${esc(acte.code)}"
           title="${isSelected ? 'Retirer' : maxReached ? '2 actes maximum' : 'Ajouter au calcul'}">
           ${isSelected ? '✓' : maxReached ? '–' : '+'}
@@ -334,7 +334,7 @@ const CCAM = (() => {
     banner.style.display = '';
 
     // Trier par tarif décroissant pour afficher ① principal puis ② 50%
-    const sorted = [...selectedActes].sort((a, b) => b.tarif - a.tarif);
+    const sorted = [...selectedActes].sort((a, b) => Engine.getCCAMTarif(b) - Engine.getCCAMTarif(a));
     const has2 = selectedActes.length === 2;
 
     const esc = escapeHTML;

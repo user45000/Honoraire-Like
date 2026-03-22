@@ -100,7 +100,7 @@ const Consultation = (() => {
           document.getElementById('modal-title').textContent = `${acte.code} — ${acte.label}`;
           const _body = document.getElementById('modal-body');
           _body.innerHTML = '';
-          const _pT = document.createElement('p'); _pT.className = 'majo-detail-tarif'; _pT.textContent = acte.tarif.toFixed(2).replace('.', ',') + '€'; _body.appendChild(_pT);
+          const _pT = document.createElement('p'); _pT.className = 'majo-detail-tarif'; _pT.textContent = Engine.getCCAMTarif(acte).toFixed(2).replace('.', ',') + '€'; _body.appendChild(_pT);
           const _pN = document.createElement('p'); _pN.textContent = acte.note || ''; _body.appendChild(_pN);
           document.getElementById('modal-overlay').classList.add('active');
         }

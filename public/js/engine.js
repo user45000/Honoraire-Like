@@ -18,6 +18,23 @@ const Engine = (() => {
     return localStorage.getItem('hon_zone') || 'metro';
   }
 
+  function getSecteur() {
+    return localStorage.getItem('hon_secteur') || 's1';
+  }
+
+  function isOptam() {
+    return getSecteur() === 's2optam';
+  }
+
+  /**
+   * Retourne le tarif CCAM adapté au secteur du praticien
+   */
+  function getCCAMTarif(acte) {
+    if (isOptam() && acte.tarif_optam != null) return acte.tarif_optam;
+    if (acte.tarif_non_optam != null) return acte.tarif_non_optam;
+    return acte.tarif || 0;
+  }
+
   function getGeo() {
     return localStorage.getItem('hon_geo') || 'plaine';
   }
@@ -447,10 +464,11 @@ const Engine = (() => {
     const items = [];
     let replaceConsult = false;
 
-    const sorted = [...ccamActes].sort((a, b) => b.tarif - a.tarif);
+    const sorted = [...ccamActes].sort((a, b) => getCCAMTarif(b) - getCCAMTarif(a));
 
     for (let i = 0; i < Math.min(sorted.length, 2); i++) {
       const acte = sorted[i];
+      const acteTarif = getCCAMTarif(acte);
       let cumul = acte.cumulG || 'non';
 
       // baseOnly : cumul 100% autorisé UNIQUEMENT avec G ou VG basique
@@ -466,20 +484,20 @@ const Engine = (() => {
 
       if (cumul === 'oui') {
         const taux = i === 0 ? 1 : 0.5;
-        const montant = Math.round(acte.tarif * taux * 100) / 100;
+        const montant = Math.round(acteTarif * taux * 100) / 100;
         const tauxLabel = taux < 1 ? ` (${Math.round(taux * 100)}%)` : '';
         items.push({ code: acte.code, label: acte.label + tauxLabel, montant });
       } else if (cumul === '50%') {
-        const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
+        const montant = Math.round(acteTarif * 0.5 * 100) / 100;
         items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
       } else {
         if (replaceConsult) {
           // Acte précédent a déjà remplacé G — association à 50%
-          const montant = Math.round(acte.tarif * 0.5 * 100) / 100;
+          const montant = Math.round(acteTarif * 0.5 * 100) / 100;
           items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
-        } else if (acte.tarif > consultTarif) {
+        } else if (acteTarif > consultTarif) {
           replaceConsult = true;
-          items.push({ code: acte.code, label: acte.label, montant: acte.tarif });
+          items.push({ code: acte.code, label: acte.label, montant: acteTarif });
         } else {
           items.push({
             code: '(' + acte.code + ')',
@@ -652,6 +670,9 @@ const Engine = (() => {
     getTarifs,
     getZone,
     getGeo,
+    getSecteur,
+    isOptam,
+    getCCAMTarif,
     getActeTarif,
     calculate,
     calculateIK,
