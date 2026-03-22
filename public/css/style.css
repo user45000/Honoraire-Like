@@ -1564,10 +1564,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   justify-content: space-between;
   align-items: baseline;
   padding: 4px 0;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
   font-size: 13px;
 }
-.result-detail-row:last-child { border-bottom: none; }
+.result-detail-row + .result-detail-row {
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
 .result-detail-code {
   font-family: var(--font-mono);
   font-weight: 600;
