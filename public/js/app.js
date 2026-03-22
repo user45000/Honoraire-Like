@@ -100,9 +100,10 @@ const App = (() => {
     document.getElementById('periode-info-btn').addEventListener('click', (e) => {
       e.stopPropagation();
       document.getElementById('modal-title').textContent = 'Périodes de garde';
+      const gs = localStorage.getItem('hon_garde_samedi') || '14';
       document.getElementById('modal-body').innerHTML = `
-        <div class="pinfo-row"><span class="pinfo-chip">Jour</span><span class="pinfo-detail">Lun–Ven 8h–20h · Sam 8h–12h</span></div>
-        <div class="pinfo-row"><span class="pinfo-chip">WE/Férié</span><span class="pinfo-detail">Sam 12h–20h · Dim &amp; fériés 8h–20h</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Jour</span><span class="pinfo-detail">Lun–Ven 8h–20h · Sam 8h–${gs}h</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">WE/Férié</span><span class="pinfo-detail">Sam ${gs}h–20h · Dim &amp; fériés 8h–20h</span></div>
         <div class="pinfo-row"><span class="pinfo-chip">Nuit</span><span class="pinfo-detail">Tous jours 6h–8h et 20h–0h</span></div>
         <div class="pinfo-row"><span class="pinfo-chip">Nuit prof.</span><span class="pinfo-detail">Tous jours 0h–6h</span></div>
       `;
@@ -296,6 +297,8 @@ const App = (() => {
     initToggleParam('zone', 'hon_zone', 'metro', onZoneChange);
     // Géo
     initToggleParam('geo', 'hon_geo', 'plaine', onGeoChange);
+    // Début de garde samedi
+    initToggleParam('garde_samedi', 'hon_garde_samedi', '14', onGardeSamediChange);
     // Mode à l'ouverture
     initToggleParam('startup_mode', 'hon_startup_mode', 'simple');
   }
@@ -326,6 +329,7 @@ const App = (() => {
     if (!localStorage.getItem('hon_secteur')) localStorage.setItem('hon_secteur', 's1');
     if (!localStorage.getItem('hon_zone')) localStorage.setItem('hon_zone', 'metro');
     if (!localStorage.getItem('hon_geo')) localStorage.setItem('hon_geo', 'plaine');
+    if (!localStorage.getItem('hon_garde_samedi')) localStorage.setItem('hon_garde_samedi', '14');
   }
 
   function saveCabinetAddress(input, savedEl) {
@@ -472,6 +476,14 @@ const App = (() => {
     Visite.updateDeplacementPrices();
   }
 
+  function onGardeSamediChange() {
+    // Recalculer la période si on est sur le jour/heure auto
+    const jourEl = document.getElementById('jour-input');
+    if (jourEl && parseInt(jourEl.value, 10) === 5) {
+      applyAutoPeriode();
+    }
+  }
+
   // === Patientèle (MT / hors patientèle) ===
   function initRelation() {
     const saved = localStorage.getItem('hon_relation') || 'mt';
@@ -577,7 +589,8 @@ const App = (() => {
     if (heure < 6) return 'nuitprofonde';             // 0h-6h → Nuit profonde (MM), tous les jours
     if (heure < 8 || heure >= 20) return 'nuit';      // 6h-8h ou 20h-24h → Nuit (MN), tous les jours
     if (jour >= 6) return 'dimferie';                 // Dimanche ou Jour férié (8h-20h)
-    if (jour === 5 && heure >= 12) return 'samediAM';  // Samedi 12h-20h → PDSA (CRS/VRS)
+    const gardeSamedi = parseInt(localStorage.getItem('hon_garde_samedi') || '14', 10);
+    if (jour === 5 && heure >= gardeSamedi) return 'samediAM'; // Samedi garde → PDSA (CRS/VRS)
     return 'jour';                                    // Reste → Jour
   }
 
