@@ -5,6 +5,17 @@ const Account = (() => {
   let currentUser = null;
   let selectedPlan = 'month';
 
+  function syncSubStatus() {
+    const status = currentUser?.subscription_status || '';
+    if (status === 'active') {
+      localStorage.setItem('hon_sub_status', 'active');
+      document.documentElement.classList.add('hmg-sub');
+    } else {
+      localStorage.removeItem('hon_sub_status');
+      document.documentElement.classList.remove('hmg-sub');
+    }
+  }
+
   async function init() {
     try {
       const basePath = App.getBasePath();
@@ -14,6 +25,7 @@ const Account = (() => {
     } catch (e) {
       currentUser = null;
     }
+    syncSubStatus();
     attachListeners();
     handlePaymentReturn();
     initPaywall();
@@ -140,6 +152,7 @@ const Account = (() => {
             currentUser = data.user;
           }
         } catch (e) {}
+        syncSubStatus();
         // Cacher le paywall immédiatement
         const overlay = document.getElementById('paywall-overlay');
         if (overlay) overlay.style.display = 'none';
@@ -340,6 +353,7 @@ const Account = (() => {
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error; return; }
         currentUser = data.user;
+        syncSubStatus();
         const btn = document.getElementById('login-submit');
         btn.textContent = '✓';
         btn.classList.add('login-success');
@@ -368,6 +382,7 @@ const Account = (() => {
         const data = await res.json();
         if (!res.ok) { errEl.textContent = data.error; return; }
         currentUser = data.user;
+        syncSubStatus();
         render();
       } catch (e) {
         errEl.textContent = 'Erreur lors de la création du compte';
@@ -392,6 +407,7 @@ const Account = (() => {
         await fetch(`${basePath}api/auth/logout`, { method: 'POST' });
       } catch (e) {}
       currentUser = null;
+      syncSubStatus();
       render();
     });
 
@@ -481,6 +497,7 @@ const Account = (() => {
         await fetch(`${basePath}api/auth/logout`, { method: 'POST' });
       } catch (e) {}
       currentUser = null;
+      syncSubStatus();
       render();
     });
 
@@ -490,7 +507,7 @@ const Account = (() => {
       try {
         const basePath = App.getBasePath();
         const res = await fetch(`${basePath}api/auth/account`, { method: 'DELETE' });
-        if (res.ok) { currentUser = null; render(); }
+        if (res.ok) { currentUser = null; syncSubStatus(); render(); }
       } catch (e) {}
     });
 
