@@ -96,6 +96,11 @@ const App = (() => {
       nowBadge.style.display = '';
     });
 
+    // Tap sur barre résultat → détail expandé
+    document.getElementById('result-bar').addEventListener('click', () => toggleResultDetail());
+    document.getElementById('result-detail-backdrop').addEventListener('click', () => closeResultDetail());
+    document.getElementById('result-detail').addEventListener('click', () => closeResultDetail());
+
     // Info périodes → modal bottom-sheet (même pattern que les autres i)
     document.getElementById('periode-info-btn').addEventListener('click', (e) => {
       e.stopPropagation();
@@ -239,10 +244,16 @@ const App = (() => {
     }
   }
 
+  let lastResult = null;
+
   function updateResult(result) {
+    lastResult = result;
     const codesEl = document.getElementById('result-codes');
     const totalEl = document.getElementById('result-total');
     const amoAmcEl = document.getElementById('result-amo-amc');
+
+    // Fermer le détail quand le résultat change
+    closeResultDetail();
 
     // En onglet CCAM : afficher tous les codes du résultat (G + DEQP003, ou acte isolé seul)
     if (currentTab === 'ccam') {
@@ -251,6 +262,7 @@ const App = (() => {
         codesEl.textContent = '';
         totalEl.textContent = '0,00€';
         if (amoAmcEl) amoAmcEl.textContent = '';
+        lastResult = null;
       } else {
         codesEl.textContent = result.codes.join(' + ');
         totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
@@ -274,6 +286,46 @@ const App = (() => {
         amoAmcEl.textContent = '';
       }
     }
+  }
+
+  function toggleResultDetail() {
+    const panel = document.getElementById('result-detail');
+    const backdrop = document.getElementById('result-detail-backdrop');
+    if (!panel || !lastResult || !lastResult.details || lastResult.details.length === 0) return;
+    const isOpen = panel.classList.contains('open');
+    if (isOpen) {
+      closeResultDetail();
+    } else {
+      let html = '';
+      for (const d of lastResult.details) {
+        const montant = d.montant === 0 ? '—' : d.montant.toFixed(2).replace('.', ',') + ' €';
+        html += '<div class="result-detail-row">' +
+          '<span class="result-detail-code">' + d.code + '</span>' +
+          '<span class="result-detail-label">' + d.label + '</span>' +
+          '<span class="result-detail-amount">' + montant + '</span>' +
+        '</div>';
+      }
+      html += '<div class="result-detail-total">' +
+        '<span>Total</span>' +
+        '<span>' + lastResult.total.toFixed(2).replace('.', ',') + ' €</span>' +
+      '</div>';
+      if (lastResult.amo !== undefined) {
+        html += '<div class="result-detail-amo">AMO ' +
+          lastResult.amo.toFixed(2).replace('.', ',') + ' € | AMC ' +
+          lastResult.amc.toFixed(2).replace('.', ',') + ' €</div>';
+      }
+      html += '<div class="result-detail-close">Toucher pour fermer</div>';
+      panel.innerHTML = html;
+      panel.classList.add('open');
+      backdrop.classList.add('open');
+    }
+  }
+
+  function closeResultDetail() {
+    const panel = document.getElementById('result-detail');
+    const backdrop = document.getElementById('result-detail-backdrop');
+    if (panel) panel.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
   }
 
   function updateModeBar(visible, mode) {

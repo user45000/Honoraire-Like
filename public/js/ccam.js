@@ -33,6 +33,18 @@ const CCAM = (() => {
     };
     const pLabel = periodeLabels[periode] || '';
 
+    // Actes programmés (baseOnly) : aucun modificateur applicable
+    const allBaseOnly = selectedActes.length > 0 && selectedActes.every(a => a.baseOnly);
+    if (allBaseOnly) {
+      const reason = 'Acte programmé — pas de modificateur d\'urgence';
+      return {
+        M: { available: false, reason },
+        P: { available: false, reason },
+        S: { available: false, reason },
+        F: { available: false, reason }
+      };
+    }
+
     return {
       M: { available: true, reason: '' },
       P: {
@@ -204,14 +216,16 @@ const CCAM = (() => {
     updateSelectionBanner();
     const modifCard = document.getElementById('ccam-modif-card');
     if (modifCard) {
-      const hasNonBaseOnly = selectedActes.some(a => !a.baseOnly);
-      modifCard.style.display = (selectedActes.length > 0 && hasNonBaseOnly) ? '' : 'none';
-      if (!hasNonBaseOnly) {
+      // Toujours afficher les modificateurs quand un acte est sélectionné
+      modifCard.style.display = selectedActes.length > 0 ? '' : 'none';
+      const allBaseOnly = selectedActes.length > 0 && selectedActes.every(a => a.baseOnly);
+      if (allBaseOnly) {
+        // Actes programmés : désactiver M/P/S/F mais les montrer grisés
         activeModificateurs = [];
         const modifToggles = document.getElementById('ccam-modif-toggles');
         if (modifToggles) modifToggles.querySelectorAll('.ccam-modif-btn').forEach(b => {
           b.classList.remove('active');
-          b.classList.remove('disabled');
+          b.classList.add('disabled');
         });
       } else {
         updateModifStates();
