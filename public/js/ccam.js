@@ -43,11 +43,14 @@ const CCAM = (() => {
       return { M: { available: false, reason }, P: { available: false, reason }, S: { available: false, reason }, F: { available: false, reason } };
     }
 
-    // M : autorisé si au moins un acte le permet
-    const mAllowed = isModifAllowedByActs('M');
+    // M : autorisé si au moins un acte le permet ET contexte cabinet (pas visite)
+    const isVisite = App.getCCAMContext() === 'visite';
+    const mAllowed = isModifAllowedByActs('M') && !isVisite;
     const mResult = {
       available: mAllowed,
-      reason: mAllowed ? '' : 'Non autorisé pour cet acte (urgence cabinet uniquement sur sutures, immobilisations...)'
+      reason: isVisite ? 'M réservé au cabinet (art. III-2 CCAM)'
+        : !isModifAllowedByActs('M') ? 'Non autorisé pour cet acte'
+        : ''
     };
 
     // P, S, F : autorisés si l'acte le permet ET la période correspond
