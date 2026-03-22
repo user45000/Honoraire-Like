@@ -310,6 +310,9 @@ const CCAM = (() => {
       const acte = allActes.find(a => a.code === code);
       if (acte) selectedActes.push(acte);
     }
+    const isNowSelected = selectedActes.some(a => a.code === code);
+    // Sync les boutons courants dans consultation/visite
+    syncToCourants(code, isNowSelected);
     render(document.getElementById('ccam-search').value.trim());
     // Recalculer sur l'onglet actif
     App.onCCAMChanged();
@@ -412,5 +415,25 @@ const CCAM = (() => {
     return allActes.find(a => a.code === code) || null;
   }
 
-  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe, getModificateurs, updateModifFromPeriode };
+  // Sync depuis un acte courant (consultation/visite) → sélection CCAM
+  function syncFromCourant(code, active) {
+    const isSelected = selectedActes.some(a => a.code === code);
+    if (active && !isSelected) {
+      if (selectedActes.length >= 2) return; // max 2
+      const acte = allActes.find(a => a.code === code);
+      if (acte) selectedActes.push(acte);
+    } else if (!active && isSelected) {
+      selectedActes = selectedActes.filter(a => a.code !== code);
+    }
+    // Re-render l'onglet CCAM si visible
+    render(document.getElementById('ccam-search')?.value?.trim() || '');
+  }
+
+  // Appelé quand un acte est togglé dans l'onglet CCAM → sync les courants
+  function syncToCourants(code, active) {
+    Consultation.syncCourantUI(code, active);
+    Visite.syncCourantUI(code, active);
+  }
+
+  return { init, setActes, onShow, getSelectedActes, clearSelection, getActe, getModificateurs, updateModifFromPeriode, syncFromCourant };
 })();

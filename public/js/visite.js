@@ -160,6 +160,9 @@ const Visite = (() => {
           state.actesCourants.push(code);
           btn.classList.add('active');
         }
+        // Sync avec l'onglet CCAM et consultation
+        CCAM.syncFromCourant(code, state.actesCourants.includes(code));
+        Consultation.syncCourantUI(code, state.actesCourants.includes(code));
         recalculate();
       });
     }
@@ -512,5 +515,17 @@ const Visite = (() => {
 
   function getState() { return state; }
 
-  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation };
+  function syncCourantUI(code, active) {
+    const btn = document.querySelector('#visite-courants-grid [data-courant="' + code + '"]');
+    if (!btn) return;
+    if (active && !state.actesCourants.includes(code)) {
+      state.actesCourants.push(code);
+      btn.classList.add('active');
+    } else if (!active && state.actesCourants.includes(code)) {
+      state.actesCourants = state.actesCourants.filter(c => c !== code);
+      btn.classList.remove('active');
+    }
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI };
 })();

@@ -89,7 +89,7 @@ const Consultation = (() => {
       }
     });
 
-    // Actes courants (ECG, Frottis)
+    // Actes courants (ECG, Frottis) — synchronisés avec l'onglet CCAM
     const courantsGrid = document.getElementById('consult-courants-grid');
     courantsGrid.addEventListener('click', (e) => {
       const infoBtn = e.target.closest('[data-courant-info]');
@@ -117,6 +117,10 @@ const Consultation = (() => {
         state.actesCourants.push(code);
         btn.classList.add('active');
       }
+      // Sync avec l'onglet CCAM
+      CCAM.syncFromCourant(code, state.actesCourants.includes(code));
+      // Sync visite aussi
+      Visite.syncCourantUI(code, state.actesCourants.includes(code));
       recalculate();
     });
 
@@ -347,5 +351,18 @@ const Consultation = (() => {
     recalculate();
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation };
+  // Sync UI des boutons courants depuis l'extérieur (CCAM ou Visite)
+  function syncCourantUI(code, active) {
+    const btn = document.querySelector('#consult-courants-grid [data-courant="' + code + '"]');
+    if (!btn) return;
+    if (active && !state.actesCourants.includes(code)) {
+      state.actesCourants.push(code);
+      btn.classList.add('active');
+    } else if (!active && state.actesCourants.includes(code)) {
+      state.actesCourants = state.actesCourants.filter(c => c !== code);
+      btn.classList.remove('active');
+    }
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI };
 })();
