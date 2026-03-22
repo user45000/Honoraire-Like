@@ -733,34 +733,6 @@
       "note": "Acte isolé"
     },
     {
-      "code": "YYYY180",
-      "label": "Injection IM ou SC",
-      "tarif": 3.78,
-      "cumulG": "non",
-      "note": "Inclus dans la consultation si réalisé pendant"
-    },
-    {
-      "code": "YYYY070",
-      "label": "Injection intraveineuse",
-      "tarif": 3.78,
-      "cumulG": "non",
-      "note": "Inclus dans la consultation si réalisé pendant"
-    },
-    {
-      "code": "YYYY015",
-      "label": "Pansement simple",
-      "tarif": 4.5,
-      "cumulG": "non",
-      "note": "Inclus dans la consultation si réalisé pendant"
-    },
-    {
-      "code": "YYYY023",
-      "label": "Pansement lourd et complexe",
-      "tarif": 9,
-      "cumulG": "non",
-      "note": "Acte isolé"
-    },
-    {
       "code": "AHQP001",
       "label": "Audiométrie tonale",
       "tarif": 25.1,
@@ -832,10 +804,10 @@
     },
     {
       "code": "ALQP003",
-      "label": "Tympanométrie",
-      "tarif": 26.4,
+      "label": "Évaluation d'une dépression (Hamilton)",
+      "tarif": 69.12,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Test d'Hamilton ou équivalent. Cumulable avec G/VG. 1 fois par an."
     },
     {
       "code": "QZHA001",
