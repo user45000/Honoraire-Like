@@ -176,7 +176,7 @@ function buildEmail(content) {
 const stripeKey = process.env.STRIPE_SECRET_KEY;
 const stripe = stripeKey ? require('stripe')(stripeKey) : null;
 
-app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!stripe || !webhookSecret) return res.status(500).json({ error: 'Stripe non configuré' });
 
@@ -268,12 +268,22 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
       }
 
       if (!userId) break;
+      let subscriptionEnd = null;
+      if (session.subscription && stripe) {
+        try {
+          const sub = await stripe.subscriptions.retrieve(session.subscription);
+          subscriptionEnd = new Date(sub.current_period_end * 1000).toISOString();
+        } catch (e) {
+          console.error('Erreur récupération subscription:', e.message);
+        }
+      }
       db.prepare(`UPDATE users SET
         stripe_customer_id = ?,
         stripe_subscription_id = ?,
-        subscription_status = 'active'
+        subscription_status = 'active',
+        subscription_end = ?
         WHERE id = ?`
-      ).run(session.customer, session.subscription, userId);
+      ).run(session.customer, session.subscription, subscriptionEnd, userId);
       const paidUser = db.prepare('SELECT email FROM users WHERE id = ?').get(userId);
       if (paidUser) sendEmail(paidUser.email, 'Votre abonnement Honoraires MG est actif', buildEmail(`
         <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:28px">
@@ -320,6 +330,7 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
       `));
       break;
     }
+    case 'customer.subscription.created':
     case 'customer.subscription.updated': {
       const sub = event.data.object;
       const user = db.prepare('SELECT id FROM users WHERE stripe_customer_id = ?').get(sub.customer);
