@@ -376,6 +376,22 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), (req,
       `));
       break;
     }
+    case 'charge.refunded': {
+      const charge = event.data.object;
+      if (!charge.refunded) break; // remboursement partiel, on ignore
+      const user = db.prepare('SELECT id, stripe_subscription_id FROM users WHERE stripe_customer_id = ?').get(charge.customer);
+      if (user) {
+        db.prepare('UPDATE users SET subscription_status = ?, subscription_end = NULL WHERE id = ?')
+          .run('expired', user.id);
+        // Annuler aussi l'abonnement Stripe pour éviter les futurs prélèvements
+        if (user.stripe_subscription_id && stripe) {
+          stripe.subscriptions.cancel(user.stripe_subscription_id).catch(e =>
+            console.error('Erreur annulation sub après remboursement:', e.message)
+          );
+        }
+      }
+      break;
+    }
   }
   res.json({ received: true });
 });
