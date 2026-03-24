@@ -5,7 +5,7 @@ const App = (() => {
   let currentTab = 'consultation';
   let currentRelation = 'mt';
   let ccamContext = 'consultation'; // dernier onglet consultation/visite avant CCAM
-  let ccamIK = { enabled: false, km: 5 }; // IK propre au contexte CCAM "En visite"
+  let ccamIK = { enabled: false, km: 5, geoOverride: null }; // IK propre au contexte CCAM "En visite"
 
   async function init() {
     // Charger les paramètres
@@ -182,6 +182,7 @@ const App = (() => {
       updateCCAMIKInfo();
       onCCAMChanged();
     });
+    document.getElementById('ccam-ik-geolocate')?.addEventListener('click', handleCCAMGeolocate);
 
     // Afficher l'onglet initial
     Consultation.onShow();
@@ -664,7 +665,7 @@ const App = (() => {
         deplacement: 'ID',
         ikEnabled: ccamIK.enabled,
         ikKm: ccamIK.km,
-        ikGeoOverride: null,
+        ikGeoOverride: ccamIK.geoOverride || null,
         heure: vs.heure,
         ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : [],
         ccamActes: CCAM.getSelectedActes()
@@ -774,6 +775,61 @@ const App = (() => {
     const ik = Engine.calculateIK(ccamIK.km, null);
     const geoLabel = Engine.getGeo() === 'montagne' ? 'montagne' : 'plaine';
     infoEl.textContent = `${geoLabel} — franchise ${ik.franchise} km — ${ik.kmFactures} km × ${ik.tarifKm.toFixed(2).replace('.', ',')}€ = ${ik.montant.toFixed(2).replace('.', ',')}€`;
+  }
+
+  async function handleCCAMGeolocate() {
+    const btn = document.getElementById('ccam-ik-geolocate');
+    const status = document.getElementById('ccam-ik-geo-status');
+    const cabinetAddr = localStorage.getItem('hon_cabinet_address') || '';
+    if (!cabinetAddr.trim()) {
+      status.textContent = '⚠️ Renseignez l\'adresse du cabinet dans Paramètres';
+      status.className = 'ik-geo-status warn';
+      return;
+    }
+    btn.disabled = true;
+    status.textContent = '📡 Géolocalisation en cours…';
+    status.className = 'ik-geo-status';
+    try {
+      const pos = await new Promise((resolve, reject) => {
+        if (!navigator.geolocation) reject(new Error('Géolocalisation non supportée'));
+        navigator.geolocation.getCurrentPosition(resolve, () => reject(new Error('Position refusée')), { timeout: 12000, maximumAge: 0, enableHighAccuracy: true });
+      });
+      const patLat = pos.coords.latitude;
+      const patLng = pos.coords.longitude;
+      status.textContent = '📍 Localisation du cabinet…';
+      const cabRes = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(cabinetAddr)}&limit=1`);
+      const cabData = await cabRes.json();
+      if (!cabData.features?.length) {
+        status.textContent = '⚠️ Cabinet introuvable — vérifiez l\'adresse dans Paramètres';
+        status.className = 'ik-geo-status warn'; btn.disabled = false; return;
+      }
+      const [cabLng, cabLat] = cabData.features[0].geometry.coordinates;
+      status.textContent = '🗺️ Calcul de l\'itinéraire…';
+      const routeRes = await fetch(`https://router.project-osrm.org/route/v1/driving/${cabLng},${cabLat};${patLng},${patLat}?overview=false`);
+      const routeData = await routeRes.json();
+      if (routeData.code !== 'Ok' || !routeData.routes?.length) {
+        status.textContent = '⚠️ Itinéraire introuvable';
+        status.className = 'ik-geo-status warn'; btn.disabled = false; return;
+      }
+      const km = Math.round(routeData.routes[0].distance / 1000);
+      // Détection zone montagne
+      try {
+        const revRes = await fetch(`https://api-adresse.data.gouv.fr/reverse/?lon=${patLng}&lat=${patLat}&limit=1`);
+        const revData = await revRes.json();
+        const citycode = revData.features?.[0]?.properties?.citycode;
+        ccamIK.geoOverride = (citycode && (citycode.startsWith('2A') || citycode.startsWith('2B') || (typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode)))) ? 'montagne' : null;
+      } catch { ccamIK.geoOverride = null; }
+      ccamIK.km = km;
+      document.getElementById('ccam-ik-km').value = km;
+      updateCCAMIKInfo();
+      onCCAMChanged();
+      status.textContent = `✅ ${(routeData.routes[0].distance / 1000).toFixed(1)} km (aller) — franchise déduite automatiquement` + (ccamIK.geoOverride === 'montagne' ? ' — 🏔️ zone montagne' : '');
+      status.className = 'ik-geo-status ok';
+    } catch (e) {
+      status.textContent = '❌ ' + (e.message || 'Erreur');
+      status.className = 'ik-geo-status warn';
+    }
+    btn.disabled = false;
   }
 
   function getCCAMContext() { return ccamContext; }
