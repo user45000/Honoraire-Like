@@ -254,7 +254,7 @@ const CCAM = (() => {
   function renderItem(acte) {
     const isFav = favorites.includes(acte.code);
     const isSelected = selectedActes.some(a => a.code === acte.code);
-    const maxReached = selectedActes.length >= 2 && !isSelected;
+    const maxReached = selectedActes.length >= 5 && !isSelected;
     const cumul = acte.cumulG || 'non';
 
     let cumulBadge = '';
@@ -266,14 +266,14 @@ const CCAM = (() => {
       cumulBadge = '<span class="ccam-cumul no">isolé</span>';
     }
 
-    // Badge de rang quand 2 actes sont sélectionnés
+    // Badge de rang selon la position dans le classement tarifaire
     let rankBadge = '';
-    if (isSelected && selectedActes.length === 2) {
+    if (isSelected && selectedActes.length >= 1) {
       const sorted = [...selectedActes].sort((a, b) => Engine.getCCAMTarif(b) - Engine.getCCAMTarif(a));
       const rank = sorted.findIndex(a => a.code === acte.code);
-      rankBadge = rank === 0
-        ? '<span class="ccam-rank rank-primary">① principal</span>'
-        : '<span class="ccam-rank rank-secondary">② 50%</span>';
+      if (rank === 0) rankBadge = '<span class="ccam-rank rank-primary">① 100%</span>';
+      else if (rank === 1) rankBadge = '<span class="ccam-rank rank-secondary">② 50%</span>';
+      else rankBadge = '<span class="ccam-rank rank-excluded">hors cotation</span>';
     }
 
     const esc = escapeHTML;
@@ -292,7 +292,7 @@ const CCAM = (() => {
         </div>
         <span class="ccam-tarif">${Engine.getCCAMTarif(acte).toFixed(2).replace('.', ',')}€</span>
         <button class="ccam-add-btn ${isSelected ? 'active' : ''}" data-add="${esc(acte.code)}"
-          title="${isSelected ? 'Retirer' : maxReached ? '2 actes maximum' : 'Ajouter au calcul'}">
+          title="${isSelected ? 'Retirer' : maxReached ? '5 actes max' : 'Ajouter au calcul'}">
           ${isSelected ? '✓' : maxReached ? '–' : '+'}
         </button>
       </div>
@@ -329,7 +329,7 @@ const CCAM = (() => {
     if (idx >= 0) {
       selectedActes.splice(idx, 1);
     } else {
-      if (selectedActes.length >= 2) return; // Max 2 actes — bloqué
+      if (selectedActes.length >= 5) return; // Soft limit : 5 actes max
       const acte = allActes.find(a => a.code === code);
       if (acte) selectedActes.push(acte);
     }
@@ -368,36 +368,40 @@ const CCAM = (() => {
 
     banner.style.display = '';
 
-    // Trier par tarif décroissant pour afficher ① principal puis ② 50%
+    // Trier par tarif décroissant : top 2 cotés, reste hors cotation
     const sorted = [...selectedActes].sort((a, b) => Engine.getCCAMTarif(b) - Engine.getCCAMTarif(a));
-    const has2 = selectedActes.length === 2;
+    const n = selectedActes.length;
 
     const esc = escapeHTML;
     const acteLines = sorted.map((a, idx) => {
-      const rankIcon = has2 ? (idx === 0 ? '① ' : '② ') : '';
-      let tauxLabel = '';
-      let tauxClass = '';
-      if (has2) {
-        tauxLabel = idx === 0 ? '100%' : '50%';
-        tauxClass = idx === 0 ? 'taux-full' : 'taux-half';
+      let rankIcon, tauxLabel, tauxClass, rowClass;
+      if (idx === 0) {
+        rankIcon = '① '; tauxLabel = '100%'; tauxClass = 'taux-full'; rowClass = '';
+      } else if (idx === 1) {
+        rankIcon = '② '; tauxLabel = '50%'; tauxClass = 'taux-half'; rowClass = '';
       } else {
+        rankIcon = ''; tauxLabel = 'hors cotation'; tauxClass = 'taux-excluded'; rowClass = 'ccam-sel-excluded';
+      }
+      // Cas 1 seul acte : pas de rang affiché, affiche règle cumul G
+      if (n === 1) {
+        rankIcon = '';
         const cumul = a.cumulG || 'non';
         if (cumul === 'oui') { tauxLabel = '+ G'; tauxClass = 'taux-full'; }
         else if (cumul === '50%') { tauxLabel = '50% + G'; tauxClass = 'taux-half'; }
         else { tauxLabel = 'remplace G si + rémunérateur'; tauxClass = ''; }
       }
-      return `<div class="ccam-sel-item">
-        <strong>${rankIcon}${esc(a.code)}</strong> ${a.tarif.toFixed(2).replace('.', ',')}€
+      return `<div class="ccam-sel-item ${esc(rowClass)}">
+        <strong>${rankIcon}${esc(a.code)}</strong> ${Engine.getCCAMTarif(a).toFixed(2).replace('.', ',')}€
         <span class="ccam-sel-taux ${esc(tauxClass)}">${esc(tauxLabel)}</span>
         <button class="ccam-sel-remove" data-remove="${esc(a.code)}">&times;</button>
       </div>`;
     }).join('');
 
-    const limitMsg = has2
-      ? '<div class="ccam-sel-limit">2/2 — retirer un acte pour en ajouter un autre</div>'
+    const infoMsg = n >= 2
+      ? `<div class="ccam-sel-rule">Les 2 actes les plus rémunérateurs sont retenus · ${n}/5 sélectionnés</div>`
       : '';
 
-    banner.innerHTML = `${acteLines}${limitMsg}`;
+    banner.innerHTML = `${acteLines}${infoMsg}`;
 
     banner.querySelectorAll('.ccam-sel-remove').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -442,7 +446,7 @@ const CCAM = (() => {
   function syncFromCourant(code, active) {
     const isSelected = selectedActes.some(a => a.code === code);
     if (active && !isSelected) {
-      if (selectedActes.length >= 2) return; // max 2
+      if (selectedActes.length >= 5) return; // soft limit 5
       const acte = allActes.find(a => a.code === code);
       if (acte) selectedActes.push(acte);
     } else if (!active && isSelected) {

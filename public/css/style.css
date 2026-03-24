@@ -1147,6 +1147,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   background: rgba(230,126,34,0.12);
 }
 
+.rank-excluded {
+  color: var(--text-secondary);
+  background: var(--border);
+}
+
 .ccam-add-btn {
   width: 32px;
   height: 32px;
@@ -1331,6 +1336,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ccam-sel-taux.taux-half {
   color: #e67e22;
   background: rgba(230,126,34,0.12);
+}
+
+.ccam-sel-taux.taux-excluded {
+  color: var(--text-secondary);
+  background: var(--border);
+}
+
+.ccam-sel-excluded {
+  opacity: 0.6;
 }
 
 .ccam-sel-limit {
