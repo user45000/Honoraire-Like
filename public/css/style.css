@@ -1052,6 +1052,10 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   pointer-events: none;
 }
 
+.ccam-item.soft-dimmed {
+  opacity: 0.55;
+}
+
 .ccam-item:active {
   transform: scale(0.99);
 }

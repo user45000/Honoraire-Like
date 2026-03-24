@@ -255,6 +255,7 @@ const CCAM = (() => {
     const isFav = favorites.includes(acte.code);
     const isSelected = selectedActes.some(a => a.code === acte.code);
     const maxReached = selectedActes.length >= 5 && !isSelected;
+    const softDimmed = selectedActes.length >= 2 && !isSelected && !maxReached;
     const cumul = acte.cumulG || 'non';
 
     let cumulBadge = '';
@@ -278,7 +279,7 @@ const CCAM = (() => {
 
     const esc = escapeHTML;
     return `
-      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : ''}" data-code="${esc(acte.code)}">
+      <div class="ccam-item ${isSelected ? 'selected' : ''} ${maxReached ? 'dimmed' : softDimmed ? 'soft-dimmed' : ''}" data-code="${esc(acte.code)}">
         <button class="ccam-fav-btn ${isFav ? 'favorited' : ''}" data-fav="${esc(acte.code)}">
           ${isFav ? '&#9733;' : '&#9734;'}
         </button>
