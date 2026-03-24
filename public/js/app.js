@@ -625,9 +625,25 @@ const App = (() => {
    * Recalcule sur l'onglet consultation ou visite actif
    */
   function onCCAMChanged() {
-    // Recalcul avec le contexte mémorisé (consultation ou visite)
     if (ccamContext === 'visite') {
-      Visite.recalculate();
+      // Acte technique CCAM seul à domicile → ID (€3,50), sans VG
+      const vs = Visite.getState();
+      const result = Engine.calculate({
+        acte: null,
+        age: vs.age,
+        majorations: [],
+        periode: vs.periode,
+        mode: vs.mode,
+        isVisite: true,
+        deplacement: 'ID',
+        ikEnabled: vs.ikEnabled,
+        ikKm: vs.ikKm,
+        ikGeoOverride: vs.ikGeoOverride,
+        heure: vs.heure,
+        ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : [],
+        ccamActes: CCAM.getSelectedActes()
+      });
+      updateResult(result);
     } else {
       Consultation.recalculate();
     }
@@ -699,19 +715,23 @@ const App = (() => {
     const label = document.getElementById('ccam-context-label');
     if (label) label.textContent = isVisite ? 'En visite' : 'Au cabinet';
 
-    // Chips : acte + majorations actives + actes courants (ECG, Frottis…)
+    // Chips : en visite → ID fixe ; au cabinet → acte + majorations
     const COURANT_LABELS = { 'DEQP003': 'ECG', 'JKHD001': 'Frottis' };
     const chips = document.getElementById('ccam-ctx-chips');
     if (chips) {
-      const acteClass = 'ccam-ctx-chip chip-acte' + (isVisite ? ' chip-visite' : '');
-      let html = `<span class="${acteClass}">${state.acte}</span>`;
-      (state.majorations || []).forEach(m => {
-        html += `<span class="ccam-ctx-chip chip-majo">${m}</span>`;
-      });
-      (state.actesCourants || []).forEach(code => {
-        const label = COURANT_LABELS[code] || code;
-        html += `<span class="ccam-ctx-chip chip-courant">${label}</span>`;
-      });
+      let html;
+      if (isVisite) {
+        html = `<span class="ccam-ctx-chip chip-acte chip-visite">ID · 3,50€</span>`;
+      } else {
+        html = `<span class="ccam-ctx-chip chip-acte">${state.acte}</span>`;
+        (state.majorations || []).forEach(m => {
+          html += `<span class="ccam-ctx-chip chip-majo">${m}</span>`;
+        });
+        (state.actesCourants || []).forEach(code => {
+          const lbl = COURANT_LABELS[code] || code;
+          html += `<span class="ccam-ctx-chip chip-courant">${lbl}</span>`;
+        });
+      }
       chips.innerHTML = html;
     }
   }
