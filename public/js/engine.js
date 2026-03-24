@@ -402,7 +402,17 @@ const Engine = (() => {
     let replaceConsult = false;
 
     if (ccamActes && ccamActes.length > 0) {
-      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos);
+      // Tarif déplacement MD* déjà ajouté — pour comparaison CCAM+ID vs VG+MD*
+      let depTarifForCCAM = 0;
+      if (isVisite && deplacement && deplacement.startsWith('MD') && isDeplacementApplicable(mode)) {
+        const depEntry = tarifs.deplacement[deplacement];
+        if (depEntry) {
+          const zone = getZone();
+          depTarifForCCAM = depEntry.tarifs[zone] || depEntry.tarifs.metro || 0;
+        }
+      }
+
+      const ccamResult = calculateCCAM(ccamActes, acte, acteTarif, activeMajos, depTarifForCCAM);
       for (const item of ccamResult.items) {
         codes.push(item.code);
         details.push(item);
@@ -412,23 +422,32 @@ const Engine = (() => {
       replaceConsult = ccamResult.replaceConsult;
 
       if (replaceConsult && acte) {
-        // G remplacé par CCAM → annuler G et ses majorations NGAP
-        // (sans acte NGAP, details[0] est ID/déplacement — ne pas l'annuler)
+        // CCAM+ID remplace VG+MD* → annuler VG et ses majorations NGAP
         total -= acteTarif;
         details[0].montant = 0;
         details[0].label += ' (non facturé — acte CCAM plus rémunérateur)';
         codes[0] = '(' + codes[0] + ')';
 
-        // Annuler les majorations NGAP (liées à la consultation)
         for (let i = 1; i < details.length; i++) {
           const d = details[i];
           const code = d.code;
-          // Majorations NGAP et horaires : liées à la consultation
           if (tarifs.majorations[code] || ['CRN','CRM','CRD','CRS','VRN','VRM','VRD','VRS','F','MN','MM'].includes(code)) {
+            // Majorations NGAP/horaires liées à la consultation → annulées
             total -= d.montant;
             d.montant = 0;
             d.label += ' (non facturé)';
             codes[i] = '(' + codes[i] + ')';
+          } else if (isVisite && code && code.startsWith('MD')) {
+            // MD* → ID : CCAM remplace VG, déplacement passe en indemnité forfaitaire
+            const zone = getZone();
+            const idEntry = tarifs.deplacement?.ID;
+            const idT = idEntry ? (idEntry.tarifs[zone] || idEntry.tarifs.metro || 3.5) : 3.5;
+            total -= d.montant;
+            total += idT;
+            d.montant = idT;
+            d.code = 'ID';
+            d.label = idEntry?.label || 'Indemnité de déplacement (acte technique)';
+            codes[i] = 'ID';
           }
         }
       }
@@ -487,9 +506,16 @@ const Engine = (() => {
    * baseOnly : actes cumulables à 100% uniquement avec G/VG de base
    *   (convention 2024 — non valable avec consultations complexes ou MSH/MIC actifs)
    */
-  function calculateCCAM(ccamActes, consultCode, consultTarif, activeMajos) {
+  function calculateCCAM(ccamActes, consultCode, consultTarif, activeMajos, depTarif = 0) {
     const items = [];
     let replaceConsult = false;
+
+    // En visite avec MD* : comparer CCAM+ID vs VG+MD* (pas juste CCAM vs VG)
+    const zone = getZone();
+    const idTarif = (depTarif > 0 && tarifs.deplacement?.ID)
+      ? (tarifs.deplacement.ID.tarifs[zone] || tarifs.deplacement.ID.tarifs.metro || 3.5)
+      : 0;
+    const consultTotal = consultTarif + depTarif; // VG + MD* (ou juste VG si pas de visite)
 
     const sorted = [...ccamActes].sort((a, b) => getCCAMTarif(b) - getCCAMTarif(a));
 
@@ -522,13 +548,14 @@ const Engine = (() => {
           // Acte précédent a déjà remplacé G — association à 50%
           const montant = Math.round(acteTarif * 0.5 * 100) / 100;
           items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
-        } else if (acteTarif > consultTarif) {
+        } else if (acteTarif + idTarif > consultTotal) {
+          // CCAM+ID plus rémunérateur que VG+MD* → remplace la consultation
           replaceConsult = true;
           items.push({ code: acte.code, label: acte.label, montant: acteTarif });
         } else {
           items.push({
             code: '(' + acte.code + ')',
-            label: acte.label + ' (non facturé — G plus rémunérateur)',
+            label: acte.label + ' (non facturé — VG+déplacement plus rémunérateur)',
             montant: 0
           });
         }
