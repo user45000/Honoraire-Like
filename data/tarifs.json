@@ -618,6 +618,15 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "electrocardiogramme",
+        "électrocardiogramme",
+        "cardio",
+        "coeur",
+        "rythme",
+        "QRS",
+        "tracé"
       ]
     },
     {
@@ -627,7 +636,16 @@
       "cumulG": "oui",
       "note": "Cumulable à 100% avec G/VG depuis 2017",
       "tarif_optam": 13,
-      "tarif_non_optam": 9.96
+      "tarif_non_optam": 9.96,
+      "keywords": [
+        "FCV",
+        "frottis cervical",
+        "col utérin",
+        "cancer col",
+        "papanicolaou",
+        "pap smear",
+        "dépistage gynéco"
+      ]
     },
     {
       "code": "GLQP012",
@@ -637,7 +655,18 @@
       "baseOnly": true,
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes (VL, APC, GL…) ni avec MSH/MIC actifs.",
       "tarif_optam": 41.87,
-      "tarif_non_optam": 38.8
+      "tarif_non_optam": 38.8,
+      "keywords": [
+        "EFR",
+        "exploration fonctionnelle respiratoire",
+        "VEMS",
+        "CVF",
+        "débit",
+        "poumons",
+        "BPCO",
+        "asthme",
+        "souffle"
+      ]
     },
     {
       "code": "JKLD001",
@@ -647,7 +676,16 @@
       "baseOnly": true,
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
       "tarif_optam": 38.4,
-      "tarif_non_optam": 38.4
+      "tarif_non_optam": 38.4,
+      "keywords": [
+        "stérilet",
+        "DIU",
+        "dispositif intra-utérin",
+        "contraception",
+        "cuivre",
+        "mirena",
+        "kyleena"
+      ]
     },
     {
       "code": "JKKD001",
@@ -657,7 +695,14 @@
       "baseOnly": true,
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024). Non cumulable avec consultations complexes ni avec MSH/MIC actifs.",
       "tarif_optam": 38.4,
-      "tarif_non_optam": 38.4
+      "tarif_non_optam": 38.4,
+      "keywords": [
+        "stérilet",
+        "changement stérilet",
+        "DIU",
+        "contraception",
+        "renouvellement"
+      ]
     },
     {
       "code": "JKGD001",
@@ -672,6 +717,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "stérilet",
+        "retrait stérilet",
+        "ablation DIU",
+        "contraception"
       ]
     },
     {
@@ -682,7 +733,19 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 27.3,
       "tarif_non_optam": 27.3,
-      "baseOnly": true
+      "baseOnly": true,
+      "keywords": [
+        "infiltration",
+        "cortisone",
+        "corticoïde",
+        "épaule",
+        "coude",
+        "poignet",
+        "tendinite",
+        "arthrose",
+        "bursite",
+        "injection articulaire"
+      ]
     },
     {
       "code": "NZLB001",
@@ -692,7 +755,18 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 32.2,
       "tarif_non_optam": 32.2,
-      "baseOnly": true
+      "baseOnly": true,
+      "keywords": [
+        "infiltration",
+        "cortisone",
+        "corticoïde",
+        "genou",
+        "hanche",
+        "cheville",
+        "tendinite",
+        "arthrose",
+        "injection articulaire"
+      ]
     },
     {
       "code": "LHLB001",
@@ -702,7 +776,18 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 35.7,
       "tarif_non_optam": 35.7,
-      "baseOnly": true
+      "baseOnly": true,
+      "keywords": [
+        "infiltration",
+        "cortisone",
+        "dos",
+        "lombaire",
+        "cervicale",
+        "dorsale",
+        "rachis",
+        "facettes",
+        "épidurale"
+      ]
     },
     {
       "code": "QZJA002",
@@ -717,6 +802,15 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "fil",
+        "coupure",
+        "blessure",
+        "suture",
+        "plaie",
+        "cicatrice"
       ]
     },
     {
@@ -732,6 +826,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "fil",
+        "plaie profonde",
+        "blessure profonde",
+        "suture profonde"
       ]
     },
     {
@@ -739,7 +840,15 @@
       "label": "Ablation de fils/agrafes",
       "tarif": 4.83,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "keywords": [
+        "retrait fils",
+        "ablation fils",
+        "désuture",
+        "agrafes",
+        "retrait agrafes",
+        "pansement"
+      ]
     },
     {
       "code": "QZFA031",
@@ -753,6 +862,16 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "azote",
+        "cryo",
+        "verrue",
+        "kératose",
+        "molluscum",
+        "fibrome",
+        "gel",
+        "lésion"
       ]
     },
     {
@@ -762,7 +881,17 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 29.07,
-      "tarif_non_optam": 29.07
+      "tarif_non_optam": 29.07,
+      "keywords": [
+        "fond oeil",
+        "FO",
+        "rétine",
+        "diabète",
+        "HTA",
+        "ophtalmologie",
+        "yeux",
+        "nerf optique"
+      ]
     },
     {
       "code": "CDQP010",
@@ -776,6 +905,16 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "audiométrie",
+        "audition",
+        "surdité",
+        "oreille",
+        "bilan auditif",
+        "hearing",
+        "tonal",
+        "vocal"
       ]
     },
     {
@@ -783,7 +922,17 @@
       "label": "Bandelette urinaire (BU)",
       "tarif": 4.59,
       "cumulG": "non",
-      "note": "Acte isolé, inclus dans la consultation"
+      "note": "Acte isolé, inclus dans la consultation",
+      "keywords": [
+        "BU",
+        "bandelette",
+        "urine",
+        "infection urinaire",
+        "cystite",
+        "protéinurie",
+        "nitrites",
+        "leucocytes"
+      ]
     },
     {
       "code": "QZHA002",
@@ -792,7 +941,15 @@
       "cumulG": "non",
       "note": "Acte isolé",
       "tarif_optam": 48.97,
-      "tarif_non_optam": 38.08
+      "tarif_non_optam": 38.08,
+      "keywords": [
+        "nexplanon",
+        "implanon",
+        "implant contraceptif",
+        "bâtonnet",
+        "implant bras",
+        "contraception"
+      ]
     },
     {
       "code": "QZGA004",
@@ -806,6 +963,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "nexplanon",
+        "implanon",
+        "retrait implant",
+        "ablation implant bras",
+        "contraception"
       ]
     },
     {
@@ -813,7 +977,18 @@
       "label": "Échographie abdominale",
       "tarif": 53.06,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "keywords": [
+        "echo",
+        "échographie",
+        "abdomen",
+        "foie",
+        "reins",
+        "vésicule",
+        "rate",
+        "pancréas",
+        "abdominale"
+      ]
     },
     {
       "code": "CDQP010",
@@ -827,6 +1002,16 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "audiométrie",
+        "audition",
+        "surdité",
+        "oreille",
+        "bilan auditif",
+        "hearing",
+        "tonal",
+        "vocal"
       ]
     },
     {
@@ -834,14 +1019,33 @@
       "label": "Échographie pelvienne",
       "tarif": 47.69,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "keywords": [
+        "echo",
+        "échographie",
+        "pelvis",
+        "utérus",
+        "ovaires",
+        "gynéco",
+        "pelvienne"
+      ]
     },
     {
       "code": "MGQP002",
       "label": "Écho-doppler veineux membre inférieur",
       "tarif": 49.26,
       "cumulG": "non",
-      "note": "Acte isolé"
+      "note": "Acte isolé",
+      "keywords": [
+        "doppler",
+        "TVP",
+        "thrombose veineuse",
+        "phlébite",
+        "varices",
+        "jambe",
+        "écho-doppler",
+        "veines"
+      ]
     },
     {
       "code": "CBQD001",
@@ -855,6 +1059,15 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "oreille",
+        "tympan",
+        "otite",
+        "audition",
+        "tympanogramme",
+        "impédancemétrie",
+        "trompe eustache"
       ]
     },
     {
@@ -864,7 +1077,16 @@
       "cumulG": "non",
       "note": "Test d'Hamilton ou équivalent. Cumulable avec G/VG. 1 fois par an.",
       "tarif_optam": 69.12,
-      "tarif_non_optam": 69.12
+      "tarif_non_optam": 69.12,
+      "keywords": [
+        "HDRS",
+        "hamilton",
+        "dépression",
+        "échelle dépression",
+        "bilan psychiatrique",
+        "score dépressif",
+        "HAD"
+      ]
     },
     {
       "code": "CDQP012",
@@ -878,6 +1100,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "audiométrie",
+        "audition",
+        "surdité",
+        "oreille",
+        "bilan auditif"
       ]
     },
     {
@@ -892,6 +1121,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "audiométrie",
+        "tympanométrie",
+        "audition",
+        "surdité",
+        "oreille"
       ]
     },
     {
@@ -901,7 +1137,14 @@
       "cumulG": "non",
       "note": "Acte isolé. Examen complet audiométrie + tympanométrie (ne pas cumuler CBQD001 ni CDQP012)",
       "tarif_optam": 55.2,
-      "tarif_non_optam": 53.98
+      "tarif_non_optam": 53.98,
+      "keywords": [
+        "audiométrie",
+        "tympanométrie",
+        "audition",
+        "surdité",
+        "bilan complet oreille"
+      ]
     },
     {
       "code": "QZHA001",
@@ -910,14 +1153,32 @@
       "cumulG": "50%",
       "note": "Cumulable à 50% avec G/VG. Max 2 biopsies par consultation.",
       "tarif_optam": 21.43,
-      "tarif_non_optam": 20.49
+      "tarif_non_optam": 20.49,
+      "keywords": [
+        "biopsie",
+        "peau",
+        "lésion cutanée",
+        "mélanome",
+        "carcinome",
+        "cancer peau",
+        "punch biopsie",
+        "exérèse diagnostic"
+      ]
     },
     {
       "code": "FSD",
       "label": "Forfait Sécurité Dermatologie",
       "tarif": 45,
       "cumulG": "non",
-      "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire."
+      "note": "Associé à une exérèse cutanée ambulatoire (QZFA036, QZFA002, QZFA004, QZFA011). Remplace la consultation pré-opératoire.",
+      "keywords": [
+        "dermato",
+        "dermatologie",
+        "peau",
+        "forfait",
+        "sécurité",
+        "consultation dermato"
+      ]
     },
     {
       "code": "YYYY490",
@@ -926,7 +1187,12 @@
       "cumulG": "oui",
       "note": "En sus de DEQP003 quand l'ECG est réalisé lors d'une visite à domicile. Toujours cumulable à 100% avec VG + DEQP003.",
       "tarif_optam": 9.6,
-      "tarif_non_optam": 9.6
+      "tarif_non_optam": 9.6,
+      "keywords": [
+        "ECG domicile",
+        "electrocardiogramme visite",
+        "supplément"
+      ]
     },
     {
       "code": "GLQP007",
@@ -935,7 +1201,17 @@
       "cumulG": "non",
       "note": "Dépistage SAHOS. Acte isolé.",
       "tarif_optam": 151.68,
-      "tarif_non_optam": 122.65
+      "tarif_non_optam": 122.65,
+      "keywords": [
+        "apnée",
+        "ronflement",
+        "SAOS",
+        "SAS",
+        "sommeil",
+        "polysomnographie",
+        "polygraphie",
+        "nuit"
+      ]
     },
     {
       "code": "YYYY010",
@@ -950,6 +1226,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "acte technique",
+        "premier recours",
+        "traumatisme"
       ]
     },
     {
@@ -965,6 +1246,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "grande plaie",
+        "suture longue",
+        "fil"
       ]
     },
     {
@@ -979,6 +1266,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "abcès",
+        "collection superficielle",
+        "furoncle",
+        "drainage",
+        "incision"
       ]
     },
     {
@@ -994,6 +1288,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "fil",
+        "suture",
+        "plaie main",
+        "plaie profonde"
       ]
     },
     {
@@ -1009,6 +1310,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "grande plaie superficielle",
+        "fil"
       ]
     },
     {
@@ -1024,6 +1330,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "points",
+        "fil",
+        "petite plaie profonde"
       ]
     },
     {
@@ -1039,6 +1350,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "pulpe",
+        "ongle",
+        "doigt",
+        "suture digitale"
       ]
     },
     {
@@ -1054,6 +1371,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "pulpe",
+        "ongle",
+        "doigt",
+        "suture digitale"
       ]
     },
     {
@@ -1068,6 +1391,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "abcès",
+        "collection",
+        "drainage",
+        "ponction",
+        "pustule",
+        "kyste"
       ]
     },
     {
@@ -1083,6 +1414,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "face",
+        "visage",
+        "suture visage",
+        "cicatrice visage"
       ]
     },
     {
@@ -1098,6 +1435,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "face",
+        "visage",
+        "plaie profonde visage"
       ]
     },
     {
@@ -1113,6 +1455,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "face",
+        "visage",
+        "joue",
+        "front",
+        "menton"
       ]
     },
     {
@@ -1128,6 +1477,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "face",
+        "visage",
+        "petite plaie visage"
       ]
     },
     {
@@ -1143,6 +1497,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "lèvre",
+        "bouche",
+        "suture lèvre"
       ]
     },
     {
@@ -1158,6 +1517,11 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "lèvre",
+        "transfixiante",
+        "plaie traversante lèvre"
       ]
     },
     {
@@ -1173,6 +1537,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "bouche",
+        "muqueuse",
+        "intrabuccal",
+        "gencive"
       ]
     },
     {
@@ -1188,6 +1558,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "nez",
+        "suture nez",
+        "plaie nez",
+        "aile du nez"
       ]
     },
     {
@@ -1203,6 +1579,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "oreille",
+        "auricule",
+        "pavillon",
+        "suture oreille"
       ]
     },
     {
@@ -1217,6 +1599,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse",
+        "tumeur maligne",
+        "lésion maligne",
+        "cancer",
+        "carcinome"
       ]
     },
     {
@@ -1231,6 +1620,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse",
+        "tumeur maligne",
+        "cancer cutané",
+        "mélanome"
       ]
     },
     {
@@ -1240,7 +1635,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 24.49,
-      "tarif_non_optam": 22.27
+      "tarif_non_optam": 22.27,
+      "keywords": [
+        "molluscum",
+        "molluscum contagiosum",
+        "virus",
+        "lésion virale"
+      ]
     },
     {
       "code": "QZFA013",
@@ -1249,7 +1650,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 34.13,
-      "tarif_non_optam": 23.83
+      "tarif_non_optam": 23.83,
+      "keywords": [
+        "curetage",
+        "verrue",
+        "molluscum",
+        "kératose",
+        "lésion cutanée"
+      ]
     },
     {
       "code": "QZFA015",
@@ -1258,7 +1666,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 37.84,
-      "tarif_non_optam": 30.01
+      "tarif_non_optam": 30.01,
+      "keywords": [
+        "molluscum contagiosum",
+        "virus",
+        "nombreuses lésions"
+      ]
     },
     {
       "code": "QZFA021",
@@ -1267,7 +1680,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 36.36,
-      "tarif_non_optam": 29.15
+      "tarif_non_optam": 29.15,
+      "keywords": [
+        "exérèse tangentielle",
+        "lésions multiples",
+        "dermatologie"
+      ]
     },
     {
       "code": "QZFA022",
@@ -1276,7 +1694,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 44.52,
-      "tarif_non_optam": 29.85
+      "tarif_non_optam": 29.85,
+      "keywords": [
+        "curetage",
+        "nombreuses lésions",
+        "dermatologie"
+      ]
     },
     {
       "code": "QZFA028",
@@ -1290,6 +1713,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse tangentielle",
+        "lésions cutanées",
+        "petite exérèse"
       ]
     },
     {
@@ -1304,6 +1732,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse",
+        "lésion cutanée",
+        "petite tumeur",
+        "kyste",
+        "fibrome",
+        "lipome"
       ]
     },
     {
@@ -1313,7 +1749,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 23.74,
-      "tarif_non_optam": 21.83
+      "tarif_non_optam": 21.83,
+      "keywords": [
+        "cryothérapie",
+        "azote",
+        "verrue",
+        "corps",
+        "lésion"
+      ]
     },
     {
       "code": "QZNP012",
@@ -1322,7 +1765,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 31.16,
-      "tarif_non_optam": 26.14
+      "tarif_non_optam": 26.14,
+      "keywords": [
+        "cryothérapie",
+        "azote",
+        "verrues multiples",
+        "corps"
+      ]
     },
     {
       "code": "QZNP005",
@@ -1331,7 +1780,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 40.07,
-      "tarif_non_optam": 31.3
+      "tarif_non_optam": 31.3,
+      "keywords": [
+        "cryothérapie",
+        "azote",
+        "nombreuses verrues",
+        "corps"
+      ]
     },
     {
       "code": "QANP007",
@@ -1340,7 +1795,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 28.8,
-      "tarif_non_optam": 28.8
+      "tarif_non_optam": 28.8,
+      "keywords": [
+        "cryothérapie",
+        "azote",
+        "visage",
+        "lésion visage"
+      ]
     },
     {
       "code": "QANP005",
@@ -1349,7 +1810,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 36.36,
-      "tarif_non_optam": 33.18
+      "tarif_non_optam": 33.18,
+      "keywords": [
+        "cryothérapie",
+        "azote",
+        "nombreuses lésions visage"
+      ]
     },
     {
       "code": "QZNP013",
@@ -1358,7 +1824,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 25.23,
-      "tarif_non_optam": 22.7
+      "tarif_non_optam": 22.7,
+      "keywords": [
+        "électrocoagulation",
+        "électrocautère",
+        "lésion",
+        "brûlure électrique"
+      ]
     },
     {
       "code": "QZNP025",
@@ -1367,7 +1839,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 34.13,
-      "tarif_non_optam": 27.86
+      "tarif_non_optam": 27.86,
+      "keywords": [
+        "électrocoagulation",
+        "électrocautère",
+        "nombreuses lésions"
+      ]
     },
     {
       "code": "QAGA001",
@@ -1381,6 +1858,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction",
+        "visage",
+        "mains",
+        "hameçon",
+        "épine"
       ]
     },
     {
@@ -1395,6 +1880,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction multiples",
+        "visage",
+        "mains"
       ]
     },
     {
@@ -1409,6 +1900,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction",
+        "superficiel",
+        "visage",
+        "main"
       ]
     },
     {
@@ -1423,6 +1921,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction profonde",
+        "visage",
+        "main",
+        "verre"
       ]
     },
     {
@@ -1437,6 +1942,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction profonde",
+        "bois",
+        "verre",
+        "métal"
       ]
     },
     {
@@ -1451,6 +1963,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction multiples",
+        "profond"
       ]
     },
     {
@@ -1465,6 +1982,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "extraction multiples",
+        "superficiel"
       ]
     },
     {
@@ -1479,6 +2001,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "corps étranger",
+        "nez",
+        "nasal",
+        "extraction nez",
+        "enfant"
       ]
     },
     {
@@ -1488,7 +2017,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 45.26,
-      "tarif_non_optam": 35.93
+      "tarif_non_optam": 35.93,
+      "keywords": [
+        "biopsie ongle",
+        "ongle",
+        "tablette",
+        "lit unguéal",
+        "mélanome unguéal"
+      ]
     },
     {
       "code": "QZHA005",
@@ -1497,7 +2033,14 @@
       "cumulG": "50%",
       "note": "Cumulable à 50% avec G/VG. Max 2 biopsies par consultation.",
       "tarif_optam": 26.6,
-      "tarif_non_optam": 21.07
+      "tarif_non_optam": 21.07,
+      "keywords": [
+        "biopsie",
+        "sous-cutané",
+        "lipome",
+        "tumeur profonde",
+        "ganglion"
+      ]
     },
     {
       "code": "JMHA001",
@@ -1506,7 +2049,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 25.99,
-      "tarif_non_optam": 19.11
+      "tarif_non_optam": 19.11,
+      "keywords": [
+        "biopsie vulve",
+        "vulve",
+        "gynéco",
+        "lésion génitale féminine"
+      ]
     },
     {
       "code": "QZGA002",
@@ -1520,6 +2069,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "implant hormonal",
+        "changement implant",
+        "remplacement implant"
       ]
     },
     {
@@ -1529,7 +2083,12 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 18.77,
-      "tarif_non_optam": 14.92
+      "tarif_non_optam": 14.92,
+      "keywords": [
+        "implant hormonal",
+        "pose implant",
+        "contraception hormonale"
+      ]
     },
     {
       "code": "QZQP001",
@@ -1538,7 +2097,15 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 54.1,
-      "tarif_non_optam": 54.1
+      "tarif_non_optam": 54.1,
+      "keywords": [
+        "dermoscopie",
+        "dermatoscopie",
+        "grain de beauté",
+        "mélanome",
+        "surveillance naevus",
+        "cancer peau"
+      ]
     },
     {
       "code": "EGJA001",
@@ -1552,6 +2119,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "hémorroïde",
+        "thrombose hémorroïdaire",
+        "hémorroïde externe",
+        "crise hémorroïdaire"
       ]
     },
     {
@@ -1561,7 +2134,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 38.4,
-      "tarif_non_optam": 38.4
+      "tarif_non_optam": 38.4,
+      "keywords": [
+        "anus",
+        "lésion anale",
+        "condylome anal",
+        "verrues anales"
+      ]
     },
     {
       "code": "JZNP001",
@@ -1570,7 +2149,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 52.68,
-      "tarif_non_optam": 46.68
+      "tarif_non_optam": 46.68,
+      "keywords": [
+        "périnée",
+        "organes génitaux",
+        "condylomes",
+        "verrues génitales",
+        "HPV"
+      ]
     },
     {
       "code": "JZNP002",
@@ -1579,7 +2165,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 36.36,
-      "tarif_non_optam": 29.15
+      "tarif_non_optam": 29.15,
+      "keywords": [
+        "périnée",
+        "condylomes génitaux",
+        "verrues",
+        "HPV",
+        "lésions génitales"
+      ]
     },
     {
       "code": "JZNP003",
@@ -1588,7 +2181,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 75.68,
-      "tarif_non_optam": 60.02
+      "tarif_non_optam": 60.02,
+      "keywords": [
+        "périnée",
+        "nombreuses lésions génitales",
+        "condylomes étendus",
+        "HPV"
+      ]
     },
     {
       "code": "JMFA002",
@@ -1597,7 +2196,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 45.49,
-      "tarif_non_optam": 39.55
+      "tarif_non_optam": 39.55,
+      "keywords": [
+        "vulve",
+        "exérèse vulvaire",
+        "lésion vulvaire",
+        "condylome vulve"
+      ]
     },
     {
       "code": "JHNP001",
@@ -1606,7 +2211,14 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 40.65,
-      "tarif_non_optam": 35.67
+      "tarif_non_optam": 35.67,
+      "keywords": [
+        "gland",
+        "prépuce",
+        "verrue",
+        "condylome",
+        "lésion pénienne"
+      ]
     },
     {
       "code": "JHFA015",
@@ -1615,7 +2227,13 @@
       "cumulG": "non",
       "note": "Acte isolé.",
       "tarif_optam": 51.73,
-      "tarif_non_optam": 38.07
+      "tarif_non_optam": 38.07,
+      "keywords": [
+        "pénis",
+        "verrue",
+        "condylome",
+        "exérèse pénienne"
+      ]
     },
     {
       "code": "CAGD001",
@@ -1629,6 +2247,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "bouchon cérumen",
+        "cérumen",
+        "oreille bouchée",
+        "surdité cérumen",
+        "lavage oreille"
       ]
     },
     {
@@ -1643,6 +2268,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "bouchon cérumen",
+        "cérumen épidermique",
+        "oreille bouchée",
+        "extraction cérumen"
       ]
     },
     {
@@ -1658,6 +2289,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "saignement nez",
+        "épistaxis",
+        "mèche nasale",
+        "tamponnement",
+        "hémorragie nasale"
       ]
     },
     {
@@ -1673,6 +2311,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "saignement nez",
+        "épistaxis",
+        "tamponnement antérieur",
+        "mèche"
       ]
     },
     {
@@ -1683,7 +2327,16 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 30.1,
       "tarif_non_optam": 21.49,
-      "baseOnly": true
+      "baseOnly": true,
+      "keywords": [
+        "ponction",
+        "aspiration",
+        "épanchement",
+        "épaule",
+        "coude",
+        "poignet",
+        "hygroma"
+      ]
     },
     {
       "code": "NZHB002",
@@ -1693,7 +2346,16 @@
       "note": "Cumulable à 100% avec G/VG uniquement (convention 2024, applicable 01/01/2026). Non cumulable avec consultations complexes.",
       "tarif_optam": 30.1,
       "tarif_non_optam": 23.51,
-      "baseOnly": true
+      "baseOnly": true,
+      "keywords": [
+        "ponction",
+        "aspiration",
+        "épanchement",
+        "genou",
+        "hanche",
+        "cheville",
+        "hydarthrose"
+      ]
     },
     {
       "code": "NZJB001",
@@ -1708,6 +2370,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "évacuation",
+        "épanchement",
+        "genou",
+        "hanche",
+        "cheville",
+        "collection articulaire"
       ]
     },
     {
@@ -1723,6 +2393,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "évacuation",
+        "épanchement",
+        "épaule",
+        "coude",
+        "poignet",
+        "collection articulaire"
       ]
     },
     {
@@ -1738,6 +2416,14 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "contention",
+        "bandage",
+        "épaule",
+        "coude",
+        "poignet",
+        "entorse"
       ]
     },
     {
@@ -1753,6 +2439,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "poignet",
+        "main",
+        "fracture",
+        "immobilisation poignet"
       ]
     },
     {
@@ -1768,6 +2461,14 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "avant-bras",
+        "poignet",
+        "main",
+        "fracture",
+        "plâtre"
       ]
     },
     {
@@ -1783,6 +2484,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "fracture",
+        "poignet",
+        "main"
       ]
     },
     {
@@ -1797,6 +2504,14 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "posture",
+        "poignet",
+        "main",
+        "canal carpien",
+        "nuit"
       ]
     },
     {
@@ -1811,6 +2526,16 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "doigt",
+        "attelle doigt",
+        "orthèse doigt",
+        "fracture doigt",
+        "entorse doigt",
+        "syndactylie",
+        "bague attelle",
+        "immobilisation doigt"
       ]
     },
     {
@@ -1826,6 +2551,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "contention",
+        "genou",
+        "bandage genou",
+        "entorse genou"
       ]
     },
     {
@@ -1841,6 +2572,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "contention",
+        "cheville",
+        "pied",
+        "entorse cheville",
+        "bandage"
       ]
     },
     {
@@ -1856,6 +2594,14 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "jambe",
+        "cheville",
+        "pied",
+        "fracture",
+        "immobilisation"
       ]
     },
     {
@@ -1871,6 +2617,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "fémur",
+        "genou",
+        "fracture"
       ]
     },
     {
@@ -1886,6 +2638,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle",
+        "jambe",
+        "pied",
+        "fracture"
       ]
     },
     {
@@ -1901,6 +2659,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "clavicule",
+        "fracture clavicule",
+        "contention épaule",
+        "anneau claviculaire"
       ]
     },
     {
@@ -1910,7 +2674,18 @@
       "cumulG": "non",
       "note": "Acte isolé. Non cumulable avec G/VG. 1 fois par an.",
       "tarif_optam": 69.12,
-      "tarif_non_optam": 69.12
+      "tarif_non_optam": 69.12,
+      "keywords": [
+        "MMSE",
+        "mini mental state",
+        "cognition",
+        "démence",
+        "alzheimer",
+        "mémoire",
+        "MoCA",
+        "test cognitif",
+        "bilan neuropsychologique"
+      ]
     },
     {
       "code": "QZJA011",
@@ -1924,6 +2699,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "abcès profond",
+        "incision abcès",
+        "drainage abcès",
+        "collection profonde"
       ]
     },
     {
@@ -1939,6 +2720,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "panaris",
+        "panaris superficiel",
+        "abcès doigt",
+        "ongle",
+        "infection doigt"
       ]
     },
     {
@@ -1954,6 +2742,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "plaie main",
+        "suture main",
+        "coupure main",
+        "doigt",
+        "paume"
       ]
     },
     {
@@ -1969,6 +2764,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "sourcil",
+        "visage",
+        "suture sourcil",
+        "arcade sourcilière"
       ]
     },
     {
@@ -1984,6 +2785,12 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "paupière",
+        "oeil",
+        "suture paupière",
+        "orbite"
       ]
     },
     {
@@ -1998,6 +2805,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "attelle cheville",
+        "cheville",
+        "fracture cheville"
       ]
     },
     {
@@ -2007,7 +2819,14 @@
       "cumulG": "non",
       "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 30.8,
-      "tarif_non_optam": 30.8
+      "tarif_non_optam": 30.8,
+      "keywords": [
+        "canal carpien",
+        "infiltration poignet",
+        "syndrome canal carpien",
+        "fourmillements main",
+        "compression nerf médian"
+      ]
     },
     {
       "code": "QZFA004",
@@ -2021,6 +2840,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse",
+        "lésion cutanée",
+        "tumeur peau",
+        "fibrome",
+        "naevus"
       ]
     },
     {
@@ -2035,6 +2861,11 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "exérèse",
+        "grande lésion",
+        "tumeur cutanée"
       ]
     },
     {
@@ -2049,6 +2880,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "traumatisme",
+        "blessure",
+        "urgence",
+        "premier recours"
       ]
     },
     {
@@ -2058,7 +2895,12 @@
       "cumulG": "oui",
       "note": "Supplément radio en zone montagne lors d'un traumatisme.",
       "tarif_optam": 11.52,
-      "tarif_non_optam": 11.52
+      "tarif_non_optam": 11.52,
+      "keywords": [
+        "montagne",
+        "ski",
+        "supplément montagne"
+      ]
     },
     {
       "code": "LHRP001",
@@ -2067,7 +2909,16 @@
       "cumulG": "non",
       "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 35,
-      "tarif_non_optam": 25.94
+      "tarif_non_optam": 25.94,
+      "keywords": [
+        "ostéopathie",
+        "manipulation",
+        "colonne",
+        "dos",
+        "rachis",
+        "vertèbres",
+        "médecine manuelle"
+      ]
     },
     {
       "code": "QZRB001",
@@ -2076,7 +2927,13 @@
       "cumulG": "non",
       "note": "Acte isolé — non cumulable avec G (convention 2024)",
       "tarif_optam": 18,
-      "tarif_non_optam": 18
+      "tarif_non_optam": 18,
+      "keywords": [
+        "acupuncture",
+        "aiguilles",
+        "médecine chinoise",
+        "points acupuncture"
+      ]
     },
     {
       "code": "CDRP002",
@@ -2085,7 +2942,16 @@
       "cumulG": "oui",
       "note": "Dépistage auditif du nourrisson de moins de 3 ans.",
       "tarif_optam": 50.4,
-      "tarif_non_optam": 41.33
+      "tarif_non_optam": 41.33,
+      "keywords": [
+        "surdité nourrisson",
+        "nouveau-né",
+        "bébé",
+        "dépistage auditif",
+        "OEA",
+        "PEAA",
+        "hearing"
+      ]
     },
     {
       "code": "BLQP010",
@@ -2099,6 +2965,15 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "vision",
+        "strabisme",
+        "diplopie",
+        "binocularité",
+        "test lang",
+        "dépistage visuel enfant",
+        "amblyopie"
       ]
     },
     {
@@ -2108,7 +2983,15 @@
       "tarif_optam": 41.55,
       "tarif_non_optam": 32.16,
       "cumulG": "non",
-      "note": "Acte isolé. Cryochirurgie par contact (azote liquide cryode)"
+      "note": "Acte isolé. Cryochirurgie par contact (azote liquide cryode)",
+      "keywords": [
+        "cryochirurgie",
+        "cryode",
+        "azote",
+        "lésion cutanée",
+        "verrue",
+        "kératose"
+      ]
     },
     {
       "code": "QCNP003",
@@ -2117,7 +3000,14 @@
       "tarif_optam": 41.8,
       "tarif_non_optam": 41.8,
       "cumulG": "non",
-      "note": "Acte isolé. Verrue palmaire, plantaire ou périunguéale"
+      "note": "Acte isolé. Verrue palmaire, plantaire ou périunguéale",
+      "keywords": [
+        "verrue",
+        "laser",
+        "CO2",
+        "destruction verrue",
+        "1 verrue"
+      ]
     },
     {
       "code": "QCNP002",
@@ -2126,7 +3016,13 @@
       "tarif_optam": 41.8,
       "tarif_non_optam": 41.8,
       "cumulG": "non",
-      "note": "Acte isolé. Verrues palmaires, plantaires et/ou périunguéales"
+      "note": "Acte isolé. Verrues palmaires, plantaires et/ou périunguéales",
+      "keywords": [
+        "verrue",
+        "laser CO2",
+        "verrues",
+        "destruction verrues"
+      ]
     },
     {
       "code": "QCNP001",
@@ -2135,7 +3031,13 @@
       "tarif_optam": 50.46,
       "tarif_non_optam": 46.82,
       "cumulG": "non",
-      "note": "Acte isolé. 6 verrues ou plus"
+      "note": "Acte isolé. 6 verrues ou plus",
+      "keywords": [
+        "verrue",
+        "laser CO2",
+        "nombreuses verrues",
+        "destruction"
+      ]
     },
     {
       "code": "QZFA020",
@@ -2149,6 +3051,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "ongle",
+        "onyxis",
+        "ongle incarné",
+        "ablation ongle partielle",
+        "périonyxis"
       ]
     },
     {
@@ -2163,6 +3072,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "ongle",
+        "appareil unguéal",
+        "ongle incarné",
+        "onyxectomie partielle"
       ]
     },
     {
@@ -2177,6 +3092,12 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "ongle",
+        "ablation totale ongle",
+        "onyxectomie totale",
+        "ongle incarné"
       ]
     },
     {
@@ -2191,6 +3112,13 @@
         "F",
         "P",
         "S"
+      ],
+      "keywords": [
+        "hématome sous-unguéal",
+        "hématome ongle",
+        "ongle noir",
+        "contusion ongle",
+        "trépanation"
       ]
     },
     {
@@ -2203,6 +3131,13 @@
       "note": "Acte isolé",
       "modificateurs": [
         "M"
+      ],
+      "keywords": [
+        "exostose",
+        "orteil",
+        "ongle",
+        "ostéophyte",
+        "orteil douloureux"
       ]
     },
     {
@@ -2218,6 +3153,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "panaris profond",
+        "phlegmon",
+        "abcès profond doigt",
+        "infection doigt grave",
+        "gaine synoviale"
       ]
     },
     {
@@ -2233,6 +3175,13 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "fracture main",
+        "os métacarpien",
+        "phalange",
+        "réduction fracture",
+        "déformation doigt"
       ]
     },
     {
@@ -2248,6 +3197,14 @@
         "M",
         "P",
         "S"
+      ],
+      "keywords": [
+        "fracture pied",
+        "avant-pied",
+        "orteil",
+        "métatarse",
+        "réduction",
+        "luxation pied"
       ]
     },
     {
@@ -2258,7 +3215,16 @@
       "tarif_non_optam": 38.21,
       "cumulG": "oui",
       "baseOnly": true,
-      "note": "Cumulable à 100% avec G/VG (décision UNCAM 07/11/2025). Non cumulable avec consultations complexes."
+      "note": "Cumulable à 100% avec G/VG (décision UNCAM 07/11/2025). Non cumulable avec consultations complexes.",
+      "keywords": [
+        "colposcopie",
+        "col utérin",
+        "frottis anormal",
+        "CIN",
+        "dysplasie",
+        "HPV",
+        "cancer col"
+      ]
     }
   ],
   "ccamModificateurs": {

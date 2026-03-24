@@ -6,6 +6,7 @@ const CCAM = (() => {
   let favorites = [];
   let selectedActes = []; // Max 2 actes sélectionnés
   let activeModificateurs = []; // Modificateurs CCAM actifs (M/P/S/F)
+  let fuseIndex = null;
 
   // Retourne la période du contexte actif (consultation ou visite)
   function getContextPeriode() {
@@ -180,6 +181,17 @@ const CCAM = (() => {
 
   function setActes(actes) {
     allActes = actes || [];
+    fuseIndex = new Fuse(allActes, {
+      keys: [
+        { name: 'code', weight: 3 },
+        { name: 'label', weight: 2 },
+        { name: 'keywords', weight: 1 }
+      ],
+      threshold: 0.35,
+      ignoreLocation: true,
+      minMatchCharLength: 2,
+      includeScore: true
+    });
     render('');
   }
 
@@ -197,13 +209,24 @@ const CCAM = (() => {
     const favSection = document.getElementById('ccam-favorites');
     const favListEl = document.getElementById('ccam-fav-list');
 
-    const q = query.toLowerCase();
+    const q = query.toLowerCase().trim();
 
     let filtered = allActes;
     if (q) {
-      filtered = allActes.filter(a =>
-        a.code.toLowerCase().includes(q) || a.label.toLowerCase().includes(q)
+      // Correspondance exacte en priorité (code ou label contient le terme)
+      const exact = allActes.filter(a =>
+        a.code.toLowerCase().includes(q) ||
+        a.label.toLowerCase().includes(q) ||
+        (a.keywords || []).some(k => k.toLowerCase().includes(q))
       );
+      if (exact.length > 0) {
+        filtered = exact;
+      } else if (fuseIndex) {
+        // Fuzzy search via Fuse.js (fautes de frappe, approximations)
+        filtered = fuseIndex.search(q).map(r => r.item);
+      } else {
+        filtered = [];
+      }
     }
 
     listEl.innerHTML = filtered.map(a => renderItem(a)).join('');
