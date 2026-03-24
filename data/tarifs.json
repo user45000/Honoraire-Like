@@ -508,6 +508,14 @@
     }
   },
   "deplacement": {
+    "ID": {
+      "label": "Indemnité de déplacement (acte technique)",
+      "tarifs": {
+        "metro": 3.5,
+        "antilles": 3.5,
+        "reunion": 3.5
+      }
+    },
     "MD": {
       "label": "Majoration de déplacement",
       "tarifs": {

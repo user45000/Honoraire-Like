@@ -247,10 +247,15 @@ const Engine = (() => {
       }
 
       // MU : visite de jour non-régulée uniquement (non-cumulable avec F/MN/MM)
-      // MD/MDM (jour) = cumulable avec MU. MDN/MDI/MDD déjà bloqués par isHorsJour.
       if (available && code === 'MU' && (isHorsJour || isRegule)) {
         available = false;
         reason = 'Uniquement en visite de jour non régulée (non-cumulable avec F/MN/MM)';
+      }
+
+      // MU : non cumulable avec MD* (visite VG). ID (acte technique seul) reste cumulable.
+      if (available && code === 'MU' && deplacement && deplacement.startsWith('MD')) {
+        available = false;
+        reason = `Non cumulable avec ${deplacement}`;
       }
 
       // MVR : dans les 24h après régulation SAS de JOUR uniquement
@@ -584,8 +589,9 @@ const Engine = (() => {
       // Sens inverse : un majo déjà dans result excluant ce code
       if (result.some(r => tarifs.majorations[r]?.exclusifs?.includes(code))) continue;
 
-      // MU : visite de jour non-régulée uniquement (MD/MDM cumulables, MDN/MDI/MDD bloqués via isHorsJour)
+      // MU : visite de jour non-régulée + non cumulable avec MD* (ID reste cumulable)
       if (code === 'MU' && (isHorsJour || isRegule)) continue;
+      if (code === 'MU' && deplacement && deplacement.startsWith('MD')) continue;
 
       // MVR : dans les 24h après régulation SAS de JOUR (non applicable la nuit PDSA)
       // Nécessite SNP ou MRT dans result
