@@ -999,8 +999,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   top: calc(var(--header-height) + var(--safe-top));
   z-index: 10;
   padding: 6px 10px;
-  margin-bottom: 10px;
-  box-shadow: none;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
 }
 .ccam-search-wrap {
   position: relative;
