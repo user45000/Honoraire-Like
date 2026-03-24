@@ -337,10 +337,12 @@ const Engine = (() => {
     const details = [];
     let total = 0;
 
-    // 1. Acte de base
+    // 1. Acte de base (null = acte CCAM seul sans NGAP, ex: déplacement ID uniquement)
     const acteTarif = getActeTarif(acte);
-    codes.push(acte);
-    details.push({ code: acte, label: tarifs.consultations[acte]?.label || acte, montant: acteTarif });
+    if (acte) {
+      codes.push(acte);
+      details.push({ code: acte, label: tarifs.consultations[acte]?.label || acte, montant: acteTarif });
+    }
     total += acteTarif;
 
     // 2. Majorations (avec règles contextuelles NGAP)
