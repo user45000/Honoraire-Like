@@ -411,8 +411,9 @@ const Engine = (() => {
       }
       replaceConsult = ccamResult.replaceConsult;
 
-      if (replaceConsult) {
+      if (replaceConsult && acte) {
         // G remplacé par CCAM → annuler G et ses majorations NGAP
+        // (sans acte NGAP, details[0] est ID/déplacement — ne pas l'annuler)
         total -= acteTarif;
         details[0].montant = 0;
         details[0].label += ' (non facturé — acte CCAM plus rémunérateur)';

@@ -509,7 +509,7 @@
   },
   "deplacement": {
     "ID": {
-      "label": "Indemnité forfaitaire de déplacement",
+      "label": "Indemnité de déplacement (acte technique)",
       "tarifs": {
         "metro": 3.5,
         "antilles": 3.5,
