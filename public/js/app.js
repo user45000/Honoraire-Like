@@ -263,6 +263,7 @@ const App = (() => {
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
       resultBar.style.display = '';
+      onCCAMChanged();
     } else {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
