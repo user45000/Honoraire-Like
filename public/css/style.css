@@ -647,7 +647,13 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ik-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+}
+
+.ik-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .ik-toggle {
@@ -655,7 +661,21 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  flex: 1;
 }
+
+.ik-pin-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 6px;
+  line-height: 1;
+  opacity: 0.75;
+  transition: opacity 0.15s;
+}
+.ik-pin-btn:active { opacity: 1; }
 
 .ik-toggle input {
   display: none;
@@ -700,23 +720,23 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ik-controls {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .ik-km-input {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   justify-content: center;
 }
 
 .ik-btn {
-  width: 40px;
-  height: 40px;
-  border: 2px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border: 1.5px solid var(--border);
   background: var(--card);
   border-radius: 50%;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--primary);
   cursor: pointer;
@@ -733,12 +753,12 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .ik-km-input input {
-  width: 70px;
-  height: 40px;
+  width: 58px;
+  height: 32px;
   text-align: center;
-  border: 2px solid var(--border);
-  border-radius: 8px;
-  font-size: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 7px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text);
   font-family: inherit;
@@ -750,18 +770,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .ik-unit {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
   color: var(--text-secondary);
 }
 
 .ik-info {
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-secondary);
-  background: var(--bg);
-  border-radius: 6px;
-  padding: 6px 10px;
+  padding: 3px 0;
 }
 
 .ik-geo-btn {
@@ -779,6 +796,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 .ik-geo-btn:active { background: var(--primary-dark, #2872D4); }
 .ik-geo-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.ik-pin-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .ik-geo-status {
   text-align: center;

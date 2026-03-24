@@ -407,18 +407,20 @@
       <!-- IK visible uniquement en mode "En visite" -->
       <div id="ccam-ik-section" class="section-card" style="display:none">
         <div class="ik-section">
-          <label class="ik-toggle">
-            <input type="checkbox" id="ccam-ik-enabled">
-            <span class="ik-slider"></span>
-            <span class="ik-label">Indemnités kilométriques (IK)</span>
-          </label>
+          <div class="ik-toggle-row">
+            <label class="ik-toggle">
+              <input type="checkbox" id="ccam-ik-enabled">
+              <span class="ik-slider"></span>
+              <span class="ik-label">Indemnités kilométriques</span>
+            </label>
+            <button class="ik-pin-btn" id="ccam-ik-geolocate" style="display:none" title="Distance depuis le cabinet">📍</button>
+          </div>
           <div class="ik-controls" id="ccam-ik-controls" style="display:none">
-            <button class="ik-geo-btn" id="ccam-ik-geolocate">📍 Distance depuis le cabinet</button>
             <div class="ik-geo-status" id="ccam-ik-geo-status"></div>
             <div class="ik-km-input">
-              <button class="ik-btn" id="ccam-ik-minus">-</button>
+              <button class="ik-btn" id="ccam-ik-minus">−</button>
               <input type="number" id="ccam-ik-km" value="5" min="0" max="200" step="1">
-              <span class="ik-unit">km (aller)</span>
+              <span class="ik-unit">km aller</span>
               <button class="ik-btn" id="ccam-ik-plus">+</button>
             </div>
             <div class="ik-info" id="ccam-ik-info"></div>

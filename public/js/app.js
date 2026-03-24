@@ -162,6 +162,7 @@ const App = (() => {
     document.getElementById('ccam-ik-enabled')?.addEventListener('change', (e) => {
       ccamIK.enabled = e.target.checked;
       document.getElementById('ccam-ik-controls').style.display = ccamIK.enabled ? '' : 'none';
+      document.getElementById('ccam-ik-geolocate').style.display = ccamIK.enabled ? '' : 'none';
       updateCCAMIKInfo();
       onCCAMChanged();
     });
