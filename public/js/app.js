@@ -5,6 +5,7 @@ const App = (() => {
   let currentTab = 'consultation';
   let currentRelation = 'mt';
   let ccamContext = 'consultation'; // dernier onglet consultation/visite avant CCAM
+  let ccamIK = { enabled: false, km: 5 }; // IK propre au contexte CCAM "En visite"
 
   async function init() {
     // Charger les paramètres
@@ -154,6 +155,31 @@ const App = (() => {
     document.getElementById('ccam-context-bar')?.addEventListener('click', () => {
       ccamContext = ccamContext === 'visite' ? 'consultation' : 'visite';
       updateCCAMContextBar();
+      onCCAMChanged();
+    });
+
+    // IK CCAM (section visible uniquement en visite)
+    document.getElementById('ccam-ik-enabled')?.addEventListener('change', (e) => {
+      ccamIK.enabled = e.target.checked;
+      document.getElementById('ccam-ik-controls').style.display = ccamIK.enabled ? '' : 'none';
+      updateCCAMIKInfo();
+      onCCAMChanged();
+    });
+    document.getElementById('ccam-ik-km')?.addEventListener('input', (e) => {
+      ccamIK.km = Math.max(0, parseInt(e.target.value) || 0);
+      updateCCAMIKInfo();
+      onCCAMChanged();
+    });
+    document.getElementById('ccam-ik-minus')?.addEventListener('click', () => {
+      ccamIK.km = Math.max(0, ccamIK.km - 1);
+      document.getElementById('ccam-ik-km').value = ccamIK.km;
+      updateCCAMIKInfo();
+      onCCAMChanged();
+    });
+    document.getElementById('ccam-ik-plus')?.addEventListener('click', () => {
+      ccamIK.km = Math.min(200, ccamIK.km + 1);
+      document.getElementById('ccam-ik-km').value = ccamIK.km;
+      updateCCAMIKInfo();
       onCCAMChanged();
     });
 
@@ -636,9 +662,9 @@ const App = (() => {
         mode: vs.mode,
         isVisite: true,
         deplacement: 'ID',
-        ikEnabled: vs.ikEnabled,
-        ikKm: vs.ikKm,
-        ikGeoOverride: vs.ikGeoOverride,
+        ikEnabled: ccamIK.enabled,
+        ikKm: ccamIK.km,
+        ikGeoOverride: null,
         heure: vs.heure,
         ccamModificateurs: CCAM.getModificateurs ? CCAM.getModificateurs() : [],
         ccamActes: CCAM.getSelectedActes()
@@ -734,6 +760,20 @@ const App = (() => {
       }
       chips.innerHTML = html;
     }
+
+    // Section IK : visible uniquement en visite
+    const ikSection = document.getElementById('ccam-ik-section');
+    if (ikSection) ikSection.style.display = isVisite ? '' : 'none';
+    if (isVisite) updateCCAMIKInfo();
+  }
+
+  function updateCCAMIKInfo() {
+    const infoEl = document.getElementById('ccam-ik-info');
+    if (!infoEl) return;
+    if (!ccamIK.enabled) { infoEl.textContent = ''; return; }
+    const ik = Engine.calculateIK(ccamIK.km, null);
+    const geoLabel = Engine.getGeo() === 'montagne' ? 'montagne' : 'plaine';
+    infoEl.textContent = `${geoLabel} — franchise ${ik.franchise} km — ${ik.kmFactures} km × ${ik.tarifKm.toFixed(2).replace('.', ',')}€ = ${ik.montant.toFixed(2).replace('.', ',')}€`;
   }
 
   function getCCAMContext() { return ccamContext; }

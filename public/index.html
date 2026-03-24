@@ -404,6 +404,25 @@
           <path d="M3 6h12M13 4l2 2-2 2M15 12H3M5 10l-2 2 2 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
+      <!-- IK visible uniquement en mode "En visite" -->
+      <div id="ccam-ik-section" class="section-card" style="display:none">
+        <div class="ik-section">
+          <label class="ik-toggle">
+            <input type="checkbox" id="ccam-ik-enabled">
+            <span class="ik-slider"></span>
+            <span class="ik-label">Indemnités kilométriques (IK)</span>
+          </label>
+          <div class="ik-controls" id="ccam-ik-controls" style="display:none">
+            <div class="ik-km-input">
+              <button class="ik-btn" id="ccam-ik-minus">-</button>
+              <input type="number" id="ccam-ik-km" value="5" min="0" max="200" step="1">
+              <span class="ik-unit">km (aller)</span>
+              <button class="ik-btn" id="ccam-ik-plus">+</button>
+            </div>
+            <div class="ik-info" id="ccam-ik-info"></div>
+          </div>
+        </div>
+      </div>
       <div class="section-card ccam-search-card">
         <div class="ccam-search-wrap">
           <input type="text" id="ccam-search" placeholder="Rechercher un acte (code ou mot-clé)..." class="ccam-search-input">
