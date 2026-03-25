@@ -102,7 +102,7 @@ const Account = (() => {
 
   // === Paywall ===
   const PAYWALL_KEY = 'hon_visit_count';
-  const PAYWALL_THRESHOLD = 1;
+  const PAYWALL_THRESHOLD = 5;
   let paywallPlan = 'month';
 
   function initPaywall() {
@@ -127,6 +127,7 @@ const Account = (() => {
 
     // Paywall nécessaire → afficher
     overlay.classList.add('visible');
+    if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
 
     // Sélection du plan
     overlay.querySelectorAll('.paywall-plan').forEach(btn => {
