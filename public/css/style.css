@@ -489,6 +489,12 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   pointer-events: none;
 }
 
+.acte-btn.ccam-blocked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+}
+
 .acte-btn .info-icon {
   width: 18px;
   height: 18px;
