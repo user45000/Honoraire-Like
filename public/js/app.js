@@ -899,29 +899,30 @@ const App = (() => {
       html += fdsOverlay(93.2, 61.5, '✓', 'fds-fill-check');
     }
 
-    // ── Lignes d'actes ──
-    // Colonnes : date individuelle | NGAP 40.44% | CCAM/autres 48.2% | montant 62.8%
-    acteRows.slice(0, 4).forEach((d, i) => {
+    // ── Lignes d'actes (on n'affiche que les actes avec montant > 0) ──
+    // Colonnes : date | activités 35.5% | codes des actes 40.44% | autres actes 48.2% | montant 62.8%
+    acteRows.filter(d => d.montant > 0).slice(0, 4).forEach((d, i) => {
       const y = FDS_ROWS_Y[i];
-      const isZero = d.montant === 0;
-      const cls = isZero ? ' fds-zero' : '';
 
       // Date : 8 chiffres, chacun dans sa case exacte
-      html += fdsDate(DATE_BOX_X, y, cls);
+      html += fdsDate(DATE_BOX_X, y);
 
       // Code acte :
-      //  - Code CCAM (format 7 chars : 4 lettres + 3 alphanums, ex. DEQP003) → col "codes des actes" (40.44%)
+      //  - Code CCAM (4 lettres + 3 alphanums, ex. DEQP003) → col "codes des actes" (40.44%)
+      //    + code activité "1" dans col "activités" (35.5%)
       //  - NGAP lettre-clé (G, VG, C, CS…) → col "codes des actes" (40.44%)
-      //  - NGAP majorations/autres (MCG, MCS, MTC…) → col "autres actes" (48.2%)
+      //  - NGAP majorations/autres (MCG, MCS…) → col "autres actes" (48.2%)
       const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
       const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
-      const codeX = (isCCAM || isNGAPLettre) ? 40.44 : 48.2;
-      html += fdsOverlay(codeX, y, d.code, 'fds-fill-code' + cls);
+      if (isCCAM) {
+        html += fdsOverlay(35.5, y, '1', 'fds-fill-digit'); // code activité
+        html += fdsOverlay(40.44, y, d.code, 'fds-fill-code');
+      } else {
+        html += fdsOverlay(isNGAPLettre ? 40.44 : 48.2, y, d.code, 'fds-fill-code');
+      }
 
       // Montant honoraires
-      if (!isZero) {
-        html += fdsOverlay(62.8, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
-      }
+      html += fdsOverlay(62.8, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
 
       // Frais de déplacement (ID/MD) et IK — 1ère ligne seulement
       if (i === 0) {
