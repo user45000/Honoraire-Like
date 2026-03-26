@@ -856,8 +856,6 @@ const App = (() => {
     if (!lastResult || !lastResult.details || lastResult.details.length === 0) return;
 
     const isMT = getRelation() === 'mt';
-    const isVisite = currentTab === 'visite' || (currentTab === 'ccam' && ccamContext === 'visite');
-    const lieu = isVisite ? 'V' : 'S';
     const today = new Date();
     const dd = String(today.getDate()).padStart(2,'0');
     const mm = String(today.getMonth()+1).padStart(2,'0');
@@ -894,9 +892,6 @@ const App = (() => {
       // Date dans les cases JJMMAAAA
       html += fdsOverlay(1.5, y, `${dd} ${mm} ${yyyy}`, 'fds-fill-val' + (isZero ? ' fds-zero' : ''));
 
-      // Lieu (S = cabinet, V = visite) dans colonne "activités"
-      html += fdsOverlay(36.2, y + 0.3, lieu, 'fds-fill-lieu');
-
       // Code de l'acte — NGAP consultation/visite (G,VG,C…) dans colonne C/CS/V/VS
       // Majorations et CCAM dans colonne "autres actes"
       const isConsultCode = /^(G|VG|V$|C$|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|CS|MP|AS)/.test(d.code);
@@ -924,15 +919,6 @@ const App = (() => {
 
     // ── MONTANT TOTAL (1+2+3) ──
     html += fdsOverlay(61.5, 84.1, lastResult.total.toFixed(2).replace('.', ','), 'fds-fill-total');
-
-    // ── Parts AMO / AMC ──
-    if (lastResult.amo !== undefined) {
-      // PO : case "l'assuré(e) n'a pas payé la part obligatoire" → si tiers payant → laissé blanc
-      // On indique le montant de la part sécu dans la zone PO (x≈38%, y≈87.5%)
-      html += fdsOverlay(38.0, 87.5, lastResult.amo.toFixed(2).replace('.', ','), 'fds-fill-amo');
-      // PC : x≈88%
-      html += fdsOverlay(88.0, 87.5, lastResult.amc.toFixed(2).replace('.', ','), 'fds-fill-amc');
-    }
 
     // ── Date signature médecin ──
     html += fdsOverlay(20.0, 92.5, todayFr, 'fds-fill-sigdate');
