@@ -857,10 +857,11 @@ const App = (() => {
   const FDS_ROWS_Y = [72.35, 75.14, 77.94, 80.73];
 
   // ── Colonnes dans les lignes d'actes (vérifiées sur séparateurs PDF) ──
-  const COL_ACTIVITE = 36.15;  // centre col "activités" (34.07%–38.23%)
-  const COL_NGAP     = 40.44;  // col "C,CS/V,VS"   lettre-clé NGAP (1-2 chars)
-  const COL_CCAM     = 44.5;   // col "éléments de tarification CCAM" (44.77%)
-  const COL_AUTRES   = 48.2;   // col "autres actes" majorations NGAP
+  // "Code principal" CCAM : 6 cases (19.41–34.07%) + overflow 7e char
+  const CCAM_BOX_X   = [19.71, 22.06, 24.54, 26.94, 29.42, 31.89, 34.4];
+  const COL_ACTIVITE = 36.15;  // centre col "activités" (34.07–38.23%)
+  const COL_NGAP     = 40.44;  // col "C,CS/V,VS" lettre-clé NGAP
+  const COL_AUTRES   = 48.2;   // col "autres actes / modificateurs" NGAP
 
   // ── Cases montant honoraires : 4 cases × 2.33% entre 61.67% et 70.99% ──
   const MT_CELL_W  = 2.33;
@@ -947,8 +948,12 @@ const App = (() => {
       const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
       const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
       if (isCCAM) {
-        html += fdsOverlay(COL_ACTIVITE - 0.5, y, '1', 'fds-fill-digit'); // centré
-        html += fdsOverlay(COL_CCAM, y, d.code, 'fds-fill-code');
+        // Code principal : chaque char dans sa case (19.41–34.07%)
+        d.code.split('').forEach((c, j) => {
+          html += fdsOverlay(CCAM_BOX_X[j], y, c, 'fds-fill-digit');
+        });
+        // Code activité centré dans sa case (34.07–38.23%)
+        html += fdsOverlay(COL_ACTIVITE, y, '1', 'fds-fill-digit');
       } else {
         html += fdsOverlay(isNGAPLettre ? COL_NGAP : COL_AUTRES, y, d.code, 'fds-fill-code');
       }
