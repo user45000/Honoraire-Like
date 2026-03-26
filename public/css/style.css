@@ -2239,6 +2239,11 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-size: max(calc(var(--fds-scale) * 7.5px), 5.5px);
   letter-spacing: max(calc(var(--fds-scale) * 2px), 1.5px);
 }
+/* Chiffre unique positionné case par case (date JJMMAAAA) */
+.fds-fill-digit {
+  font-size: max(calc(var(--fds-scale) * 8px), 6px);
+  letter-spacing: 0;
+}
 .fds-fill-amt, .fds-fill-dep-amt, .fds-fill-ik,
 .fds-fill-total, .fds-fill-amo, .fds-fill-amc {
   font-size: max(calc(var(--fds-scale) * 8.5px), 6.5px);

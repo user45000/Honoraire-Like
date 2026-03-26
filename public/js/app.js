@@ -844,10 +844,18 @@ const App = (() => {
   function getCCAMContext() { return ccamContext; }
 
   // === Feuille de soin ===
-  // Positions calibrées sur le PDF officiel S3110 ameli.fr (617.5 x 858.9 pts)
-  // Lignes d'actes : grille verticale à y=72.0%, 74.8%, 77.6%, 80.4% (tops des cases)
-  // Texte centré à +0.5% dans la case
-  const FDS_ROWS_Y = [72.5, 75.3, 78.1, 80.9];
+  // Positions extraites du PDF officiel S3110 ameli.fr (617.5 x 858.9 pts)
+  // Chaque chiffre de date est positionné individuellement sur sa case J/M/A
+
+  // X de chaque case date dans les lignes d'actes (ordre : J J M M A A A A)
+  const DATE_BOX_X = [5.91, 7.66, 9.13, 10.88, 12.81, 14.56, 16.31, 18.06];
+
+  // X de chaque case date haut-droite (date de consultation)
+  const DATE_TOP_X = [77.55, 79.89, 81.94, 84.28, 86.79, 89.12, 91.45, 93.88];
+  const DATE_TOP_Y = 5.58;
+
+  // Y de chaque ligne d'actes (baseline PDF - 6pts pour top div CSS)
+  const FDS_ROWS_Y = [72.35, 75.14, 77.94, 80.73];
   const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
 
   function fdsOverlay(x, y, text, cls = '') {
@@ -872,60 +880,60 @@ const App = (() => {
     // Construire les overlays
     let html = '';
 
-    // ── Date de consultation (cases JJMMAAAA haut droite — box 76.8–95.5%, y=5.1–6.5%) ──
-    // Séparation en 3 groupes alignés sur les cases individuelles
-    html += fdsOverlay(77.3, 5.5, dd,   'fds-fill-val');  // JJ  → cases 76.8–83.3%
-    html += fdsOverlay(83.5, 5.5, mm,   'fds-fill-val');  // MM  → cases 83.5–89.0%
-    html += fdsOverlay(89.2, 5.5, yyyy, 'fds-fill-val');  // AAAA → cases 89.0–95.5%
-
-    // ── MALADIE ✓ (case à x=5.7%, y=43.8%) ──
-    html += fdsOverlay(6.5, 43.5, '✓', 'fds-fill-check');
-
-    // ── Accès parcours de soins (ligne y=61.4%) ──
-    // Cases : accès direct 19.4%, urgence 30.2%, hors résidence 51.1%,
-    //         MT remplacé 72.9%, accès hors coordination 92.8%
-    if (!isMT) {
-      html += fdsOverlay(92.8, 61.4, '✓', 'fds-fill-check'); // accès hors coordination
+    // Helper : place chaque chiffre de DDMMYYYY dans sa case individuelle
+    const dateStr = `${dd}${mm}${yyyy}`; // 8 chars
+    function fdsDate(boxXArr, y, cls = '') {
+      return dateStr.split('').map((c, i) =>
+        fdsOverlay(boxXArr[i], y, c, 'fds-fill-digit' + cls)
+      ).join('');
     }
 
-    // ── Lignes d'actes (4 lignes, cases vérifiées sur grille PDF) ──
-    // Colonnes : date JJ→5.5% MM→12.5% AAAA→19.5% | NGAP 40.4% | CCAM 48.2% | montant 62.9%
-    //            déplacement (ID/MD) 77.2% | IK nbre 82.4% | IK montant 88.1%
+    // ── Date consultation : cases haut-droite (J J M M A A A A) ──
+    html += fdsDate(DATE_TOP_X, DATE_TOP_Y);
+
+    // ── MALADIE ✓ (centre de la case à 6.88%, 43.74%) ──
+    html += fdsOverlay(6.0, 43.2, '✓', 'fds-fill-check');
+
+    // ── Accès hors coordination ✓ (case droite, centre 94.0%, 62.0%) ──
+    if (!isMT) {
+      html += fdsOverlay(93.2, 61.5, '✓', 'fds-fill-check');
+    }
+
+    // ── Lignes d'actes ──
+    // Colonnes : date individuelle | NGAP 40.44% | CCAM/autres 48.2% | montant 62.8%
     acteRows.slice(0, 4).forEach((d, i) => {
       const y = FDS_ROWS_Y[i];
       const isZero = d.montant === 0;
       const cls = isZero ? ' fds-zero' : '';
 
-      // Date : séparée en 3 groupes pour aligner sur les cases JJMMAAAA
-      html += fdsOverlay(5.5,  y, dd,   'fds-fill-val' + cls);
-      html += fdsOverlay(12.5, y, mm,   'fds-fill-val' + cls);
-      html += fdsOverlay(19.5, y, yyyy, 'fds-fill-val' + cls);
+      // Date : 8 chiffres, chacun dans sa case exacte
+      html += fdsDate(DATE_BOX_X, y, cls);
 
-      // Code acte : lettre-clé NGAP (col C/CS/V/VS à 40.4%) ou code CCAM (col autres à 48.2%)
+      // Code acte
       const isConsultCode = /^(G|VG|V$|C$|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)/.test(d.code);
-      html += fdsOverlay(isConsultCode ? 40.4 : 48.2, y, d.code, 'fds-fill-code' + cls);
+      html += fdsOverlay(isConsultCode ? 40.44 : 48.2, y, d.code, 'fds-fill-code' + cls);
 
-      // Montant honoraires ①
+      // Montant honoraires
       if (!isZero) {
-        html += fdsOverlay(62.5, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
+        html += fdsOverlay(62.8, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
       }
 
-      // Frais de déplacement et IK sur la 1ère ligne seulement
+      // Frais de déplacement (ID/MD) et IK — 1ère ligne seulement
       if (i === 0) {
         if (deplItem && deplItem.montant > 0) {
-          html += fdsOverlay(77.2, y, deplItem.code, 'fds-fill-dep');
-          html += fdsOverlay(77.2, y + 1.4, deplItem.montant.toFixed(2).replace('.', ','), 'fds-fill-dep');
+          html += fdsOverlay(77.2, y, deplItem.code, 'fds-fill-code');
+          html += fdsOverlay(77.2, y + 2.7, deplItem.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
         }
         if (ikItem && ikItem.montant > 0) {
           const kmMatch = ikItem.label.match(/(\d+)\s*km/i);
-          if (kmMatch) html += fdsOverlay(82.4, y, kmMatch[1], 'fds-fill-val');
+          if (kmMatch) html += fdsOverlay(82.4, y, kmMatch[1], 'fds-fill-digit');
           html += fdsOverlay(88.1, y, ikItem.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
         }
       }
     });
 
-    // ── MONTANT TOTAL — box x=47.8–71.2%, y=83.9–86.3% ──
-    html += fdsOverlay(62.0, 84.7, lastResult.total.toFixed(2).replace('.', ','), 'fds-fill-total');
+    // ── MONTANT TOTAL — case valeur x=47.8–71.2%, centre y=85.09% ──
+    html += fdsOverlay(48.5, 84.6, lastResult.total.toFixed(2).replace('.', ','), 'fds-fill-total');
 
     document.getElementById('fds-body').innerHTML = `
       <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
