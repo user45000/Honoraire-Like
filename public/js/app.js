@@ -909,9 +909,14 @@ const App = (() => {
       // Date : 8 chiffres, chacun dans sa case exacte
       html += fdsDate(DATE_BOX_X, y, cls);
 
-      // Code acte
-      const isConsultCode = /^(G|VG|V$|C$|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)/.test(d.code);
-      html += fdsOverlay(isConsultCode ? 40.44 : 48.2, y, d.code, 'fds-fill-code' + cls);
+      // Code acte :
+      //  - Code CCAM (format 7 chars : 4 lettres + 3 alphanums, ex. DEQP003) → col "codes des actes" (40.44%)
+      //  - NGAP lettre-clé (G, VG, C, CS…) → col "codes des actes" (40.44%)
+      //  - NGAP majorations/autres (MCG, MCS, MTC…) → col "autres actes" (48.2%)
+      const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
+      const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
+      const codeX = (isCCAM || isNGAPLettre) ? 40.44 : 48.2;
+      html += fdsOverlay(codeX, y, d.code, 'fds-fill-code' + cls);
 
       // Montant honoraires
       if (!isZero) {
