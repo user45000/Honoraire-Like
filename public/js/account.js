@@ -102,8 +102,20 @@ const Account = (() => {
 
   // === Paywall ===
   const PAYWALL_KEY = 'hon_visit_count';
-  const PAYWALL_THRESHOLD = 5;
+  const PAYWALL_RESET_KEY = 'hon_visit_month';
+  const THRESHOLD_ANON = 5;
+  const THRESHOLD_TRIAL = 20;
   let paywallPlan = 'month';
+
+  function getPaywallCount() {
+    const currentMonth = new Date().toISOString().slice(0, 7); // "2026-03"
+    const storedMonth = localStorage.getItem(PAYWALL_RESET_KEY);
+    if (storedMonth !== currentMonth) {
+      localStorage.setItem(PAYWALL_RESET_KEY, currentMonth);
+      localStorage.setItem(PAYWALL_KEY, '0');
+    }
+    return parseInt(localStorage.getItem(PAYWALL_KEY) || '0');
+  }
 
   function initPaywall() {
     const overlay = document.getElementById('paywall-overlay');
@@ -116,9 +128,10 @@ const Account = (() => {
       return;
     }
 
-    const count = parseInt(localStorage.getItem(PAYWALL_KEY) || '0') + 1;
+    const threshold = (currentUser && currentUser.subscription_status === 'trial') ? THRESHOLD_TRIAL : THRESHOLD_ANON;
+    const count = getPaywallCount() + 1;
     localStorage.setItem(PAYWALL_KEY, count.toString());
-    if (count < PAYWALL_THRESHOLD) {
+    if (count < threshold) {
       // Pas encore de paywall
       overlay.classList.remove('visible');
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
