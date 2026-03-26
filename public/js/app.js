@@ -116,6 +116,19 @@ const App = (() => {
       document.getElementById('modal-overlay').classList.add('active');
     });
 
+    // Identification médecin
+    ['praticien-nom', 'praticien-prenom', 'praticien-rpps'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = localStorage.getItem('hon_' + id.replace('-', '_')) || '';
+      el.addEventListener('blur', () => {
+        localStorage.setItem('hon_' + id.replace('-', '_'), el.value.trim());
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') el.blur();
+      });
+    });
+
     // Adresse cabinet
     const cabinetInput = document.getElementById('cabinet-address');
     const cabinetSuggestions = document.getElementById('cabinet-suggestions');
@@ -927,6 +940,19 @@ const App = (() => {
 
     // ── Date consultation : cases haut-droite (J J M M A A A A) ──
     html += fdsDate(DATE_TOP_X, DATE_TOP_Y);
+
+    // ── Identification médecin (zone tampon IDENTIFICATION DU MEDECIN) ──
+    const medNom    = localStorage.getItem('hon_praticien_nom') || '';
+    const medPrenom = localStorage.getItem('hon_praticien_prenom') || '';
+    const medRpps   = localStorage.getItem('hon_praticien_rpps') || '';
+    const medAddr   = localStorage.getItem('hon_cabinet_address') || '';
+    if (medNom || medPrenom || medRpps) {
+      const lines = [];
+      if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
+      if (medRpps) lines.push(`RPPS : ${medRpps}`);
+      if (medAddr) lines.push(medAddr);
+      html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${lines.join('<br>')}</div>`;
+    }
 
     // ── MALADIE ✓ (centre de la case à 6.88%, 43.74%) ──
     html += fdsOverlay(6.0, 43.2, '✓', 'fds-fill-check');

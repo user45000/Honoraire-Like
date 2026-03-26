@@ -2272,6 +2272,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-size: max(calc(var(--fds-scale) * 8px), 6px);
   font-weight: 900;
 }
+/* Bloc identification médecin (zone tampon) */
+.fds-fill-med {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: max(calc(var(--fds-scale) * 7.5px), 6px);
+  line-height: 1.6;
+  color: #00008b;
+  white-space: nowrap;
+  letter-spacing: 0;
+}
 .fds-fill-dep {
   font-size: max(calc(var(--fds-scale) * 7px), 5.5px);
   color: #003080;
