@@ -2171,6 +2171,15 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   background: #f0f2f5; border-radius: 20px 20px 0 0;
   display: flex; flex-direction: column; overflow: hidden;
 }
+
+@media (min-width: 640px) {
+  .fds-modal { align-items: center; justify-content: center; }
+  .fds-sheet {
+    width: min(860px, 95vw);
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+}
 .fds-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 14px 16px 12px; background: #1B2D4F; flex-shrink: 0;
