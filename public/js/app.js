@@ -857,19 +857,28 @@ const App = (() => {
   const FDS_ROWS_Y = [72.35, 75.14, 77.94, 80.73];
 
   // ── Colonnes dans les lignes d'actes (vérifiées sur séparateurs PDF) ──
-  const COL_ACTIVITE = 36.0;   // col "activités"       séparateur gauche=34.07%
-  const COL_NGAP     = 40.44;  // col "C,CS/V,VS"        lettre-clé NGAP + code CCAM
-  const COL_AUTRES   = 48.2;   // col "autres actes"     majorations NGAP
+  const COL_ACTIVITE = 36.15;  // centre col "activités" (34.07%–38.23%)
+  const COL_NGAP     = 40.44;  // col "C,CS/V,VS"   lettre-clé NGAP (1-2 chars)
+  const COL_CCAM     = 44.5;   // col "éléments de tarification CCAM" (44.77%)
+  const COL_AUTRES   = 48.2;   // col "autres actes" majorations NGAP
 
   // ── Cases montant honoraires : 4 cases × 2.33% entre 61.67% et 70.99% ──
-  //    + cases ouvertes à gauche (61.67% − n × 2.33%) pour chiffres supplémentaires
   const MT_CELL_W  = 2.33;
-  const MT_RIGHT_X = 70.99;
+  const MT_RIGHT_X = 70.99;   // bord droit col montant honoraires
+
+  // ── Frais de déplacement ID/MD : colonne 70.99%–83.82% ──
+  const DEPL_CODE_X  = 76.5;  // "I.D."=77.22%, "M.D."=78.49%
+  const DEPL_RIGHT_X = 83.5;  // bord droit zone ID/MD montant
+
+  // ── IK nbre : colonne 83.82%–88.48%, centre 86.15% ──
+  const IK_NBRE_X    = 86.15;
+  // ── IK montant : colonne 88.48%–93.15% ──
+  const IK_RIGHT_X   = 93.15;
 
   // ── Cases montant TOTAL dans value-box (47.84%–71.16%) ──
-  //    7 séparateurs internes → cases de 2.33% avec bord droit à 66.41%
+  //    7 séparateurs internes → bord droit à 66.41%
   const TOT_RIGHT_X = 66.41;
-  const TOT_Y       = 84.5;   // y centre de la value-box (83.86%–86.31%)
+  const TOT_Y       = 84.5;
 
   const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
 
@@ -930,31 +939,35 @@ const App = (() => {
       // Date : 8 chiffres individuels dans leurs cases J/J/M/M/A/A/A/A
       html += fdsDate(DATE_BOX_X, y);
 
-      // Code acte
+      // Code acte :
+      //  CCAM (4 lettres + 3 alphanums) → col "éléments tarification CCAM" (44.5%)
+      //       + activité "1" centré dans col "activités" (36.15%)
+      //  NGAP lettre-clé → col "C,CS/V,VS" (40.44%)
+      //  Majorations NGAP → col "autres actes" (48.2%)
       const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
       const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
       if (isCCAM) {
-        html += fdsOverlay(COL_ACTIVITE, y, '1', 'fds-fill-digit'); // activité
-        html += fdsOverlay(COL_NGAP, y, d.code, 'fds-fill-code');
+        html += fdsOverlay(COL_ACTIVITE - 0.5, y, '1', 'fds-fill-digit'); // centré
+        html += fdsOverlay(COL_CCAM, y, d.code, 'fds-fill-code');
       } else {
         html += fdsOverlay(isNGAPLettre ? COL_NGAP : COL_AUTRES, y, d.code, 'fds-fill-code');
       }
 
-      // Montant honoraires : chaque chiffre dans sa case, aligné à droite
+      // Montant honoraires : aligné à droite dans ses cases (61.67%–70.99%)
       html += fdsCells(amt, MT_RIGHT_X, MT_CELL_W, y);
 
-      // Frais de déplacement (ID/MD) et IK — attachés à la 1ère ligne d'acte
+      // Frais de déplacement et IK — sur la 1ère ligne d'acte seulement
       if (i === 0) {
         if (deplItem && deplItem.montant > 0) {
-          // ID/MD : code dans col "I.D./M.D." (77.2%), montant dans la ligne du dessous
-          html += fdsOverlay(77.2, y, deplItem.code, 'fds-fill-code');
-          html += fdsCells(deplItem.montant.toFixed(2).replace('.', ','), MT_RIGHT_X, MT_CELL_W, y);
+          // Code ID/MD dans col "frais déplacement" (76.5%), montant right-aligné à 83.5%
+          html += fdsOverlay(DEPL_CODE_X, y, deplItem.code, 'fds-fill-code');
+          html += fdsCells(deplItem.montant.toFixed(2).replace('.', ','), DEPL_RIGHT_X, MT_CELL_W, y);
         }
         if (ikItem && ikItem.montant > 0) {
+          // IK nbre (km) centré à 86.15%, IK montant right-aligné à 93.15%
           const kmMatch = ikItem.label.match(/(\d+)\s*km/i);
-          // IK nbre (83.82–88.48%) et IK montant (88.48–93.15%)
-          if (kmMatch) html += fdsOverlay(85.0, y, kmMatch[1], 'fds-fill-digit');
-          html += fdsCells(ikItem.montant.toFixed(2).replace('.', ','), 93.15, MT_CELL_W, y);
+          if (kmMatch) html += fdsOverlay(IK_NBRE_X - 0.5, y, kmMatch[1], 'fds-fill-digit');
+          html += fdsCells(ikItem.montant.toFixed(2).replace('.', ','), IK_RIGHT_X, MT_CELL_W, y);
         }
       }
     });
