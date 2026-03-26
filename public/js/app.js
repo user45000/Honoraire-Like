@@ -145,6 +145,9 @@ const App = (() => {
     // Modal
     initModal();
 
+    // Feuille de soin
+    initFDS();
+
     // Mode simple/complet
     initViewMode();
 
@@ -280,6 +283,7 @@ const App = (() => {
     const codesEl = document.getElementById('result-codes');
     const totalEl = document.getElementById('result-total');
     const amoAmcEl = document.getElementById('result-amo-amc');
+    const fdsBtn = document.getElementById('fds-open-btn');
 
     // Fermer le détail quand le résultat change
     closeResultDetail();
@@ -291,6 +295,7 @@ const App = (() => {
         codesEl.textContent = '';
         totalEl.textContent = '0,00€';
         if (amoAmcEl) amoAmcEl.textContent = '';
+        if (fdsBtn) fdsBtn.style.display = 'none';
         lastResult = null;
       } else {
         codesEl.textContent = result.codes.join(' + ');
@@ -300,6 +305,7 @@ const App = (() => {
             ? `AMO ${result.amo.toFixed(2).replace('.', ',')}€ | AMC ${result.amc.toFixed(2).replace('.', ',')}€`
             : '';
         }
+        if (fdsBtn) fdsBtn.style.display = '';
       }
       return;
     }
@@ -315,6 +321,7 @@ const App = (() => {
         amoAmcEl.textContent = '';
       }
     }
+    if (fdsBtn) fdsBtn.style.display = '';
   }
 
   function toggleResultDetail() {
@@ -835,6 +842,105 @@ const App = (() => {
   }
 
   function getCCAMContext() { return ccamContext; }
+
+  // === Feuille de soin ===
+  function openFDS() {
+    if (!lastResult || !lastResult.details || lastResult.details.length === 0) return;
+
+    const tab = currentTab;
+    const relation = (typeof getRelation === 'function') ? getRelation() : 'mt';
+    const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    // Actes — séparer les actifs des annulés (montant=0 avec mention non facturé)
+    let acteRowsHtml = '';
+    for (const d of lastResult.details) {
+      const isZero = d.montant === 0;
+      const montantStr = isZero ? '—' : d.montant.toFixed(2).replace('.', ',') + ' €';
+      acteRowsHtml += `<div class="fds-acte-row">
+        <span class="fds-acte-code">${d.code}</span>
+        <span class="fds-acte-label${isZero ? ' zeroed' : ''}">${d.label}</span>
+        <span class="fds-acte-montant${isZero ? ' zero' : ''}">${montantStr}</span>
+      </div>`;
+    }
+    acteRowsHtml += `<div class="fds-acte-row fds-total">
+      <span class="fds-acte-code">TOTAL</span>
+      <span class="fds-acte-label">Honoraires</span>
+      <span class="fds-acte-montant">${lastResult.total.toFixed(2).replace('.', ',')}&nbsp;€</span>
+    </div>`;
+
+    // Part AMO/AMC
+    let partsHtml = '';
+    if (lastResult.amo !== undefined) {
+      partsHtml = `<div class="fds-parts">
+        <div class="fds-part">
+          <div class="fds-part-label">Part AMO (Sécu)</div>
+          <div class="fds-part-val">${lastResult.amo.toFixed(2).replace('.', ',')} €</div>
+        </div>
+        <div class="fds-part">
+          <div class="fds-part-label">Part AMC (Mutuelle)</div>
+          <div class="fds-part-val">${lastResult.amc.toFixed(2).replace('.', ',')} €</div>
+        </div>
+      </div>`;
+    }
+
+    // Cases à cocher automatiques
+    const checks = [];
+    if (relation === 'mt') checks.push('Médecin traitant');
+    if (tab === 'visite' || (tab === 'ccam' && ccamContext === 'visite')) checks.push('Visite à domicile');
+    const checksHtml = checks.length ? `<div class="fds-checks">${
+      checks.map(c => `<div class="fds-check-row"><span class="fds-check-box checked"></span><span>${c}</span></div>`).join('')
+    }</div>` : '';
+
+    // Questions contextuelles
+    const questionsHtml = `<div class="fds-questions">
+      <div class="fds-q-row"><span class="fds-q-icon">🔵</span><div class="fds-q-text"><strong>ALD / Exo TM ?</strong> Cocher la case ALD + "Exonération du ticket modérateur" (prise en charge à 100% AMO)</div></div>
+      <div class="fds-q-row"><span class="fds-q-icon">🟠</span><div class="fds-q-text"><strong>Accident du travail ?</strong> Utiliser le formulaire AT Cerfa 11383 à la place de la feuille de soins ordinaire</div></div>
+      <div class="fds-q-row"><span class="fds-q-icon">🟢</span><div class="fds-q-text"><strong>Tiers payant ?</strong> Cocher PO (Part Obligatoire) et/ou PC (Part Complémentaire) selon les cas</div></div>
+    </div>`;
+
+    document.getElementById('fds-body').innerHTML = `
+      <div>
+        <div class="fds-section-title">① Praticien</div>
+        <div class="fds-hint">⚠️ Le cachet ne doit pas déborder sur la case "Part Obligatoire" — 1ère cause de rejet CPAM</div>
+        <div class="fds-info-row">
+          <span class="fds-info-label">Date des soins</span>
+          <span class="fds-info-val">${today}</span>
+        </div>
+      </div>
+      <div>
+        <div class="fds-section-title">② Actes réalisés</div>
+        <div class="fds-actes">${acteRowsHtml}</div>
+        ${partsHtml}
+      </div>
+      <div>
+        <div class="fds-section-title">③ Cases à cocher</div>
+        ${checksHtml}
+        ${questionsHtml}
+      </div>
+      <div>
+        <div class="fds-section-title">④ Patient</div>
+        <div class="fds-patient-rows">
+          <div class="fds-info-row"><span class="fds-info-label">N° Sécurité Sociale</span><span class="fds-info-val">15 chiffres + clé de contrôle</span></div>
+          <div class="fds-info-row"><span class="fds-info-label">Si bénéficiaire ≠ assuré</span><span class="fds-info-val">Remplir les 2 zones (ex : enfant)</span></div>
+          <div class="fds-info-row"><span class="fds-info-label">Signature patient</span><span class="fds-info-val">Obligatoire</span></div>
+        </div>
+      </div>`;
+
+    document.getElementById('fds-modal').style.display = 'flex';
+  }
+
+  function closeFDS() {
+    document.getElementById('fds-modal').style.display = 'none';
+  }
+
+  function initFDS() {
+    document.getElementById('fds-open-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openFDS();
+    });
+    document.getElementById('fds-close')?.addEventListener('click', closeFDS);
+    document.getElementById('fds-backdrop')?.addEventListener('click', closeFDS);
+  }
 
   return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation };
 })();
