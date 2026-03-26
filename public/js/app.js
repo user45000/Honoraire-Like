@@ -844,22 +844,45 @@ const App = (() => {
   function getCCAMContext() { return ccamContext; }
 
   // === Feuille de soin ===
-  // Positions extraites du PDF officiel S3110 ameli.fr (617.5 x 858.9 pts)
-  // Chaque chiffre de date est positionné individuellement sur sa case J/M/A
+  // Carte case-par-case du PDF officiel S3110 ameli.fr (617.5 x 858.9 pts)
 
-  // X de chaque case date dans les lignes d'actes (ordre : J J M M A A A A)
+  // ── Date dans lignes d'actes : 8 positions individuelles (J J M M A A A A) ──
   const DATE_BOX_X = [5.91, 7.66, 9.13, 10.88, 12.81, 14.56, 16.31, 18.06];
 
-  // X de chaque case date haut-droite (date de consultation)
+  // ── Date haut-droite (date de consultation) : 8 cases ──
   const DATE_TOP_X = [77.55, 79.89, 81.94, 84.28, 86.79, 89.12, 91.45, 93.88];
   const DATE_TOP_Y = 5.58;
 
-  // Y de chaque ligne d'actes (baseline PDF - 6pts pour top div CSS)
+  // ── Y des 4 lignes d'actes (baseline PDF - 6pts = top du div CSS) ──
   const FDS_ROWS_Y = [72.35, 75.14, 77.94, 80.73];
+
+  // ── Colonnes dans les lignes d'actes (vérifiées sur séparateurs PDF) ──
+  const COL_ACTIVITE = 36.0;   // col "activités"       séparateur gauche=34.07%
+  const COL_NGAP     = 40.44;  // col "C,CS/V,VS"        lettre-clé NGAP + code CCAM
+  const COL_AUTRES   = 48.2;   // col "autres actes"     majorations NGAP
+
+  // ── Cases montant honoraires : 4 cases × 2.33% entre 61.67% et 70.99% ──
+  //    + cases ouvertes à gauche (61.67% − n × 2.33%) pour chiffres supplémentaires
+  const MT_CELL_W  = 2.33;
+  const MT_RIGHT_X = 70.99;
+
+  // ── Cases montant TOTAL dans value-box (47.84%–71.16%) ──
+  //    7 séparateurs internes → cases de 2.33% avec bord droit à 66.41%
+  const TOT_RIGHT_X = 66.41;
+  const TOT_Y       = 84.5;   // y centre de la value-box (83.86%–86.31%)
+
   const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
 
   function fdsOverlay(x, y, text, cls = '') {
     return `<div class="fds-fill ${cls}" style="left:${x}%;top:${y}%">${text}</div>`;
+  }
+
+  // Place un montant aligné à droite dans ses cases (bord droit = rightX, cellW = largeur case)
+  function fdsCells(amount, rightX, cellW, y) {
+    return amount.split('').map((c, i, arr) => {
+      const x = rightX - (arr.length - i - 0.15) * cellW;
+      return fdsOverlay(x, y, c, 'fds-fill-digit');
+    }).join('');
   }
 
   function openFDS() {
@@ -899,47 +922,45 @@ const App = (() => {
       html += fdsOverlay(93.2, 61.5, '✓', 'fds-fill-check');
     }
 
-    // ── Lignes d'actes (on n'affiche que les actes avec montant > 0) ──
-    // Colonnes : date | activités 35.5% | codes des actes 40.44% | autres actes 48.2% | montant 62.8%
+    // ── Lignes d'actes (actes à montant > 0 uniquement) ──
     acteRows.filter(d => d.montant > 0).slice(0, 4).forEach((d, i) => {
       const y = FDS_ROWS_Y[i];
+      const amt = d.montant.toFixed(2).replace('.', ',');
 
-      // Date : 8 chiffres, chacun dans sa case exacte
+      // Date : 8 chiffres individuels dans leurs cases J/J/M/M/A/A/A/A
       html += fdsDate(DATE_BOX_X, y);
 
-      // Code acte :
-      //  - Code CCAM (4 lettres + 3 alphanums, ex. DEQP003) → col "codes des actes" (40.44%)
-      //    + code activité "1" dans col "activités" (35.5%)
-      //  - NGAP lettre-clé (G, VG, C, CS…) → col "codes des actes" (40.44%)
-      //  - NGAP majorations/autres (MCG, MCS…) → col "autres actes" (48.2%)
+      // Code acte
       const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
       const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
       if (isCCAM) {
-        html += fdsOverlay(35.5, y, '1', 'fds-fill-digit'); // code activité
-        html += fdsOverlay(40.44, y, d.code, 'fds-fill-code');
+        html += fdsOverlay(COL_ACTIVITE, y, '1', 'fds-fill-digit'); // activité
+        html += fdsOverlay(COL_NGAP, y, d.code, 'fds-fill-code');
       } else {
-        html += fdsOverlay(isNGAPLettre ? 40.44 : 48.2, y, d.code, 'fds-fill-code');
+        html += fdsOverlay(isNGAPLettre ? COL_NGAP : COL_AUTRES, y, d.code, 'fds-fill-code');
       }
 
-      // Montant honoraires
-      html += fdsOverlay(62.8, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
+      // Montant honoraires : chaque chiffre dans sa case, aligné à droite
+      html += fdsCells(amt, MT_RIGHT_X, MT_CELL_W, y);
 
-      // Frais de déplacement (ID/MD) et IK — 1ère ligne seulement
+      // Frais de déplacement (ID/MD) et IK — attachés à la 1ère ligne d'acte
       if (i === 0) {
         if (deplItem && deplItem.montant > 0) {
+          // ID/MD : code dans col "I.D./M.D." (77.2%), montant dans la ligne du dessous
           html += fdsOverlay(77.2, y, deplItem.code, 'fds-fill-code');
-          html += fdsOverlay(77.2, y + 2.7, deplItem.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
+          html += fdsCells(deplItem.montant.toFixed(2).replace('.', ','), MT_RIGHT_X, MT_CELL_W, y);
         }
         if (ikItem && ikItem.montant > 0) {
           const kmMatch = ikItem.label.match(/(\d+)\s*km/i);
-          if (kmMatch) html += fdsOverlay(82.4, y, kmMatch[1], 'fds-fill-digit');
-          html += fdsOverlay(88.1, y, ikItem.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
+          // IK nbre (83.82–88.48%) et IK montant (88.48–93.15%)
+          if (kmMatch) html += fdsOverlay(85.0, y, kmMatch[1], 'fds-fill-digit');
+          html += fdsCells(ikItem.montant.toFixed(2).replace('.', ','), 93.15, MT_CELL_W, y);
         }
       }
     });
 
-    // ── MONTANT TOTAL — case valeur x=47.8–71.2%, centre y=85.09% ──
-    html += fdsOverlay(48.5, 84.6, lastResult.total.toFixed(2).replace('.', ','), 'fds-fill-total');
+    // ── MONTANT TOTAL : cases 52.42%–66.41%, bord droit 66.41%, y=84.5% ──
+    html += fdsCells(lastResult.total.toFixed(2).replace('.', ','), TOT_RIGHT_X, MT_CELL_W, TOT_Y);
 
     document.getElementById('fds-body').innerHTML = `
       <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
