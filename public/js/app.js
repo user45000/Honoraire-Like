@@ -844,137 +844,111 @@ const App = (() => {
   function getCCAMContext() { return ccamContext; }
 
   // === Feuille de soin ===
+  // Positions en % sur le formulaire réel S3116 (617.5 x 858.9 pts)
+  const FDS_ROWS_Y = [71.5, 74.3, 77.1, 79.9]; // y% des 4 lignes d'actes
+  const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
+
+  function fdsOverlay(x, y, text, cls = '') {
+    return `<div class="fds-fill ${cls}" style="left:${x}%;top:${y}%">${text}</div>`;
+  }
+
   function openFDS() {
     if (!lastResult || !lastResult.details || lastResult.details.length === 0) return;
 
-    const tab = currentTab;
     const isMT = getRelation() === 'mt';
-    const isVisite = tab === 'visite' || (tab === 'ccam' && ccamContext === 'visite');
-    const todayShort = new Date().toLocaleDateString('fr-FR');
+    const isVisite = currentTab === 'visite' || (currentTab === 'ccam' && ccamContext === 'visite');
+    const lieu = isVisite ? 'V' : 'S';
+    const today = new Date();
+    const dd = String(today.getDate()).padStart(2,'0');
+    const mm = String(today.getMonth()+1).padStart(2,'0');
+    const yyyy = today.getFullYear();
+    const todayFr = `${dd}/${mm}/${yyyy}`;
 
-    // Lignes d'actes
-    let tbodyHtml = '';
-    for (const d of lastResult.details) {
+    // Séparer les détails
+    const details = lastResult.details;
+    const deplItem = details.find(d => DEPL_CODES.some(c => d.code === c || d.code.startsWith(c)));
+    const ikItem   = details.find(d => d.code === 'IK' || d.label.toLowerCase().includes('kilométr'));
+    const acteRows = details.filter(d => d !== deplItem && d !== ikItem);
+
+    // Construire les overlays
+    let html = '';
+
+    // ── Date de consultation (cases JJMMAAAA en haut à droite) ──
+    html += fdsOverlay(79.5, 4.7, `${dd}  ${mm}  ${yyyy}`, 'fds-fill-date');
+
+    // ── MALADIE ✓ (toujours coché pour une consultation ordinaire) ──
+    html += fdsOverlay(7.6, 43.2, '✓', 'fds-fill-check');
+
+    // ── Accès parcours de soins ──
+    // Si MT : pas de case spéciale à cocher (consultation ordinaire MT)
+    // Si hors patientèle : accès hors coordination (dernière case, x≈87.5%)
+    if (!isMT) {
+      html += fdsOverlay(87.5, 61.3, '✓', 'fds-fill-check');
+    }
+
+    // ── Lignes d'actes (4 lignes disponibles sur le formulaire) ──
+    acteRows.slice(0, 4).forEach((d, i) => {
+      const y = FDS_ROWS_Y[i];
       const isZero = d.montant === 0;
-      const montantStr = isZero ? '<span class="fds-cell-zero">—</span>' : `<strong>${d.montant.toFixed(2).replace('.', ',')} €</strong>`;
-      tbodyHtml += `<tr${isZero ? ' class="fds-row-zero"' : ''}>
-        <td class="fds-td-date">${isZero ? '' : todayShort}</td>
-        <td class="fds-td-code">${d.code}</td>
-        <td class="fds-td-label">${d.label}</td>
-        <td class="fds-td-amt">${montantStr}</td>
-      </tr>`;
-    }
-    // Ligne total
-    tbodyHtml += `<tr class="fds-row-total">
-      <td colspan="3">Total honoraires</td>
-      <td class="fds-td-amt"><strong>${lastResult.total.toFixed(2).replace('.', ',')} €</strong></td>
-    </tr>`;
-    // Parts AMO / AMC
+
+      // Date dans les cases JJMMAAAA
+      html += fdsOverlay(1.5, y, `${dd} ${mm} ${yyyy}`, 'fds-fill-val' + (isZero ? ' fds-zero' : ''));
+
+      // Lieu (S = cabinet, V = visite) dans colonne "activités"
+      html += fdsOverlay(36.2, y + 0.3, lieu, 'fds-fill-lieu');
+
+      // Code de l'acte — NGAP consultation/visite (G,VG,C…) dans colonne C/CS/V/VS
+      // Majorations et CCAM dans colonne "autres actes"
+      const isConsultCode = /^(G|VG|V$|C$|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|CS|MP|AS)/.test(d.code);
+      const codeX = isConsultCode ? 40.0 : 45.5;
+      html += fdsOverlay(codeX, y, d.code, 'fds-fill-code' + (isZero ? ' fds-zero' : ''));
+
+      // Montant honoraires ①
+      if (!isZero) {
+        html += fdsOverlay(64.5, y, d.montant.toFixed(2).replace('.', ','), 'fds-fill-amt');
+      }
+
+      // Frais de déplacement (ID/MD) et IK — dans colonnes à droite de la ligne 0
+      if (i === 0) {
+        if (deplItem && deplItem.montant > 0) {
+          html += fdsOverlay(80.2, y, deplItem.code, 'fds-fill-dep');
+          html += fdsOverlay(80.2, y + 1.5, deplItem.montant.toFixed(2).replace('.', ','), 'fds-fill-dep-amt');
+        }
+        if (ikItem && ikItem.montant > 0) {
+          const kmMatch = ikItem.label.match(/(\d+)\s*km/i);
+          if (kmMatch) html += fdsOverlay(83.8, y, kmMatch[1], 'fds-fill-ik');
+          html += fdsOverlay(88.5, y, ikItem.montant.toFixed(2).replace('.', ','), 'fds-fill-ik');
+        }
+      }
+    });
+
+    // ── MONTANT TOTAL (1+2+3) ──
+    html += fdsOverlay(61.5, 84.1, lastResult.total.toFixed(2).replace('.', ','), 'fds-fill-total');
+
+    // ── Parts AMO / AMC ──
     if (lastResult.amo !== undefined) {
-      tbodyHtml += `<tr class="fds-row-amo">
-        <td colspan="3"><span class="fds-po-label">PO</span> Part obligatoire (Assurance Maladie)</td>
-        <td class="fds-td-amt">${lastResult.amo.toFixed(2).replace('.', ',')} €</td>
-      </tr>
-      <tr class="fds-row-amc">
-        <td colspan="3"><span class="fds-pc-label">PC</span> Part complémentaire (Mutuelle)</td>
-        <td class="fds-td-amt">${lastResult.amc.toFixed(2).replace('.', ',')} €</td>
-      </tr>`;
+      // PO : case "l'assuré(e) n'a pas payé la part obligatoire" → si tiers payant → laissé blanc
+      // On indique le montant de la part sécu dans la zone PO (x≈38%, y≈87.5%)
+      html += fdsOverlay(38.0, 87.5, lastResult.amo.toFixed(2).replace('.', ','), 'fds-fill-amo');
+      // PC : x≈88%
+      html += fdsOverlay(88.0, 87.5, lastResult.amc.toFixed(2).replace('.', ','), 'fds-fill-amc');
     }
 
-    // Cases à cocher
-    const chkMT  = isMT   ? 'fds-chk-on' : 'fds-chk-off';
-    const chkVis = isVisite ? 'fds-chk-on' : 'fds-chk-off';
+    // ── Date signature médecin ──
+    html += fdsOverlay(20.0, 92.5, todayFr, 'fds-fill-sigdate');
 
     document.getElementById('fds-body').innerHTML = `
-      <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez toujours les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
-
-      <div class="fds-form">
-
-        <!-- En-tête -->
-        <div class="fds-form-head">
-          <div class="fds-form-head-left">
-            <div class="fds-form-title-main">FEUILLE DE SOINS</div>
-            <div class="fds-form-ref">S 3116 (cerfa n° 12541)</div>
-          </div>
-          <div class="fds-form-head-right">
-            <div class="fds-form-field-lbl">Caisse destinataire</div>
-            <div class="fds-form-blank fds-blank-sm"></div>
-          </div>
-        </div>
-
-        <!-- Assuré / Bénéficiaire -->
-        <div class="fds-form-2col">
-          <div class="fds-form-zone">
-            <div class="fds-form-zone-title">ASSURÉ(E)</div>
-            <div class="fds-form-field">
-              <span class="fds-form-field-lbl">N° Sécurité Sociale</span>
-              <div class="fds-ss-boxes">${Array.from({length:15},()=>'<span class="fds-ss-box"></span>').join('')}<span class="fds-ss-box fds-ss-cle"></span></div>
-            </div>
-            <div class="fds-form-field"><span class="fds-form-field-lbl">Nom</span><div class="fds-form-blank"></div></div>
-            <div class="fds-form-field"><span class="fds-form-field-lbl">Prénom</span><div class="fds-form-blank"></div></div>
-          </div>
-          <div class="fds-form-zone">
-            <div class="fds-form-zone-title">BÉNÉFICIAIRE DES SOINS</div>
-            <div class="fds-form-hint-small">Si différent de l'assuré (ex : enfant)</div>
-            <div class="fds-form-field"><span class="fds-form-field-lbl">Nom</span><div class="fds-form-blank"></div></div>
-            <div class="fds-form-field"><span class="fds-form-field-lbl">Prénom</span><div class="fds-form-blank"></div></div>
-            <div class="fds-form-field"><span class="fds-form-field-lbl">Né(e) le</span><div class="fds-form-blank fds-blank-sm"></div></div>
-          </div>
-        </div>
-
-        <!-- Cases à cocher -->
-        <div class="fds-form-checks">
-          <div class="fds-chk ${chkMT}"><span class="fds-chk-sq">${isMT ? '✓' : ''}</span>Médecin traitant</div>
-          <div class="fds-chk ${chkVis}"><span class="fds-chk-sq">${isVisite ? '✓' : ''}</span>Visite à domicile</div>
-          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>ALD / Exo TM</div>
-          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>Accident du travail</div>
-          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>Tiers payant (PO/PC)</div>
-        </div>
-        <div class="fds-form-hint-at">⚠️ Accident du travail → utiliser le formulaire AT (Cerfa 11383) à la place</div>
-
-        <!-- Tableau des actes -->
-        <table class="fds-form-table">
-          <thead>
-            <tr>
-              <th class="fds-th-date">Date</th>
-              <th class="fds-th-code">Code</th>
-              <th class="fds-th-label">Nature et cotation de l'acte</th>
-              <th class="fds-th-amt">Honoraires</th>
-            </tr>
-          </thead>
-          <tbody>${tbodyHtml}</tbody>
-        </table>
-
-        <!-- Bas de form : cachet + règlement -->
-        <div class="fds-form-2col fds-form-bottom">
-          <div class="fds-form-zone fds-stamp-zone">
-            <div class="fds-form-zone-title">CACHET DU PRATICIEN</div>
-            <div class="fds-stamp-box">
-              <div class="fds-stamp-inner">Nom · Prénom · Adresse<br>N° RPPS</div>
-            </div>
-            <div class="fds-stamp-warn">⚠️ Ne pas déborder sur la case PO — 1ère cause de rejet CPAM</div>
-          </div>
-          <div class="fds-form-zone">
-            <div class="fds-form-zone-title">MODE DE RÈGLEMENT</div>
-            <div class="fds-payment-opts">
-              <label><span class="fds-chk-sq"></span> Espèces</label>
-              <label><span class="fds-chk-sq"></span> Chèque</label>
-              <label><span class="fds-chk-sq"></span> Carte bancaire</label>
-              <label><span class="fds-chk-sq"></span> Virement</label>
-            </div>
-            <div class="fds-form-zone-title" style="margin-top:12px">SIGNATURE MÉDECIN</div>
-            <div class="fds-sig-line"></div>
-            <div class="fds-sig-date">Date : ${todayShort}</div>
-          </div>
-        </div>
-
-        <!-- Signature patient -->
-        <div class="fds-form-zone fds-sig-patient-zone">
-          <div class="fds-form-zone-title">SIGNATURE DU PATIENT / ASSURÉ <span class="fds-sig-req">(obligatoire)</span></div>
-          <div class="fds-sig-line fds-sig-line-lg"></div>
-        </div>
-
+      <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
+      <div class="fds-overlay-container" id="fds-overlay-container">
+        <img src="/images/fds_form.png" class="fds-form-image" alt="Feuille de soins S3116 cerfa 12541">
+        ${html}
       </div>`;
+
+    // Calcul du facteur d'échelle pour les tailles de police
+    requestAnimationFrame(() => {
+      const c = document.getElementById('fds-overlay-container');
+      if (c) c.style.setProperty('--fds-scale', c.offsetWidth / 617.5);
+    });
 
     document.getElementById('fds-modal').style.display = 'flex';
   }

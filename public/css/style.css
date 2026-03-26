@@ -2154,48 +2154,26 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 /* === Bouton feuille de soin (result-bar) === */
 .fds-open-btn {
   background: rgba(255,255,255,0.12);
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  padding: 5px 8px;
-  cursor: pointer;
-  margin-right: 10px;
-  flex-shrink: 0;
-  line-height: 1;
-  transition: background 0.15s;
+  border: none; border-radius: 8px; font-size: 16px;
+  padding: 5px 8px; cursor: pointer; margin-right: 10px;
+  flex-shrink: 0; line-height: 1; transition: background 0.15s;
 }
 .fds-open-btn:active { background: rgba(255,255,255,0.25); }
 
 /* === Modale Feuille de soin === */
 .fds-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 500;
-  display: flex;
-  align-items: flex-end;
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: flex-end;
 }
-.fds-backdrop {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.55);
-}
+.fds-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.55); }
 .fds-sheet {
-  position: relative;
-  width: 100%;
-  max-height: 92vh;
-  background: #f0f2f5;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  position: relative; width: 100%; max-height: 92vh;
+  background: #f0f2f5; border-radius: 20px 20px 0 0;
+  display: flex; flex-direction: column; overflow: hidden;
 }
 .fds-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px 12px;
-  background: #1B2D4F;
-  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 12px; background: #1B2D4F; flex-shrink: 0;
 }
 .fds-header-left { display: flex; align-items: center; gap: 8px; }
 .fds-title { font-size: 15px; font-weight: 700; color: #fff; }
@@ -2209,176 +2187,79 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   display: flex; align-items: center; justify-content: center;
 }
 .fds-body {
-  overflow-y: auto;
-  padding: 12px 12px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  overflow-y: auto; padding: 10px 10px 0; display: flex;
+  flex-direction: column; gap: 10px;
   padding-bottom: calc(env(safe-area-inset-bottom) + 20px);
 }
-
-/* Beta banner */
 .fds-beta-banner {
   font-size: 11px; color: #92400e; background: #fef3c7;
   border: 1px solid #fbbf24; border-radius: 6px; padding: 8px 10px; line-height: 1.5;
+  flex-shrink: 0;
 }
 .fds-beta-banner strong { font-weight: 700; }
 
-/* === Feuille de soin visuelle === */
-.fds-form {
-  background: #fff;
-  border: 1.5px solid #334e82;
+/* === Overlay sur le vrai formulaire S3116 === */
+.fds-overlay-container {
+  position: relative;
+  width: 100%;
+  --fds-scale: 0.6; /* mis à jour par JS */
+}
+.fds-form-image {
+  width: 100%;
+  display: block;
   border-radius: 4px;
-  overflow: hidden;
-  font-size: 12px;
-  color: #111;
 }
 
-/* En-tête */
-.fds-form-head {
-  background: #1B2D4F;
-  color: #fff;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  gap: 8px;
+/* Textes superposés au formulaire */
+.fds-fill {
+  position: absolute;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: max(calc(var(--fds-scale) * 8px), 6px);
+  color: #00008b;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1;
+  pointer-events: none;
 }
-.fds-form-title-main { font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
-.fds-form-ref { font-size: 10px; opacity: 0.7; margin-top: 2px; }
-.fds-form-head-right { text-align: right; }
-
-/* Zones 2 colonnes */
-.fds-form-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-bottom: 1px solid #334e82;
+.fds-fill-check {
+  font-size: max(calc(var(--fds-scale) * 11px), 8px);
+  color: #00008b;
+  font-weight: 900;
 }
-.fds-form-zone {
-  padding: 8px 10px;
-  border-right: 1px solid #334e82;
+.fds-fill-date {
+  font-size: max(calc(var(--fds-scale) * 7.5px), 5.5px);
+  letter-spacing: max(calc(var(--fds-scale) * 3.5px), 2px);
 }
-.fds-form-zone:last-child { border-right: none; }
-.fds-form-zone-title {
-  font-size: 9px; font-weight: 800; text-transform: uppercase;
-  letter-spacing: 0.08em; color: #1B2D4F; margin-bottom: 6px;
+.fds-fill-code {
+  font-size: max(calc(var(--fds-scale) * 9px), 7px);
+  font-weight: 900;
+  color: #000080;
 }
-
-/* Champs */
-.fds-form-field { display: flex; flex-direction: column; margin-bottom: 5px; }
-.fds-form-field-lbl { font-size: 9px; color: #555; margin-bottom: 2px; }
-.fds-form-blank {
-  height: 16px; border-bottom: 1px solid #aaa; width: 100%;
+.fds-fill-val {
+  font-size: max(calc(var(--fds-scale) * 7.5px), 5.5px);
+  letter-spacing: max(calc(var(--fds-scale) * 2px), 1.5px);
 }
-.fds-blank-sm { width: 60%; }
-.fds-form-hint-small { font-size: 9px; color: #888; margin-bottom: 5px; font-style: italic; }
-
-/* N° SS boxes */
-.fds-ss-boxes {
-  display: flex; gap: 2px; margin-top: 2px; flex-wrap: wrap;
+.fds-fill-amt, .fds-fill-dep-amt, .fds-fill-ik,
+.fds-fill-total, .fds-fill-amo, .fds-fill-amc {
+  font-size: max(calc(var(--fds-scale) * 8.5px), 6.5px);
+  font-variant-numeric: tabular-nums;
 }
-.fds-ss-box {
-  width: 14px; height: 18px; border: 1px solid #aaa;
-  border-radius: 2px; display: inline-block;
+.fds-fill-total {
+  font-size: max(calc(var(--fds-scale) * 9px), 7px);
+  font-weight: 900;
 }
-.fds-ss-cle {
-  width: 22px; background: #f5f5f5; margin-left: 3px;
+.fds-fill-lieu {
+  font-size: max(calc(var(--fds-scale) * 8px), 6px);
+  font-weight: 900;
 }
-
-/* Cases à cocher */
-.fds-form-checks {
-  display: flex; flex-wrap: wrap; gap: 6px 12px;
-  padding: 7px 10px; border-bottom: 1px solid #334e82;
-  background: #f7f9fc;
+.fds-fill-dep {
+  font-size: max(calc(var(--fds-scale) * 7px), 5.5px);
+  color: #003080;
 }
-.fds-chk {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 11px; font-weight: 600; color: #333;
+.fds-fill-sigdate {
+  font-size: max(calc(var(--fds-scale) * 7.5px), 6px);
 }
-.fds-chk-sq {
-  width: 14px; height: 14px; border: 1.5px solid #666; border-radius: 2px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 800; flex-shrink: 0;
-}
-.fds-chk-on .fds-chk-sq { background: #166534; border-color: #166534; color: #fff; }
-.fds-chk-off .fds-chk-sq { background: #fff; color: transparent; }
-.fds-chk-ask .fds-chk-sq { background: #fff7ed; border-color: #e07b00; color: #e07b00; }
-.fds-form-hint-at {
-  font-size: 10px; color: #b45309; background: #fff7ed;
-  padding: 5px 10px; border-bottom: 1px solid #334e82;
-}
-
-/* Tableau actes */
-.fds-form-table {
-  width: 100%; border-collapse: collapse;
-  border-bottom: 1px solid #334e82;
-}
-.fds-form-table th {
-  background: #1B2D4F; color: #fff;
-  font-size: 9px; font-weight: 700; text-transform: uppercase;
-  padding: 5px 8px; text-align: left; letter-spacing: 0.04em;
-}
-.fds-th-date { width: 60px; }
-.fds-th-code { width: 52px; }
-.fds-th-amt  { width: 72px; text-align: right !important; }
-.fds-form-table td {
-  padding: 6px 8px; font-size: 11px; border-bottom: 1px solid #dde1ea;
-  vertical-align: middle;
-}
-.fds-form-table tr:last-child td { border-bottom: none; }
-.fds-td-date { font-size: 10px; color: #555; }
-.fds-td-code {
-  font-family: var(--font-mono); font-weight: 800;
-  font-size: 12px; color: #1B2D4F;
-}
-.fds-td-label { color: #222; line-height: 1.3; }
-.fds-td-amt { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.fds-row-zero td { background: #fafafa; }
-.fds-row-zero .fds-td-code { color: #aaa; }
-.fds-row-zero .fds-td-label { color: #aaa; text-decoration: line-through; font-style: italic; }
-.fds-cell-zero { color: #bbb; }
-.fds-row-total td {
-  background: #1B2D4F; color: #fff; font-weight: 700;
-  font-size: 12px; border-bottom: none;
-}
-.fds-row-total .fds-td-amt { font-size: 14px; }
-.fds-row-amo td { background: #f0f7ff; font-size: 11px; }
-.fds-row-amc td { background: #f5f0ff; font-size: 11px; }
-.fds-po-label, .fds-pc-label {
-  display: inline-block; font-size: 9px; font-weight: 800;
-  padding: 1px 4px; border-radius: 3px; margin-right: 4px;
-}
-.fds-po-label { background: #dbeafe; color: #1e40af; }
-.fds-pc-label { background: #ede9fe; color: #6d28d9; }
-
-/* Bas : cachet + règlement */
-.fds-form-bottom { border-bottom: 1px solid #334e82; }
-.fds-stamp-zone { background: #fafafa; }
-.fds-stamp-box {
-  border: 1.5px dashed #aaa; border-radius: 4px;
-  min-height: 52px; display: flex; align-items: center;
-  justify-content: center; margin: 6px 0;
-}
-.fds-stamp-inner { font-size: 10px; color: #bbb; text-align: center; line-height: 1.6; }
-.fds-stamp-warn { font-size: 9px; color: #b45309; }
-.fds-payment-opts {
-  display: flex; flex-direction: column; gap: 5px; margin-top: 4px;
-}
-.fds-payment-opts label {
-  display: flex; align-items: center; gap: 5px; font-size: 11px; color: #333;
-}
-.fds-sig-line {
-  border-bottom: 1px solid #aaa; height: 28px; margin: 6px 0 2px;
-}
-.fds-sig-line-lg { height: 36px; }
-.fds-sig-date { font-size: 10px; color: #555; }
-.fds-sig-req { font-size: 9px; color: #b45309; font-weight: 400; }
-
-/* Zone signature patient */
-.fds-sig-patient-zone {
-  border-right: none;
-  padding-bottom: 12px;
-}
+.fds-zero { color: #bbb; text-decoration: line-through; font-weight: 400; }
 
 /* Bannière cookies */
 .cookie-banner {
