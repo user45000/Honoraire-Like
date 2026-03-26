@@ -899,6 +899,10 @@ const App = (() => {
     </div>`;
 
     document.getElementById('fds-body').innerHTML = `
+      <div class="fds-beta-banner">
+        🧪 <strong>Fonctionnalité en cours de développement (BÊTA)</strong><br>
+        Ces informations sont indicatives. Vérifiez toujours les règles de facturation en vigueur. En cas de doute, consultez votre CPAM.
+      </div>
       <div>
         <div class="fds-section-title">① Praticien</div>
         <div class="fds-hint">⚠️ Le cachet ne doit pas déborder sur la case "Part Obligatoire" — 1ère cause de rejet CPAM</div>

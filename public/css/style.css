@@ -2256,6 +2256,17 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   margin-bottom: 10px;
 }
 
+.fds-beta-banner {
+  font-size: 12px;
+  color: #92400e;
+  background: #fef3c7;
+  border: 1.5px solid #fbbf24;
+  border-radius: 8px;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+.fds-beta-banner strong { font-weight: 700; }
+
 .fds-hint {
   font-size: 12px;
   color: #e07b00;
