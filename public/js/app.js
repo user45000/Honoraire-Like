@@ -848,86 +848,132 @@ const App = (() => {
     if (!lastResult || !lastResult.details || lastResult.details.length === 0) return;
 
     const tab = currentTab;
-    const relation = (typeof getRelation === 'function') ? getRelation() : 'mt';
-    const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const isMT = getRelation() === 'mt';
+    const isVisite = tab === 'visite' || (tab === 'ccam' && ccamContext === 'visite');
+    const todayShort = new Date().toLocaleDateString('fr-FR');
 
-    // Actes — séparer les actifs des annulés (montant=0 avec mention non facturé)
-    let acteRowsHtml = '';
+    // Lignes d'actes
+    let tbodyHtml = '';
     for (const d of lastResult.details) {
       const isZero = d.montant === 0;
-      const montantStr = isZero ? '—' : d.montant.toFixed(2).replace('.', ',') + ' €';
-      acteRowsHtml += `<div class="fds-acte-row">
-        <span class="fds-acte-code">${d.code}</span>
-        <span class="fds-acte-label${isZero ? ' zeroed' : ''}">${d.label}</span>
-        <span class="fds-acte-montant${isZero ? ' zero' : ''}">${montantStr}</span>
-      </div>`;
+      const montantStr = isZero ? '<span class="fds-cell-zero">—</span>' : `<strong>${d.montant.toFixed(2).replace('.', ',')} €</strong>`;
+      tbodyHtml += `<tr${isZero ? ' class="fds-row-zero"' : ''}>
+        <td class="fds-td-date">${isZero ? '' : todayShort}</td>
+        <td class="fds-td-code">${d.code}</td>
+        <td class="fds-td-label">${d.label}</td>
+        <td class="fds-td-amt">${montantStr}</td>
+      </tr>`;
     }
-    acteRowsHtml += `<div class="fds-acte-row fds-total">
-      <span class="fds-acte-code">TOTAL</span>
-      <span class="fds-acte-label">Honoraires</span>
-      <span class="fds-acte-montant">${lastResult.total.toFixed(2).replace('.', ',')}&nbsp;€</span>
-    </div>`;
-
-    // Part AMO/AMC
-    let partsHtml = '';
+    // Ligne total
+    tbodyHtml += `<tr class="fds-row-total">
+      <td colspan="3">Total honoraires</td>
+      <td class="fds-td-amt"><strong>${lastResult.total.toFixed(2).replace('.', ',')} €</strong></td>
+    </tr>`;
+    // Parts AMO / AMC
     if (lastResult.amo !== undefined) {
-      partsHtml = `<div class="fds-parts">
-        <div class="fds-part">
-          <div class="fds-part-label">Part AMO (Sécu)</div>
-          <div class="fds-part-val">${lastResult.amo.toFixed(2).replace('.', ',')} €</div>
-        </div>
-        <div class="fds-part">
-          <div class="fds-part-label">Part AMC (Mutuelle)</div>
-          <div class="fds-part-val">${lastResult.amc.toFixed(2).replace('.', ',')} €</div>
-        </div>
-      </div>`;
+      tbodyHtml += `<tr class="fds-row-amo">
+        <td colspan="3"><span class="fds-po-label">PO</span> Part obligatoire (Assurance Maladie)</td>
+        <td class="fds-td-amt">${lastResult.amo.toFixed(2).replace('.', ',')} €</td>
+      </tr>
+      <tr class="fds-row-amc">
+        <td colspan="3"><span class="fds-pc-label">PC</span> Part complémentaire (Mutuelle)</td>
+        <td class="fds-td-amt">${lastResult.amc.toFixed(2).replace('.', ',')} €</td>
+      </tr>`;
     }
 
-    // Cases à cocher automatiques
-    const checks = [];
-    if (relation === 'mt') checks.push('Médecin traitant');
-    if (tab === 'visite' || (tab === 'ccam' && ccamContext === 'visite')) checks.push('Visite à domicile');
-    const checksHtml = checks.length ? `<div class="fds-checks">${
-      checks.map(c => `<div class="fds-check-row"><span class="fds-check-box checked"></span><span>${c}</span></div>`).join('')
-    }</div>` : '';
-
-    // Questions contextuelles
-    const questionsHtml = `<div class="fds-questions">
-      <div class="fds-q-row"><span class="fds-q-icon">🔵</span><div class="fds-q-text"><strong>ALD / Exo TM ?</strong> Cocher la case ALD + "Exonération du ticket modérateur" (prise en charge à 100% AMO)</div></div>
-      <div class="fds-q-row"><span class="fds-q-icon">🟠</span><div class="fds-q-text"><strong>Accident du travail ?</strong> Utiliser le formulaire AT Cerfa 11383 à la place de la feuille de soins ordinaire</div></div>
-      <div class="fds-q-row"><span class="fds-q-icon">🟢</span><div class="fds-q-text"><strong>Tiers payant ?</strong> Cocher PO (Part Obligatoire) et/ou PC (Part Complémentaire) selon les cas</div></div>
-    </div>`;
+    // Cases à cocher
+    const chkMT  = isMT   ? 'fds-chk-on' : 'fds-chk-off';
+    const chkVis = isVisite ? 'fds-chk-on' : 'fds-chk-off';
 
     document.getElementById('fds-body').innerHTML = `
-      <div class="fds-beta-banner">
-        🧪 <strong>Fonctionnalité en cours de développement (BÊTA)</strong><br>
-        Ces informations sont indicatives. Vérifiez toujours les règles de facturation en vigueur. En cas de doute, consultez votre CPAM.
-      </div>
-      <div>
-        <div class="fds-section-title">① Praticien</div>
-        <div class="fds-hint">⚠️ Le cachet ne doit pas déborder sur la case "Part Obligatoire" — 1ère cause de rejet CPAM</div>
-        <div class="fds-info-row">
-          <span class="fds-info-label">Date des soins</span>
-          <span class="fds-info-val">${today}</span>
+      <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez toujours les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
+
+      <div class="fds-form">
+
+        <!-- En-tête -->
+        <div class="fds-form-head">
+          <div class="fds-form-head-left">
+            <div class="fds-form-title-main">FEUILLE DE SOINS</div>
+            <div class="fds-form-ref">S 3116 (cerfa n° 12541)</div>
+          </div>
+          <div class="fds-form-head-right">
+            <div class="fds-form-field-lbl">Caisse destinataire</div>
+            <div class="fds-form-blank fds-blank-sm"></div>
+          </div>
         </div>
-      </div>
-      <div>
-        <div class="fds-section-title">② Actes réalisés</div>
-        <div class="fds-actes">${acteRowsHtml}</div>
-        ${partsHtml}
-      </div>
-      <div>
-        <div class="fds-section-title">③ Cases à cocher</div>
-        ${checksHtml}
-        ${questionsHtml}
-      </div>
-      <div>
-        <div class="fds-section-title">④ Patient</div>
-        <div class="fds-patient-rows">
-          <div class="fds-info-row"><span class="fds-info-label">N° Sécurité Sociale</span><span class="fds-info-val">15 chiffres + clé de contrôle</span></div>
-          <div class="fds-info-row"><span class="fds-info-label">Si bénéficiaire ≠ assuré</span><span class="fds-info-val">Remplir les 2 zones (ex : enfant)</span></div>
-          <div class="fds-info-row"><span class="fds-info-label">Signature patient</span><span class="fds-info-val">Obligatoire</span></div>
+
+        <!-- Assuré / Bénéficiaire -->
+        <div class="fds-form-2col">
+          <div class="fds-form-zone">
+            <div class="fds-form-zone-title">ASSURÉ(E)</div>
+            <div class="fds-form-field">
+              <span class="fds-form-field-lbl">N° Sécurité Sociale</span>
+              <div class="fds-ss-boxes">${Array.from({length:15},()=>'<span class="fds-ss-box"></span>').join('')}<span class="fds-ss-box fds-ss-cle"></span></div>
+            </div>
+            <div class="fds-form-field"><span class="fds-form-field-lbl">Nom</span><div class="fds-form-blank"></div></div>
+            <div class="fds-form-field"><span class="fds-form-field-lbl">Prénom</span><div class="fds-form-blank"></div></div>
+          </div>
+          <div class="fds-form-zone">
+            <div class="fds-form-zone-title">BÉNÉFICIAIRE DES SOINS</div>
+            <div class="fds-form-hint-small">Si différent de l'assuré (ex : enfant)</div>
+            <div class="fds-form-field"><span class="fds-form-field-lbl">Nom</span><div class="fds-form-blank"></div></div>
+            <div class="fds-form-field"><span class="fds-form-field-lbl">Prénom</span><div class="fds-form-blank"></div></div>
+            <div class="fds-form-field"><span class="fds-form-field-lbl">Né(e) le</span><div class="fds-form-blank fds-blank-sm"></div></div>
+          </div>
         </div>
+
+        <!-- Cases à cocher -->
+        <div class="fds-form-checks">
+          <div class="fds-chk ${chkMT}"><span class="fds-chk-sq">${isMT ? '✓' : ''}</span>Médecin traitant</div>
+          <div class="fds-chk ${chkVis}"><span class="fds-chk-sq">${isVisite ? '✓' : ''}</span>Visite à domicile</div>
+          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>ALD / Exo TM</div>
+          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>Accident du travail</div>
+          <div class="fds-chk fds-chk-ask"><span class="fds-chk-sq">?</span>Tiers payant (PO/PC)</div>
+        </div>
+        <div class="fds-form-hint-at">⚠️ Accident du travail → utiliser le formulaire AT (Cerfa 11383) à la place</div>
+
+        <!-- Tableau des actes -->
+        <table class="fds-form-table">
+          <thead>
+            <tr>
+              <th class="fds-th-date">Date</th>
+              <th class="fds-th-code">Code</th>
+              <th class="fds-th-label">Nature et cotation de l'acte</th>
+              <th class="fds-th-amt">Honoraires</th>
+            </tr>
+          </thead>
+          <tbody>${tbodyHtml}</tbody>
+        </table>
+
+        <!-- Bas de form : cachet + règlement -->
+        <div class="fds-form-2col fds-form-bottom">
+          <div class="fds-form-zone fds-stamp-zone">
+            <div class="fds-form-zone-title">CACHET DU PRATICIEN</div>
+            <div class="fds-stamp-box">
+              <div class="fds-stamp-inner">Nom · Prénom · Adresse<br>N° RPPS</div>
+            </div>
+            <div class="fds-stamp-warn">⚠️ Ne pas déborder sur la case PO — 1ère cause de rejet CPAM</div>
+          </div>
+          <div class="fds-form-zone">
+            <div class="fds-form-zone-title">MODE DE RÈGLEMENT</div>
+            <div class="fds-payment-opts">
+              <label><span class="fds-chk-sq"></span> Espèces</label>
+              <label><span class="fds-chk-sq"></span> Chèque</label>
+              <label><span class="fds-chk-sq"></span> Carte bancaire</label>
+              <label><span class="fds-chk-sq"></span> Virement</label>
+            </div>
+            <div class="fds-form-zone-title" style="margin-top:12px">SIGNATURE MÉDECIN</div>
+            <div class="fds-sig-line"></div>
+            <div class="fds-sig-date">Date : ${todayShort}</div>
+          </div>
+        </div>
+
+        <!-- Signature patient -->
+        <div class="fds-form-zone fds-sig-patient-zone">
+          <div class="fds-form-zone-title">SIGNATURE DU PATIENT / ASSURÉ <span class="fds-sig-req">(obligatoire)</span></div>
+          <div class="fds-sig-line fds-sig-line-lg"></div>
+        </div>
+
       </div>`;
 
     document.getElementById('fds-modal').style.display = 'flex';
