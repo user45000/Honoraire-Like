@@ -674,10 +674,6 @@ const App = (() => {
    * Recalcule sur l'onglet consultation ou visite actif
    */
   function onCCAMChanged() {
-    // Bloquer consultation NGAP si un acte CCAM non cumulable est sélectionné
-    const hasNonCumulable = CCAM.getSelectedActes().some(a => (a.cumulG || 'non') === 'non');
-    Consultation.setNgapBlocked(hasNonCumulable);
-
     if (ccamContext === 'visite') {
       // ID = déplacement standard pour acte CCAM à domicile (sans VG)
       const vs = Visite.getState();

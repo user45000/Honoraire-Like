@@ -37,7 +37,7 @@ const Consultation = (() => {
         return;
       }
       const btn = e.target.closest('.acte-btn');
-      if (!btn || btn.classList.contains('disabled') || btn.classList.contains('ccam-blocked')) return;
+      if (!btn || btn.classList.contains('disabled')) return;
       document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
@@ -73,7 +73,7 @@ const Consultation = (() => {
         return;
       }
       const acteBtn = e.target.closest('.acte-btn');
-      if (acteBtn && !acteBtn.classList.contains('disabled') && !acteBtn.classList.contains('ccam-blocked')) {
+      if (acteBtn && !acteBtn.classList.contains('disabled')) {
         document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
         acteBtn.classList.add('active');
         state.acte = acteBtn.dataset.acte;
@@ -351,16 +351,6 @@ const Consultation = (() => {
     recalculate();
   }
 
-  /**
-   * Bloque/débloque les boutons de consultation NGAP quand un acte CCAM
-   * non cumulable avec G est sélectionné
-   */
-  function setNgapBlocked(blocked) {
-    document.querySelectorAll('#tab-consultation .acte-btn').forEach(btn => {
-      btn.classList.toggle('ccam-blocked', blocked);
-    });
-  }
-
   // Sync UI des boutons courants depuis l'extérieur (CCAM ou Visite)
   function syncCourantUI(code, active) {
     const btn = document.querySelector('#consult-courants-grid [data-courant="' + code + '"]');
@@ -374,5 +364,5 @@ const Consultation = (() => {
     }
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI, setNgapBlocked };
+  return { init, onShow, recalculate, getState, updateActePrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI };
 })();

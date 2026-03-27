@@ -507,62 +507,108 @@ const Engine = (() => {
    *   (convention 2024 — non valable avec consultations complexes ou MSH/MIC actifs)
    */
   function calculateCCAM(ccamActes, consultCode, consultTarif, activeMajos, depTarif = 0) {
-    const items = [];
-    let replaceConsult = false;
-
-    // En visite avec MD* : comparer CCAM+ID vs VG+MD* (pas juste CCAM vs VG)
+    // En visite avec MD* : comparer CCAM+ID vs VG+MD*
     const zone = getZone();
     const idTarif = (depTarif > 0 && tarifs.deplacement?.ID)
       ? (tarifs.deplacement.ID.tarifs[zone] || tarifs.deplacement.ID.tarifs.metro || 3.5)
       : 0;
-    const consultTotal = consultTarif + depTarif; // VG + MD* (ou juste VG si pas de visite)
+    const consultTotal = consultTarif + depTarif; // VG + MD* (ou VG seul en consultation)
+
+    // Règle baseOnly : devient 'non' si consultation complexe ou MSH/MIC actif
+    function effectiveCumul(acte) {
+      let cumul = acte.cumulG || 'non';
+      if (cumul === 'oui' && acte.baseOnly) {
+        const isBaseConsult = consultCode === 'G' || consultCode === 'VG';
+        const hasMicOrMsh = activeMajos &&
+          (activeMajos.includes('MIC') || activeMajos.includes('MSH'));
+        if (!isBaseConsult || hasMicOrMsh) cumul = 'non';
+      }
+      return cumul;
+    }
 
     const sorted = [...ccamActes].sort((a, b) => getCCAMTarif(b) - getCCAMTarif(a));
 
-    for (let i = 0; i < Math.min(sorted.length, 2); i++) {
-      const acte = sorted[i];
-      const acteTarif = getCCAMTarif(acte);
-      let cumul = acte.cumulG || 'non';
-
-      // baseOnly : cumul 100% autorisé UNIQUEMENT avec G ou VG basique
-      // → devient non-cumulable si acte complexe ou MSH/MIC actif
-      if (cumul === 'oui' && acte.baseOnly) {
-        const isBaseConsult = (consultCode === 'G' || consultCode === 'VG');
-        const hasMicOrMsh = activeMajos &&
-          (activeMajos.includes('MIC') || activeMajos.includes('MSH'));
-        if (!isBaseConsult || hasMicOrMsh) {
-          cumul = 'non';
-        }
-      }
-
-      if (cumul === 'oui') {
+    // ── Option A : CCAM pur — top 2 actes (100% + 50%), sans G ──
+    function buildOptionA() {
+      const items = [];
+      let total = 0;
+      for (let i = 0; i < Math.min(sorted.length, 2); i++) {
+        const acte = sorted[i];
+        const t = getCCAMTarif(acte);
         const taux = i === 0 ? 1 : 0.5;
-        const montant = Math.round(acteTarif * taux * 100) / 100;
+        const montant = Math.round(t * taux * 100) / 100;
         const tauxLabel = taux < 1 ? ` (${Math.round(taux * 100)}%)` : '';
         items.push({ code: acte.code, label: acte.label + tauxLabel, montant });
-      } else if (cumul === '50%') {
-        const montant = Math.round(acteTarif * 0.5 * 100) / 100;
-        items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
-      } else {
-        if (replaceConsult) {
-          // Acte précédent a déjà remplacé G — association à 50%
-          const montant = Math.round(acteTarif * 0.5 * 100) / 100;
-          items.push({ code: acte.code, label: acte.label + ' (50%)', montant });
-        } else if (acteTarif + idTarif > consultTotal) {
-          // CCAM+ID plus rémunérateur que VG+MD* → remplace la consultation
-          replaceConsult = true;
-          items.push({ code: acte.code, label: acte.label, montant: acteTarif });
-        } else {
-          items.push({
-            code: '(' + acte.code + ')',
-            label: acte.label + ' (non facturé — VG+déplacement plus rémunérateur)',
-            montant: 0
-          });
-        }
+        total += montant;
       }
+      return { items, total };
     }
 
-    return { items, replaceConsult };
+    // ── Option B : G + actes cumulables seulement (100% + 50%) ──
+    function buildOptionB(cumulables) {
+      const items = [];
+      let total = 0;
+      const sc = [...cumulables].sort((a, b) => getCCAMTarif(b) - getCCAMTarif(a));
+      for (let i = 0; i < Math.min(sc.length, 2); i++) {
+        const acte = sc[i];
+        const t = getCCAMTarif(acte);
+        const cumul = effectiveCumul(acte);
+        // cumulG:'50%' → toujours à 50% ; sinon : 1er à 100%, 2e à 50%
+        const taux = (cumul === '50%') ? 0.5 : (i === 0 ? 1 : 0.5);
+        const montant = Math.round(t * taux * 100) / 100;
+        const tauxLabel = taux < 1 ? ` (${Math.round(taux * 100)}%)` : '';
+        items.push({ code: acte.code, label: acte.label + tauxLabel, montant });
+        total += montant;
+      }
+      return { items, total };
+    }
+
+    const cumulables    = sorted.filter(a => effectiveCumul(a) !== 'non');
+    const nonCumulables = sorted.filter(a => effectiveCumul(a) === 'non');
+
+    // ── Cas simple : que des actes cumulables → G + tous les cumulables ──
+    if (nonCumulables.length === 0) {
+      return { items: buildOptionB(cumulables).items, replaceConsult: false };
+    }
+
+    // ── Cas simple : que des actes non-cumulables, ou pas de G → CCAM vs G ──
+    if (cumulables.length === 0 || !consultTarif) {
+      const a = buildOptionA();
+      if (a.total + idTarif > consultTotal) {
+        return { items: a.items, replaceConsult: true };
+      }
+      // G plus avantageux : CCAM non facturé
+      return {
+        items: sorted.slice(0, 2).map(act => ({
+          code: '(' + act.code + ')',
+          label: act.label + ' (non facturé — G+déplacement plus rémunérateur)',
+          montant: 0
+        })),
+        replaceConsult: false
+      };
+    }
+
+    // ── Cas mixte : non-cumulables ET cumulables → comparer les deux options ──
+    const a = buildOptionA();
+    const b = buildOptionB(cumulables);
+
+    // Total comparable en tenant compte du déplacement
+    // Option A : CCAM pur + ID (sans G ni MD*)
+    // Option B : G + MD* + cumulables
+    const billableA = a.total + idTarif;
+    const billableB = consultTotal + b.total;
+
+    if (billableA >= billableB) {
+      return { items: a.items, replaceConsult: true };
+    } else {
+      // Option B choisie : actes non-cumulables marqués non facturés
+      const nonFactures = nonCumulables.slice(0, 2).map(act => ({
+        code: '(' + act.code + ')',
+        label: act.label + ' (non facturé — G+actes cumulables plus rémunérateurs)',
+        montant: 0
+      }));
+      return { items: [...b.items, ...nonFactures], replaceConsult: false };
+    }
   }
 
   /**
