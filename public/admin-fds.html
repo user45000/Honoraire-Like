@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Calibration FDS</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: system-ui, sans-serif; background: #0f172a; color: #e2e8f0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+    /* ── Toolbar ── */
+    #toolbar {
+      background: #1e293b; padding: 8px 14px; display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid #334155; flex-shrink: 0; height: 46px;
+    }
+    #toolbar h1 { font-size: 14px; font-weight: 700; color: #38bdf8; white-space: nowrap; }
+    #coords-live { font-size: 11px; color: #94a3b8; font-family: monospace; }
+    #active-hint { font-size: 11px; color: #fbbf24; font-family: monospace; flex: 1; }
+    .btn { padding: 5px 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600; }
+    .btn-primary { background: #38bdf8; color: #0f172a; }
+    .btn-primary:hover { background: #7dd3fc; }
+    .btn-danger { background: #f87171; color: #0f172a; font-size: 11px; }
+    .btn-danger:hover { background: #fca5a5; }
+
+    /* ── Main layout ── */
+    #main { display: flex; flex: 1; overflow: hidden; }
+
+    /* ── Image panel ── */
+    #form-panel { flex: 1; overflow: auto; padding: 12px; display: flex; justify-content: center; align-items: flex-start; background: #0a0f1e; }
+    #form-wrap { position: relative; display: inline-block; cursor: crosshair; flex-shrink: 0; }
+    #form-img { display: block; max-height: calc(100vh - 70px); width: auto; user-select: none; }
+    #markers-layer { position: absolute; inset: 0; pointer-events: none; }
+    #cursor-h { position: absolute; left: 0; right: 0; height: 1px; background: rgba(251,191,36,0.5); pointer-events: none; }
+    #cursor-v { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(251,191,36,0.5); pointer-events: none; }
+
+    /* ── Zones panel ── */
+    #zones-panel { width: 310px; flex-shrink: 0; background: #1e293b; border-left: 1px solid #334155; overflow-y: auto; }
+
+    .grp-title {
+      padding: 7px 12px; font-size: 10px; font-weight: 700; color: #64748b;
+      text-transform: uppercase; letter-spacing: 1px; background: #0f172a;
+      position: sticky; top: 0; z-index: 1; border-bottom: 1px solid #334155;
+    }
+
+    .zone-row {
+      padding: 6px 10px; cursor: pointer; border-bottom: 1px solid #1e293b;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .zone-row:hover { background: #273549; }
+    .zone-row.active { background: #1d3a5e; border-left: 3px solid #38bdf8; padding-left: 7px; }
+
+    .zone-name { font-size: 12px; font-weight: 600; color: #cbd5e1; }
+    .zone-val  { font-size: 10px; color: #64748b; font-family: monospace; }
+    .zone-hint { font-size: 10px; color: #fbbf24; display: none; }
+    .zone-row.active .zone-hint { display: block; }
+
+    .zone-inputs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+    .inp-wrap { display: flex; align-items: center; gap: 2px; }
+    .inp-wrap label { font-size: 9px; color: #94a3b8; min-width: 12px; }
+    .inp-wrap input {
+      width: 56px; background: #0f172a; border: 1px solid #334155; color: #e2e8f0;
+      padding: 2px 4px; font-size: 11px; border-radius: 3px; font-family: monospace;
+    }
+    .inp-wrap input:focus { outline: none; border-color: #38bdf8; }
+
+    /* ── Export modal ── */
+    #modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 50; display: none; }
+    #modal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: #1e293b; border: 1px solid #38bdf8; border-radius: 8px;
+      padding: 20px; width: 620px; max-width: 95vw; max-height: 85vh;
+      overflow-y: auto; z-index: 51; display: none;
+    }
+    #modal h2 { font-size: 14px; color: #38bdf8; margin-bottom: 12px; }
+    #export-pre {
+      font-size: 11px; color: #86efac; white-space: pre; font-family: monospace;
+      background: #0f172a; padding: 12px; border-radius: 5px; overflow-x: auto;
+    }
+    #modal-footer { display: flex; gap: 8px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>🎯 Calibration Feuille de Soins</h1>
+  <span id="coords-live">—</span>
+  <span id="active-hint">← Sélectionne une zone</span>
+  <div style="flex:1"></div>
+  <button class="btn btn-danger" onclick="resetAll()">Reset</button>
+  <button class="btn btn-primary" onclick="openExport()">Exporter JS</button>
+</div>
+
+<div id="main">
+  <div id="form-panel">
+    <div id="form-wrap">
+      <img id="form-img" src="/images/fds_form.png" alt="Feuille de soins">
+      <div id="markers-layer"></div>
+      <div id="cursor-h"></div>
+      <div id="cursor-v"></div>
+    </div>
+  </div>
+
+  <div id="zones-panel" id="zones-panel"></div>
+</div>
+
+<div id="modal-bg" onclick="closeExport()"></div>
+<div id="modal">
+  <h2>Constantes JS — copier dans app.js</h2>
+  <pre id="export-pre"></pre>
+  <div id="modal-footer">
+    <button class="btn btn-primary" onclick="copyExport()">Copier</button>
+    <button class="btn btn-danger" onclick="closeExport()">Fermer</button>
+    <span id="copy-ok" style="font-size:12px;color:#86efac;display:none;align-self:center">✓ Copié !</span>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DÉFINITION DES ZONES
+// type: 'x_left'|'x_right'|'y'|'array_x'|'array_y'
+// Pour les arrays, cliquer positionne l'élément arrayIdx
+// ══════════════════════════════════════════════════════════
+const ZONE_GROUPS = [
+  { title: 'Date consultation (haut droite)', zones: [
+    { id:'DATE_TOP_Y', label:'Y',          type:'y',       def: 5.58 },
+    { id:'DATE_TOP_X', label:'X (8 cases)',type:'array_x', size:8,
+      def:[77.55,79.89,81.94,84.28,86.79,89.12,91.45,93.88] },
+  ]},
+  { title: 'Lignes d\'actes — Y', zones: [
+    { id:'FDS_ROWS_Y', label:'Y des 4 lignes', type:'array_y', size:4,
+      def:[72.35,75.14,77.94,80.73] },
+  ]},
+  { title: 'Date dans lignes', zones: [
+    { id:'DATE_BOX_X', label:'X (8 cases)',type:'array_x', size:8,
+      def:[5.91,7.66,9.13,10.88,12.81,14.56,16.31,18.06] },
+  ]},
+  { title: 'Codes actes', zones: [
+    { id:'CCAM_BOX_X',    label:'CCAM chars X (7)', type:'array_x', size:7,
+      def:[19.71,22.06,24.54,26.94,29.42,31.89,34.4] },
+    { id:'COL_ACTIVITE',  label:'Activité – bord droit X',    type:'x_right', def:37.5  },
+    { id:'NGAP_RIGHT_X',  label:'NGAP code – bord droit X',   type:'x_right', def:44.9  },
+    { id:'AUTRES_RIGHT_X',label:'Autres actes – bord droit X',type:'x_right', def:56.0  },
+  ]},
+  { title: 'Montants dans lignes', zones: [
+    { id:'MT_RIGHT_X',   label:'Honoraires – bord droit X',       type:'x_right', def:70.99 },
+    { id:'DEPL_CODE_X',  label:'Déplacement code – X gauche',     type:'x_left',  def:76.5  },
+    { id:'DEPL_RIGHT_X', label:'Déplacement montant – bord droit',type:'x_right', def:83.5  },
+    { id:'IK_NBRE_X',    label:'IK nbre – X gauche',              type:'x_left',  def:86.15 },
+    { id:'IK_RIGHT_X',   label:'IK montant – bord droit',         type:'x_right', def:93.15 },
+  ]},
+  { title: 'Total', zones: [
+    { id:'TOT_RIGHT_X', label:'Total – bord droit X', type:'x_right', def:66.41 },
+    { id:'TOT_Y',       label:'Total – Y',            type:'y',       def:84.5  },
+  ]},
+  { title: 'Identification médecin', zones: [
+    { id:'MED_LEFT_X',     label:'Tampon – X gauche',             type:'x_left',  def:5.5  },
+    { id:'MED_TOP_Y',      label:'Tampon – Y',                    type:'y',       def:28.0 },
+    { id:'REMP_NOM_LEFT',  label:'Remplaçant nom – X gauche',     type:'x_left',  def:14.5 },
+    { id:'REMP_NOM_Y',     label:'Remplaçant nom – Y',            type:'y',       def:37.0 },
+    { id:'REMP_ID_LEFT',   label:'Remplaçant identifiant – X gauche', type:'x_left', def:13.0 },
+    { id:'REMP_ID_Y',      label:'Remplaçant identifiant – Y',    type:'y',       def:38.7 },
+  ]},
+  { title: 'Cases à cocher', zones: [
+    { id:'MALADIE_X', label:'Maladie ✓ – X', type:'x_left', def:6.0  },
+    { id:'MALADIE_Y', label:'Maladie ✓ – Y', type:'y',      def:43.2 },
+    { id:'ACCES_X',   label:'Accès hors coord ✓ – X', type:'x_left', def:93.2 },
+    { id:'ACCES_Y',   label:'Accès hors coord ✓ – Y', type:'y',      def:61.5 },
+  ]},
+];
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+const SK = 'fds_calib_v2';
+let S = {};
+let activeId = null;
+let arrayIdx = 0;
+
+function loadState() {
+  try { const s = localStorage.getItem(SK); if (s) S = JSON.parse(s); } catch(e) {}
+  ZONE_GROUPS.forEach(g => g.zones.forEach(z => {
+    if (!(z.id in S)) S[z.id] = Array.isArray(z.def) ? [...z.def] : z.def;
+  }));
+}
+function save() { localStorage.setItem(SK, JSON.stringify(S)); }
+function resetAll() {
+  if (!confirm('Remettre toutes les valeurs par défaut ?')) return;
+  localStorage.removeItem(SK);
+  location.reload();
+}
+function findZone(id) {
+  for (const g of ZONE_GROUPS) for (const z of g.zones) if (z.id === id) return z;
+}
+
+// ══════════════════════════════════════════════════════════
+// BUILD UI
+// ══════════════════════════════════════════════════════════
+function buildPanel() {
+  const panel = document.getElementById('zones-panel');
+  panel.innerHTML = '';
+  ZONE_GROUPS.forEach(g => {
+    const t = document.createElement('div');
+    t.className = 'grp-title'; t.textContent = g.title;
+    panel.appendChild(t);
+    g.zones.forEach(z => panel.appendChild(makeRow(z)));
+  });
+}
+
+function makeRow(z) {
+  const row = document.createElement('div');
+  row.className = 'zone-row'; row.id = 'row-' + z.id;
+  row.onclick = () => activate(z.id);
+
+  const nm = document.createElement('div'); nm.className = 'zone-name'; nm.textContent = z.label;
+  const vl = document.createElement('div'); vl.className = 'zone-val'; vl.id = 'val-' + z.id;
+  const ht = document.createElement('div'); ht.className = 'zone-hint'; ht.id = 'hint-' + z.id;
+  row.appendChild(nm); row.appendChild(vl); row.appendChild(ht);
+
+  // Inputs
+  const iw = document.createElement('div'); iw.className = 'zone-inputs'; iw.id = 'inps-' + z.id;
+  if (Array.isArray(S[z.id])) {
+    S[z.id].forEach((v, i) => {
+      iw.appendChild(makeInp(z.id, i, v, () => { S[z.id][i] = +inputEl(z.id, i).value; save(); refreshVal(z); renderMarkers(); }));
+    });
+  } else {
+    iw.appendChild(makeInp(z.id, null, S[z.id], () => { S[z.id] = +inputEl(z.id, null).value; save(); refreshVal(z); renderMarkers(); }));
+  }
+  row.appendChild(iw);
+
+  refreshVal(z);
+  return row;
+}
+
+function makeInp(zid, idx, val, onchange) {
+  const w = document.createElement('div'); w.className = 'inp-wrap';
+  if (idx !== null) { const l = document.createElement('label'); l.textContent = idx; w.appendChild(l); }
+  const inp = document.createElement('input');
+  inp.type = 'number'; inp.step = '0.01';
+  inp.value = typeof val === 'number' ? val.toFixed(2) : val;
+  inp.id = idx !== null ? `inp-${zid}-${idx}` : `inp-${zid}`;
+  inp.onchange = e => { e.stopPropagation(); onchange(); };
+  inp.onclick = e => e.stopPropagation();
+  w.appendChild(inp);
+  return w;
+}
+
+function inputEl(zid, idx) {
+  return document.getElementById(idx !== null ? `inp-${zid}-${idx}` : `inp-${zid}`);
+}
+
+function refreshVal(z) {
+  const el = document.getElementById('val-' + z.id);
+  if (!el) return;
+  const v = S[z.id];
+  el.textContent = Array.isArray(v) ? '[' + v.map(n => n.toFixed(2)).join(', ') + ']' : v.toFixed(2) + '%';
+}
+
+// ══════════════════════════════════════════════════════════
+// ACTIVATE / SELECT
+// ══════════════════════════════════════════════════════════
+function activate(id) {
+  if (activeId) document.getElementById('row-' + activeId)?.classList.remove('active');
+  activeId = id;
+  arrayIdx = 0;
+  document.getElementById('row-' + id)?.classList.add('active');
+  updateHint();
+  renderMarkers();
+}
+
+function updateHint() {
+  const el = document.getElementById('active-hint');
+  if (!activeId) { el.textContent = '← Sélectionne une zone'; return; }
+  const z = findZone(activeId);
+  if (Array.isArray(S[activeId])) {
+    el.textContent = `${z.label} — clic #${arrayIdx + 1} / ${S[activeId].length}`;
+  } else {
+    const coord = z.type === 'y' ? 'Y' : 'X';
+    el.textContent = `${z.label} — cliquer pour placer ${coord}`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// CLICK ON IMAGE
+// ══════════════════════════════════════════════════════════
+const wrap = document.getElementById('form-wrap');
+
+wrap.addEventListener('mousemove', e => {
+  const r = wrap.getBoundingClientRect();
+  const x = ((e.clientX - r.left) / r.width * 100).toFixed(2);
+  const y = ((e.clientY - r.top) / r.height * 100).toFixed(2);
+  document.getElementById('coords-live').textContent = `X:${x}% Y:${y}%`;
+  document.getElementById('cursor-h').style.top = (e.clientY - r.top) + 'px';
+  document.getElementById('cursor-v').style.left = (e.clientX - r.left) + 'px';
+});
+
+wrap.addEventListener('click', e => {
+  const r = wrap.getBoundingClientRect();
+  const clickX = parseFloat(((e.clientX - r.left) / r.width * 100).toFixed(2));
+  const clickY = parseFloat(((e.clientY - r.top) / r.height * 100).toFixed(2));
+
+  if (!activeId) return;
+  const z = findZone(activeId);
+
+  if (Array.isArray(S[activeId])) {
+    const coord = z.type === 'array_y' ? clickY : clickX;
+    S[activeId][arrayIdx] = coord;
+    const inp = inputEl(activeId, arrayIdx);
+    if (inp) inp.value = coord.toFixed(2);
+    arrayIdx = (arrayIdx + 1) % S[activeId].length;
+  } else if (z.type === 'y') {
+    S[activeId] = clickY;
+    const inp = inputEl(activeId, null);
+    if (inp) inp.value = clickY.toFixed(2);
+  } else {
+    S[activeId] = clickX;
+    const inp = inputEl(activeId, null);
+    if (inp) inp.value = clickX.toFixed(2);
+  }
+
+  save();
+  refreshVal(z);
+  updateHint();
+  renderMarkers();
+});
+
+// ══════════════════════════════════════════════════════════
+// MARKERS
+// ══════════════════════════════════════════════════════════
+const COLORS = { x_left:'#fb923c', x_right:'#34d399', y:'#60a5fa', array_x:'#f472b6', array_y:'#a78bfa' };
+
+function renderMarkers() {
+  const layer = document.getElementById('markers-layer');
+  layer.innerHTML = '';
+
+  ZONE_GROUPS.forEach(g => g.zones.forEach(z => {
+    const v = S[z.id];
+    const isActive = z.id === activeId;
+    const col = isActive ? '#fbbf24' : (COLORS[z.type] || '#94a3b8');
+
+    if (Array.isArray(v)) {
+      const refY = getRefY(z.id);
+      const refX = 50;
+      v.forEach((val, i) => {
+        if (z.type === 'array_y') {
+          // horizontal line
+          line(layer, 0, val, 100, val, col, isActive ? 1.5 : 0.7);
+          if (isActive) label(layer, 1, val, i + ': ' + val.toFixed(2) + '%', col, true);
+        } else {
+          // vertical tick at refY
+          dot(layer, val, refY, col, isActive && i === arrayIdx);
+          if (isActive) label(layer, val, refY - 2, i + ': ' + val.toFixed(2), col, false);
+        }
+      });
+    } else if (z.type === 'y') {
+      line(layer, 0, v, 100, v, col, isActive ? 1.5 : 0.6);
+      if (isActive) label(layer, 1, v, z.id + ' ' + v.toFixed(2) + '%', col, true);
+    } else {
+      line(layer, v, 0, v, 100, col, isActive ? 1.5 : 0.6);
+      if (isActive) label(layer, v, 2, z.id + ' ' + v.toFixed(2) + '%', col, false);
+    }
+  }));
+}
+
+function getRefY(zid) {
+  if (zid === 'DATE_TOP_X') return S.DATE_TOP_Y || 5.58;
+  if (zid === 'DATE_BOX_X' || zid === 'CCAM_BOX_X') return (S.FDS_ROWS_Y && S.FDS_ROWS_Y[0]) || 72;
+  return 50;
+}
+
+function line(layer, x1, y1, x2, y2, col, opacity) {
+  const el = document.createElement('div');
+  if (x1 === x2) {
+    el.style.cssText = `position:absolute;left:${x1}%;top:0;bottom:0;width:1px;background:${col};opacity:${opacity};`;
+  } else {
+    el.style.cssText = `position:absolute;top:${y1}%;left:0;right:0;height:1px;background:${col};opacity:${opacity};`;
+  }
+  layer.appendChild(el);
+}
+
+function dot(layer, x, y, col, highlight) {
+  const el = document.createElement('div');
+  const size = highlight ? 10 : 6;
+  el.style.cssText = `position:absolute;left:${x}%;top:${y}%;width:${size}px;height:${size}px;border-radius:50%;background:${col};border:1px solid white;transform:translate(-50%,-50%);`;
+  layer.appendChild(el);
+}
+
+function label(layer, x, y, text, col, rightAlign) {
+  const el = document.createElement('div');
+  const tx = rightAlign ? 'translate(4px,-50%)' : 'translate(-50%,4px)';
+  el.style.cssText = `position:absolute;left:${x}%;top:${y}%;font-size:9px;font-family:monospace;background:rgba(0,0,0,.8);color:${col};padding:1px 3px;transform:${tx};white-space:nowrap;pointer-events:none;border-radius:2px;`;
+  el.textContent = text;
+  layer.appendChild(el);
+}
+
+// ══════════════════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════════════════
+function fmt(v) { return Array.isArray(v) ? '[' + v.map(n => n.toFixed(2)).join(', ') + ']' : v.toFixed(2); }
+
+function buildExport() {
+  const L = [];
+  L.push('// ── Constantes FDS calibrées — coller dans app.js ──');
+  L.push('');
+  L.push('// Date consultation (haut droite)');
+  L.push(`const DATE_TOP_Y = ${fmt(S.DATE_TOP_Y)};`);
+  L.push(`const DATE_TOP_X = ${fmt(S.DATE_TOP_X)};`);
+  L.push('');
+  L.push('// Lignes d\'actes');
+  L.push(`const FDS_ROWS_Y = ${fmt(S.FDS_ROWS_Y)};`);
+  L.push('');
+  L.push('// Date dans lignes');
+  L.push(`const DATE_BOX_X = ${fmt(S.DATE_BOX_X)};`);
+  L.push('');
+  L.push('// Codes actes');
+  L.push(`const CCAM_BOX_X      = ${fmt(S.CCAM_BOX_X)};`);
+  L.push(`const COL_ACTIVITE    = ${fmt(S.COL_ACTIVITE)};   // bord droit col activités`);
+  L.push(`const NGAP_RIGHT_X    = ${fmt(S.NGAP_RIGHT_X)};   // bord droit col C,CS/V,VS`);
+  L.push(`const AUTRES_RIGHT_X  = ${fmt(S.AUTRES_RIGHT_X)};   // bord droit col autres actes`);
+  L.push('');
+  L.push('// Montants dans lignes');
+  L.push(`const MT_RIGHT_X   = ${fmt(S.MT_RIGHT_X)};   // bord droit montant honoraires`);
+  L.push(`const DEPL_CODE_X  = ${fmt(S.DEPL_CODE_X)};   // X code déplacement`);
+  L.push(`const DEPL_RIGHT_X = ${fmt(S.DEPL_RIGHT_X)};   // bord droit montant déplacement`);
+  L.push(`const IK_NBRE_X    = ${fmt(S.IK_NBRE_X)};   // X IK nbre`);
+  L.push(`const IK_RIGHT_X   = ${fmt(S.IK_RIGHT_X)};   // bord droit montant IK`);
+  L.push('');
+  L.push('// Total');
+  L.push(`const TOT_RIGHT_X = ${fmt(S.TOT_RIGHT_X)};   // bord droit`);
+  L.push(`const TOT_Y       = ${fmt(S.TOT_Y)};   // Y`);
+  L.push('');
+  L.push('// Médecin — utiliser directement dans openFDS() :');
+  L.push(`// Tampon médecin : left:${fmt(S.MED_LEFT_X)}%  top:${fmt(S.MED_TOP_Y)}%`);
+  L.push(`// Remplaçant nom : left:${fmt(S.REMP_NOM_LEFT)}%  top:${fmt(S.REMP_NOM_Y)}%`);
+  L.push(`// Remplaçant id  : left:${fmt(S.REMP_ID_LEFT)}%  top:${fmt(S.REMP_ID_Y)}%`);
+  L.push('');
+  L.push('// Cases à cocher');
+  L.push(`// Maladie ✓ : x=${fmt(S.MALADIE_X)}  y=${fmt(S.MALADIE_Y)}`);
+  L.push(`// Accès     : x=${fmt(S.ACCES_X)}  y=${fmt(S.ACCES_Y)}`);
+  return L.join('\n');
+}
+
+function openExport() {
+  document.getElementById('export-pre').textContent = buildExport();
+  document.getElementById('modal').style.display = 'block';
+  document.getElementById('modal-bg').style.display = 'block';
+  document.getElementById('copy-ok').style.display = 'none';
+}
+function closeExport() {
+  document.getElementById('modal').style.display = 'none';
+  document.getElementById('modal-bg').style.display = 'none';
+}
+function copyExport() {
+  navigator.clipboard.writeText(document.getElementById('export-pre').textContent).then(() => {
+    document.getElementById('copy-ok').style.display = 'inline';
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+loadState();
+buildPanel();
+renderMarkers();
+</script>
+</body>
+</html>

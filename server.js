@@ -1003,6 +1003,10 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin.html'));
 });
 
+app.get('/admin/fds', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-fds.html'));
+});
+
 // === robots.txt ===
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(
