@@ -311,7 +311,7 @@ const App = (() => {
         if (fdsBtn) fdsBtn.style.display = 'none';
         lastResult = null;
       } else {
-        codesEl.textContent = result.codes.join(' + ');
+        codesEl.textContent = result.codes.filter(c => !c.startsWith('(')).join(' + ');
         totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
         if (amoAmcEl) {
           amoAmcEl.textContent = result.amo !== undefined
@@ -323,7 +323,7 @@ const App = (() => {
       return;
     }
 
-    codesEl.textContent = result.codes.join(' + ');
+    codesEl.textContent = result.codes.filter(c => !c.startsWith('(')).join(' + ');
     totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
     if (amoAmcEl) {
       if (result.amo !== undefined) {
@@ -346,13 +346,31 @@ const App = (() => {
       closeResultDetail();
     } else {
       let html = '';
-      for (const d of lastResult.details) {
-        const montant = d.montant === 0 ? '—' : d.montant.toFixed(2).replace('.', ',') + ' €';
+      const billed    = lastResult.details.filter(d => d.montant > 0);
+      const nonBilled = lastResult.details.filter(d => d.montant === 0);
+
+      for (const d of billed) {
+        const montant = d.montant.toFixed(2).replace('.', ',') + ' €';
         html += '<div class="result-detail-row">' +
           '<span class="result-detail-code">' + d.code + '</span>' +
           '<span class="result-detail-label">' + d.label + '</span>' +
           '<span class="result-detail-amount">' + montant + '</span>' +
         '</div>';
+      }
+
+      if (nonBilled.length > 0) {
+        html += '<div class="result-detail-separator">Non retenus</div>';
+        for (const d of nonBilled) {
+          // Nettoyer le code : retirer les parenthèses pour l'affichage
+          const code = d.code.replace(/^\(|\)$/g, '');
+          // Raccourcir le label : retirer la partie "(non facturé — ...)"
+          const label = d.label.replace(/\s*\(non facturé[^)]*\)/g, '').replace(/\s*\(non facturé.*$/i, '');
+          html += '<div class="result-detail-row result-detail-row--excluded">' +
+            '<span class="result-detail-code">' + code + '</span>' +
+            '<span class="result-detail-label">' + label + '</span>' +
+            '<span class="result-detail-amount">—</span>' +
+          '</div>';
+        }
       }
       html += '<div class="result-detail-total">' +
         '<span>Total</span>' +
