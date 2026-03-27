@@ -897,40 +897,34 @@ const App = (() => {
   const DATE_TOP_Y = 5.58;
 
   // ── Y des 4 lignes d'actes (baseline PDF - 6pts = top du div CSS) ──
-  const FDS_ROWS_Y = [72.35, 75.14, 77.94, 80.73];
+  const FDS_ROWS_Y = [72.27, 75.17, 77.80, 80.63];
 
   // ── Colonnes dans les lignes d'actes (vérifiées sur séparateurs PDF) ──
   // "Code principal" CCAM : 6 cases (19.41–34.07%) + overflow 7e char
   const CCAM_BOX_X      = [19.71, 22.06, 24.54, 26.94, 29.42, 31.89, 34.4];
-  const COL_ACTIVITE    = 37.5;   // bord droit col "activités" (34.07–38.23%)
-  const NGAP_RIGHT_X    = 44.9;   // bord droit col "C,CS/V,VS"
-  const AUTRES_RIGHT_X  = 56.0;   // bord droit col "autres actes / modificateurs"
+  const COL_ACTIVITE    = 38.49;  // bord droit col "activités"
+  const NGAP_RIGHT_X    = 42.71;  // bord droit col "C,CS/V,VS"
+  const AUTRES_RIGHT_X  = 49.53;  // bord droit col "autres actes / modificateurs"
 
-  // ── Cases montant honoraires : 4 cases × 2.33% entre 61.67% et 70.99% ──
   const MT_CELL_W  = 2.33;
-  const MT_RIGHT_X = 70.99;   // bord droit col montant honoraires
+  const MT_RIGHT_X = 73.14;  // bord droit col montant honoraires
 
-  // ── Frais de déplacement ID/MD : colonne 70.99%–83.82% ──
-  const DEPL_CODE_X  = 76.5;  // "I.D."=77.22%, "M.D."=78.49%
-  const DEPL_RIGHT_X = 83.5;  // bord droit zone ID/MD montant
+  const DEPL_CODE_X  = 78.14;  // code déplacement X gauche
+  const DEPL_RIGHT_X = 76.98;  // bord droit zone ID/MD montant
 
-  // ── IK nbre : colonne 83.82%–88.48%, centre 86.15% ──
-  const IK_NBRE_X    = 86.15;
-  // ── IK montant : colonne 88.48%–93.15% ──
-  const IK_RIGHT_X   = 93.15;
+  const IK_NBRE_X  = 82.36;
+  const IK_RIGHT_X = 92.73;
 
-  // ── Cases montant TOTAL dans value-box (47.84%–71.16%) ──
-  //    7 séparateurs internes → bord droit à 66.41%
-  const TOT_RIGHT_X = 66.41;
-  const TOT_Y       = 84.5;
+  const TOT_RIGHT_X = 66.14;
+  const TOT_Y       = 84.77;
 
   // ── Identification médecin ──
   const MED_LEFT_X    = 5.5;   // tampon médecin X gauche
   const MED_TOP_Y     = 28.0;  // tampon médecin Y
-  const REMP_NOM_LEFT = 14.5;  // remplaçant nom X gauche
-  const REMP_NOM_Y    = 37.0;  // remplaçant nom Y
-  const REMP_ID_LEFT  = 13.0;  // remplaçant identifiant X gauche
-  const REMP_ID_Y     = 38.7;  // remplaçant identifiant Y
+  const REMP_NOM_LEFT = 15.55;  // remplaçant nom X gauche
+  const REMP_NOM_Y    = 37.09;  // remplaçant nom Y
+  const REMP_ID_LEFT  = 26.97;  // remplaçant identifiant X gauche
+  const REMP_ID_Y     = 39.57;  // remplaçant identifiant Y
 
   // ── Cases à cocher ──
   const MALADIE_X = 6.0;
