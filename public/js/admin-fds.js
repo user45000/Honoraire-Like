@@ -16,17 +16,16 @@ const GROUPS = [
       def:[5.91,7.66,9.13,10.88,12.81,14.56,16.31,18.06] },
   ]},
   { title: 'Codes actes', zones: [
-    { id:'CCAM_BOX_X',    label:'CCAM X (7 chars)', type:'arr_x', sz:7,
+    { id:'CCAM_BOX_X',    label:'CCAM X (7 chars)', type:'arr_x', sz:7, compact:true,
       def:[19.71,22.06,24.54,26.94,29.42,31.89,34.4] },
     { id:'COL_ACTIVITE',  label:'Activité bord droit X',    type:'xr', def:37.5  },
     { id:'NGAP_RIGHT_X',  label:'NGAP code bord droit X',   type:'xr', def:44.9  },
     { id:'AUTRES_RIGHT_X',label:'Autres actes bord droit X',type:'xr', def:56.0  },
   ]},
   { title: 'Montants dans lignes', zones: [
-    { id:'MT_RIGHT_X',   label:'Honoraires bord droit X',       type:'xr', def:70.99 },
-    { id:'DEPL_CODE_X',  label:'Dépl. code X gauche',           type:'xl', def:76.5  },
-    { id:'DEPL_RIGHT_X', label:'Dépl. montant bord droit X',    type:'xr', def:83.5  },
-    { id:'IK_NBRE_X',    label:'IK nbre X gauche',              type:'xl', def:86.15 },
+    { id:'MT_RIGHT_X',   label:'Honoraires bord droit X',  type:'xr', def:70.99 },
+    { id:'DEPL_CODE_X',  label:'Dépl. code X gauche',      type:'xl', def:76.5  },
+    { id:'IK_NBRE_X',    label:'IK nbre X gauche',         type:'xl', def:86.15 },
     { id:'IK_RIGHT_X',   label:'IK montant bord droit X',       type:'xr', def:93.15 },
   ]},
   { title: 'Total', zones: [
@@ -117,7 +116,18 @@ function buildRow(z) {
   inps.addEventListener('click', e => e.stopPropagation());
 
   const v = S[z.id];
-  if (Array.isArray(v)) {
+  if (Array.isArray(v) && z.compact) {
+    // Champ CSV unique
+    const inp = document.createElement('input');
+    inp.type = 'text'; inp.id = 'inp-' + z.id;
+    inp.style.cssText = 'width:100%;background:#0f172a;border:1px solid #334155;color:#e2e8f0;padding:2px 4px;font-size:10px;border-radius:3px;font-family:monospace;';
+    inp.value = v.map(n => (+n).toFixed(2)).join(', ');
+    inp.addEventListener('change', () => {
+      const vals = inp.value.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+      if (vals.length === S[z.id].length) { S[z.id] = vals; save(); refreshCur(z); render(); }
+    });
+    inps.appendChild(inp);
+  } else if (Array.isArray(v)) {
     v.forEach((val, i) => {
       const w = document.createElement('div'); w.className = 'zi';
       const l = document.createElement('label'); l.textContent = i;
@@ -155,9 +165,16 @@ function refreshCur(z) {
 }
 
 function setInp(zid, idx, val) {
-  const id = idx !== null ? ('inp-' + zid + '-' + idx) : ('inp-' + zid);
-  const el = document.getElementById(id);
-  if (el) el.value = (+val).toFixed(2);
+  const z = findZone(zid);
+  if (z && z.compact && idx !== null) {
+    // Mettre à jour le champ CSV
+    const el = document.getElementById('inp-' + zid);
+    if (el) el.value = S[zid].map(n => (+n).toFixed(2)).join(', ');
+  } else {
+    const id = idx !== null ? ('inp-' + zid + '-' + idx) : ('inp-' + zid);
+    const el = document.getElementById(id);
+    if (el) el.value = (+val).toFixed(2);
+  }
 }
 
 // ════════════════════════════════════════════
