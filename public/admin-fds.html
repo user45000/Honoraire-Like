@@ -20,6 +20,7 @@
     .btn-blue { background: #38bdf8; color: #0f172a; }
     .btn-blue:hover { background: #7dd3fc; }
     .btn-red { background: #7f1d1d; color: #fca5a5; font-size: 11px; }
+    .btn-sm  { background: #334155; color: #e2e8f0; padding: 2px 8px; font-size: 14px; font-weight: 700; }
 
     #main { display: flex; flex: 1; min-height: 0; }
 
@@ -34,7 +35,7 @@
       line-height: 0; cursor: crosshair; user-select: none;
     }
 
-    #form-img { display: block; height: calc(100vh - 66px); width: auto; }
+    #form-img { display: block; height: var(--img-h, calc(100vh - 66px)); width: auto; }
 
     #preview-layer, #markers-layer {
       position: absolute; top: 0; left: 0; right: 0; bottom: 0;
@@ -116,6 +117,9 @@
   <label style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:4px;cursor:pointer">
     <input type="checkbox" id="chk-markers" checked> rep&#232;res
   </label>
+  <button class="btn btn-sm" id="btn-zoom-out" title="D&#233;zoomer (molette &#8595;)">&#8722;</button>
+  <span id="zoom-label" style="font-size:11px;color:#94a3b8;min-width:36px;text-align:center">100%</span>
+  <button class="btn btn-sm" id="btn-zoom-in"  title="Zoomer (molette &#8593;)">&#43;</button>
   <button class="btn btn-red" id="btn-reset">Reset</button>
   <button class="btn btn-blue" id="btn-export">Exporter JS</button>
   <button class="btn" id="btn-save" style="background:#15803d;color:#fff">Sauvegarder</button>

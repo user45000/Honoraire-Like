@@ -511,6 +511,25 @@ async function restoreBackup(file) {
 }
 
 // ════════════════════════════════════════════
+// ZOOM
+// ════════════════════════════════════════════
+let zoomLevel = 1.0;
+const ZOOM_STEP = 0.15;
+const ZOOM_MIN  = 0.3;
+const ZOOM_MAX  = 4.0;
+
+function applyZoom() {
+  const baseH = window.innerHeight - 66;
+  const h = Math.round(baseH * zoomLevel);
+  document.getElementById('form-img').style.height = h + 'px';
+  document.getElementById('zoom-label').textContent = Math.round(zoomLevel * 100) + '%';
+  render();
+}
+
+function zoomIn()  { zoomLevel = Math.min(ZOOM_MAX, zoomLevel + ZOOM_STEP); applyZoom(); }
+function zoomOut() { zoomLevel = Math.max(ZOOM_MIN, zoomLevel - ZOOM_STEP); applyZoom(); }
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
@@ -525,6 +544,15 @@ document.addEventListener('DOMContentLoaded', function() {
   document.getElementById('btn-copy').addEventListener('click', copyExport);
   document.getElementById('modal-bg').addEventListener('click', closeExport);
   document.getElementById('chk-markers').addEventListener('change', render);
+  document.getElementById('btn-zoom-in').addEventListener('click', zoomIn);
+  document.getElementById('btn-zoom-out').addEventListener('click', zoomOut);
+
+  document.getElementById('form-panel').addEventListener('wheel', function(e) {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    e.deltaY < 0 ? zoomIn() : zoomOut();
+  }, { passive: false });
+
   loadBackups();
 
   const img = document.getElementById('form-img');
