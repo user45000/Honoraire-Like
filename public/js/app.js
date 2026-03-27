@@ -977,27 +977,28 @@ const App = (() => {
     const remplacePrenom= localStorage.getItem('hon_remplace_prenom') || '';
 
     if (isRemplacant) {
-      // Zone tampon principale → médecin remplacé
+      // Zone tampon principale (33.5–39.6%) → médecin remplacé
       if (remplaceNom || remplacePrenom) {
         const remLines = [`Dr ${remplacePrenom} ${remplaceNom}`.trim()];
         if (medAddr) remLines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${remLines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:34.5%">${remLines.join('<br>')}</div>`;
       }
-      // Section MEDECIN REMPLACANT → infos du médecin qui effectue l'acte
+      // Section MEDECIN REMPLACANT : nom et prénom à y≈41.3% (après le label imprimé, x≈13%)
       if (medNom || medPrenom) {
-        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:39.2%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:13%;top:41.3%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
       }
+      // Identifiant (RPPS) à y≈42.4% (après le label "identifiant", x≈9%)
       if (medRpps) {
-        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:41.0%">${medRpps}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:9%;top:42.4%">${medRpps}</div>`;
       }
     } else {
-      // Zone tampon principale → médecin habituel
+      // Zone tampon principale (33.5–39.6%) → médecin habituel
       if (medNom || medPrenom || medRpps) {
         const lines = [];
         if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
         if (medRpps) lines.push(`RPPS : ${medRpps}`);
         if (medAddr) lines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${lines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:34.5%">${lines.join('<br>')}</div>`;
       }
     }
 
