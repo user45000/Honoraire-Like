@@ -930,12 +930,10 @@ const App = (() => {
     return `<div class="fds-fill ${cls}" style="left:${x}%;top:${y}%">${text}</div>`;
   }
 
-  // Place un montant aligné à droite dans ses cases (bord droit = rightX, cellW = largeur case)
-  function fdsCells(amount, rightX, cellW, y) {
-    return amount.split('').map((c, i, arr) => {
-      const x = rightX - (arr.length - i - 0.15) * cellW;
-      return fdsOverlay(x, y, c, 'fds-fill-digit');
-    }).join('');
+  // Place un montant aligné à droite (bord droit = rightX%)
+  function fdsCells(amount, rightX, _cellW, y) {
+    const right = (100 - rightX).toFixed(2);
+    return `<div class="fds-fill fds-fill-digit" style="right:${right}%;top:${y}%;text-align:right">${amount}</div>`;
   }
 
   function openFDS() {
