@@ -981,15 +981,15 @@ const App = (() => {
       if (remplaceNom || remplacePrenom) {
         const remLines = [`Dr ${remplacePrenom} ${remplaceNom}`.trim()];
         if (medAddr) remLines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:28%">${remLines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:5.5%;top:28%">${remLines.join('<br>')}</div>`;
       }
       // Ligne nom (zone écriture y≈36.6–37.5%, au-dessus du label "nom et prénom" à 37.72%)
       if (medNom || medPrenom) {
-        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:37.0%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:14.5%;top:37.0%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
       }
       // Ligne identifiant (zone écriture au-dessus du label "identifiant" à ~40%)
       if (medRpps) {
-        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:38.7%">${medRpps}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:13%;top:38.7%">${medRpps}</div>`;
       }
     } else {
       // Zone tampon principale (y=27%–36%) → médecin habituel (texte en haut de la zone)
@@ -998,7 +998,7 @@ const App = (() => {
         if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
         if (medRpps) lines.push(`RPPS : ${medRpps}`);
         if (medAddr) lines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:2%;top:28%">${lines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:5.5%;top:28%">${lines.join('<br>')}</div>`;
       }
     }
 
