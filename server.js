@@ -1007,6 +1007,81 @@ app.get('/admin/fds', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin-fds.html'));
 });
 
+// ── API calibration FDS ──
+const FDS_BACKUP_DIR = path.join(__dirname, 'data', 'fds-backups');
+const APP_JS_PATH    = path.join(__dirname, 'public', 'js', 'app.js');
+
+const FDS_SCALAR_CONSTS = [
+  'DATE_TOP_Y','COL_ACTIVITE','NGAP_RIGHT_X','AUTRES_RIGHT_X',
+  'MT_RIGHT_X','DEPL_CODE_X','DEPL_RIGHT_X','IK_NBRE_X','IK_RIGHT_X',
+  'TOT_RIGHT_X','TOT_Y',
+  'MED_LEFT_X','MED_TOP_Y','REMP_NOM_LEFT','REMP_NOM_Y','REMP_ID_LEFT','REMP_ID_Y',
+  'MALADIE_X','MALADIE_Y','ACCES_X','ACCES_Y',
+];
+const FDS_ARRAY_CONSTS = ['DATE_TOP_X','FDS_ROWS_Y','DATE_BOX_X','CCAM_BOX_X'];
+
+app.post('/api/admin/fds-calib', requireAdmin, (req, res) => {
+  try {
+    const vals = req.body;
+    if (!fs.existsSync(FDS_BACKUP_DIR)) fs.mkdirSync(FDS_BACKUP_DIR, { recursive: true });
+
+    const ts = new Date().toISOString().replace(/:/g, '-').slice(0, 19);
+    fs.writeFileSync(
+      path.join(FDS_BACKUP_DIR, `calib-${ts}.json`),
+      JSON.stringify({ timestamp: new Date().toISOString(), values: vals }, null, 2)
+    );
+
+    let content = fs.readFileSync(APP_JS_PATH, 'utf8');
+
+    FDS_SCALAR_CONSTS.forEach(name => {
+      if (!(name in vals)) return;
+      content = content.replace(
+        new RegExp('(const ' + name + '\\s*=\\s*)[\\d.]+'),
+        '$1' + (+vals[name]).toFixed(2)
+      );
+    });
+
+    FDS_ARRAY_CONSTS.forEach(name => {
+      if (!(name in vals) || !Array.isArray(vals[name])) return;
+      content = content.replace(
+        new RegExp('(const ' + name + '\\s*=\\s*)\\[[^\\]]+\\]'),
+        '$1[' + vals[name].map(v => (+v).toFixed(2)).join(', ') + ']'
+      );
+    });
+
+    fs.writeFileSync(APP_JS_PATH, content);
+    res.json({ ok: true, backup: `calib-${ts}.json` });
+  } catch (e) {
+    console.error('fds-calib save error:', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+app.get('/api/admin/fds-calib/backups', requireAdmin, (req, res) => {
+  try {
+    if (!fs.existsSync(FDS_BACKUP_DIR)) return res.json([]);
+    const files = fs.readdirSync(FDS_BACKUP_DIR)
+      .filter(f => f.startsWith('calib-') && f.endsWith('.json'))
+      .sort().reverse().slice(0, 30)
+      .map(f => {
+        try {
+          const d = JSON.parse(fs.readFileSync(path.join(FDS_BACKUP_DIR, f), 'utf8'));
+          return { file: f, timestamp: d.timestamp };
+        } catch { return { file: f, timestamp: null }; }
+      });
+    res.json(files);
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.post('/api/admin/fds-calib/restore/:file', requireAdmin, (req, res) => {
+  const file = req.params.file;
+  if (!/^calib-[\dT\-]+\.json$/.test(file)) return res.status(400).json({ error: 'Fichier invalide' });
+  try {
+    const d = JSON.parse(fs.readFileSync(path.join(FDS_BACKUP_DIR, file), 'utf8'));
+    res.json({ ok: true, values: d.values });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // === robots.txt ===
 app.get('/robots.txt', (req, res) => {
   res.type('text/plain').send(

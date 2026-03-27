@@ -436,6 +436,81 @@ function copyExport() {
 }
 
 // ════════════════════════════════════════════
+// SAVE TO SERVER
+// ════════════════════════════════════════════
+async function saveToServer() {
+  const btn = document.getElementById('btn-save');
+  btn.textContent = 'Sauvegarde...';
+  btn.disabled = true;
+  try {
+    const r = await fetch('/api/admin/fds-calib', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(S),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || r.status);
+    btn.textContent = '\u2713 Sauvegard\u00e9';
+    btn.style.background = '#166534';
+    setTimeout(() => { btn.textContent = 'Sauvegarder'; btn.style.background = ''; btn.disabled = false; }, 2500);
+    loadBackups();
+  } catch (e) {
+    btn.textContent = 'Erreur: ' + e.message;
+    btn.style.background = '#7f1d1d';
+    setTimeout(() => { btn.textContent = 'Sauvegarder'; btn.style.background = ''; btn.disabled = false; }, 3000);
+  }
+}
+
+// ════════════════════════════════════════════
+// BACKUPS
+// ════════════════════════════════════════════
+async function loadBackups() {
+  try {
+    const r = await fetch('/api/admin/fds-calib/backups');
+    if (!r.ok) return;
+    const list = await r.json();
+    const el = document.getElementById('backups-list');
+    if (!el) return;
+    el.innerHTML = list.length === 0
+      ? '<div style="padding:8px;font-size:11px;color:#64748b">Aucune sauvegarde</div>'
+      : list.map(b => {
+          const dt = b.timestamp ? new Date(b.timestamp).toLocaleString('fr-FR') : b.file;
+          return '<div class="backup-row" data-file="' + b.file + '">' + dt + '</div>';
+        }).join('');
+    el.querySelectorAll('.backup-row').forEach(row => {
+      row.addEventListener('click', () => restoreBackup(row.dataset.file));
+    });
+  } catch (e) { console.error('loadBackups:', e); }
+}
+
+async function restoreBackup(file) {
+  if (!confirm('Restaurer cette sauvegarde dans l\'\u00e9diteur ?')) return;
+  try {
+    const r = await fetch('/api/admin/fds-calib/restore/' + encodeURIComponent(file), { method: 'POST' });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error);
+    // Merge restored values into state
+    Object.assign(S, data.values);
+    save();
+    // Refresh inputs
+    allZones().forEach(z => {
+      const v = S[z.id];
+      if (Array.isArray(v)) {
+        v.forEach((val, i) => {
+          const inp = document.getElementById('inp-' + z.id + '-' + i);
+          if (inp) inp.value = (+val).toFixed(2);
+        });
+      } else {
+        const inp = document.getElementById('inp-' + z.id);
+        if (inp) inp.value = (+v).toFixed(2);
+      }
+      refreshCur(z);
+    });
+    render();
+  } catch (e) { alert('Erreur: ' + e.message); }
+}
+
+// ════════════════════════════════════════════
 // INIT
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
@@ -444,11 +519,13 @@ document.addEventListener('DOMContentLoaded', function() {
   initImageEvents();
 
   document.getElementById('btn-reset').addEventListener('click', resetAll);
+  document.getElementById('btn-save').addEventListener('click', saveToServer);
   document.getElementById('btn-export').addEventListener('click', openExport);
   document.getElementById('btn-close-modal').addEventListener('click', closeExport);
   document.getElementById('btn-copy').addEventListener('click', copyExport);
   document.getElementById('modal-bg').addEventListener('click', closeExport);
   document.getElementById('chk-markers').addEventListener('change', render);
+  loadBackups();
 
   const img = document.getElementById('form-img');
   if (img.complete && img.naturalWidth > 0) {

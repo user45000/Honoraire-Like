@@ -924,6 +924,20 @@ const App = (() => {
   const TOT_RIGHT_X = 66.41;
   const TOT_Y       = 84.5;
 
+  // ── Identification médecin ──
+  const MED_LEFT_X    = 5.5;   // tampon médecin X gauche
+  const MED_TOP_Y     = 28.0;  // tampon médecin Y
+  const REMP_NOM_LEFT = 14.5;  // remplaçant nom X gauche
+  const REMP_NOM_Y    = 37.0;  // remplaçant nom Y
+  const REMP_ID_LEFT  = 13.0;  // remplaçant identifiant X gauche
+  const REMP_ID_Y     = 38.7;  // remplaçant identifiant Y
+
+  // ── Cases à cocher ──
+  const MALADIE_X = 6.0;
+  const MALADIE_Y = 43.2;
+  const ACCES_X   = 93.2;
+  const ACCES_Y   = 61.5;
+
   const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
 
   function fdsOverlay(x, y, text, cls = '') {
@@ -979,15 +993,15 @@ const App = (() => {
       if (remplaceNom || remplacePrenom) {
         const remLines = [`Dr ${remplacePrenom} ${remplaceNom}`.trim()];
         if (medAddr) remLines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:5.5%;top:28%">${remLines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:${MED_LEFT_X}%;top:${MED_TOP_Y}%">${remLines.join('<br>')}</div>`;
       }
       // Ligne nom (zone écriture y≈36.6–37.5%, au-dessus du label "nom et prénom" à 37.72%)
       if (medNom || medPrenom) {
-        html += `<div class="fds-fill fds-fill-med" style="left:14.5%;top:37.0%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:${REMP_NOM_LEFT}%;top:${REMP_NOM_Y}%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
       }
       // Ligne identifiant (zone écriture au-dessus du label "identifiant" à ~40%)
       if (medRpps) {
-        html += `<div class="fds-fill fds-fill-med" style="left:13%;top:38.7%">${medRpps}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:${REMP_ID_LEFT}%;top:${REMP_ID_Y}%">${medRpps}</div>`;
       }
     } else {
       // Zone tampon principale (y=27%–36%) → médecin habituel (texte en haut de la zone)
@@ -996,16 +1010,16 @@ const App = (() => {
         if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
         if (medRpps) lines.push(`RPPS : ${medRpps}`);
         if (medAddr) lines.push(medAddr);
-        html += `<div class="fds-fill fds-fill-med" style="left:5.5%;top:28%">${lines.join('<br>')}</div>`;
+        html += `<div class="fds-fill fds-fill-med" style="left:${MED_LEFT_X}%;top:${MED_TOP_Y}%">${lines.join('<br>')}</div>`;
       }
     }
 
     // ── MALADIE ✓ (centre de la case à 6.88%, 43.74%) ──
-    html += fdsOverlay(6.0, 43.2, '✓', 'fds-fill-check');
+    html += fdsOverlay(MALADIE_X, MALADIE_Y, '✓', 'fds-fill-check');
 
     // ── Accès hors coordination ✓ (case droite, centre 94.0%, 62.0%) ──
     if (!isMT) {
-      html += fdsOverlay(93.2, 61.5, '✓', 'fds-fill-check');
+      html += fdsOverlay(ACCES_X, ACCES_Y, '✓', 'fds-fill-check');
     }
 
     // ── Lignes d'actes (actes à montant > 0 uniquement) ──
