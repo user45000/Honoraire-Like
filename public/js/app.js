@@ -117,17 +117,29 @@ const App = (() => {
     });
 
     // Identification médecin
-    ['praticien-nom', 'praticien-prenom', 'praticien-rpps'].forEach(id => {
+    ['praticien-nom', 'praticien-prenom', 'praticien-rpps', 'remplace-nom', 'remplace-prenom'].forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
-      el.value = localStorage.getItem('hon_' + id.replace('-', '_')) || '';
+      el.value = localStorage.getItem('hon_' + id.replace(/-/g, '_')) || '';
       el.addEventListener('blur', () => {
-        localStorage.setItem('hon_' + id.replace('-', '_'), el.value.trim());
+        localStorage.setItem('hon_' + id.replace(/-/g, '_'), el.value.trim());
       });
       el.addEventListener('keydown', e => {
         if (e.key === 'Enter') el.blur();
       });
     });
+
+    // Médecin remplaçant — toggle + affichage champs
+    const remplacantCb = document.getElementById('praticien-remplacant');
+    const remplaceFields = document.getElementById('remplace-fields');
+    if (remplacantCb && remplaceFields) {
+      remplacantCb.checked = localStorage.getItem('hon_praticien_remplacant') === 'true';
+      remplaceFields.style.display = remplacantCb.checked ? '' : 'none';
+      remplacantCb.addEventListener('change', () => {
+        localStorage.setItem('hon_praticien_remplacant', remplacantCb.checked);
+        remplaceFields.style.display = remplacantCb.checked ? '' : 'none';
+      });
+    }
 
     // Adresse cabinet
     const cabinetInput = document.getElementById('cabinet-address');
@@ -955,17 +967,38 @@ const App = (() => {
     // ── Date consultation : cases haut-droite (J J M M A A A A) ──
     html += fdsDate(DATE_TOP_X, DATE_TOP_Y);
 
-    // ── Identification médecin (zone tampon IDENTIFICATION DU MEDECIN) ──
-    const medNom    = localStorage.getItem('hon_praticien_nom') || '';
-    const medPrenom = localStorage.getItem('hon_praticien_prenom') || '';
-    const medRpps   = localStorage.getItem('hon_praticien_rpps') || '';
-    const medAddr   = localStorage.getItem('hon_cabinet_address') || '';
-    if (medNom || medPrenom || medRpps) {
-      const lines = [];
-      if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
-      if (medRpps) lines.push(`RPPS : ${medRpps}`);
-      if (medAddr) lines.push(medAddr);
-      html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${lines.join('<br>')}</div>`;
+    // ── Identification médecin ──
+    const medNom        = localStorage.getItem('hon_praticien_nom') || '';
+    const medPrenom     = localStorage.getItem('hon_praticien_prenom') || '';
+    const medRpps       = localStorage.getItem('hon_praticien_rpps') || '';
+    const medAddr       = localStorage.getItem('hon_cabinet_address') || '';
+    const isRemplacant  = localStorage.getItem('hon_praticien_remplacant') === 'true';
+    const remplaceNom   = localStorage.getItem('hon_remplace_nom') || '';
+    const remplacePrenom= localStorage.getItem('hon_remplace_prenom') || '';
+
+    if (isRemplacant) {
+      // Zone tampon principale → médecin remplacé
+      if (remplaceNom || remplacePrenom) {
+        const remLines = [`Dr ${remplacePrenom} ${remplaceNom}`.trim()];
+        if (medAddr) remLines.push(medAddr);
+        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${remLines.join('<br>')}</div>`;
+      }
+      // Section MEDECIN REMPLACANT → infos du médecin qui effectue l'acte
+      if (medNom || medPrenom) {
+        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:39.2%">${`Dr ${medPrenom} ${medNom}`.trim()}</div>`;
+      }
+      if (medRpps) {
+        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:41.0%">${medRpps}</div>`;
+      }
+    } else {
+      // Zone tampon principale → médecin habituel
+      if (medNom || medPrenom || medRpps) {
+        const lines = [];
+        if (medNom || medPrenom) lines.push(`Dr ${medPrenom} ${medNom}`.trim());
+        if (medRpps) lines.push(`RPPS : ${medRpps}`);
+        if (medAddr) lines.push(medAddr);
+        html += `<div class="fds-fill fds-fill-med" style="left:3%;top:36%">${lines.join('<br>')}</div>`;
+      }
     }
 
     // ── MALADIE ✓ (centre de la case à 6.88%, 43.74%) ──

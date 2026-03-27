@@ -521,7 +521,17 @@
         <p class="cabinet-hint">Utilisé pour pré-remplir la feuille de soins</p>
         <input type="text" id="praticien-nom" class="cabinet-address-input" placeholder="Nom" maxlength="40" autocomplete="honoraires-nom-nofill" style="margin-bottom:6px">
         <input type="text" id="praticien-prenom" class="cabinet-address-input" placeholder="Prénom" maxlength="40" autocomplete="honoraires-prenom-nofill" style="margin-bottom:6px">
-        <input type="text" id="praticien-rpps" class="cabinet-address-input" placeholder="N° RPPS (11 chiffres)" maxlength="11" autocomplete="off" inputmode="numeric">
+        <input type="text" id="praticien-rpps" class="cabinet-address-input" placeholder="N° RPPS (11 chiffres)" maxlength="11" autocomplete="off" inputmode="numeric" style="margin-bottom:10px">
+        <label class="ik-toggle">
+          <input type="checkbox" id="praticien-remplacant">
+          <span class="ik-slider"></span>
+          <span class="ik-label">Médecin remplaçant</span>
+        </label>
+        <div id="remplace-fields" style="display:none; margin-top:10px; padding-top:10px; border-top:1px solid rgba(0,0,0,0.08)">
+          <p class="cabinet-hint" style="margin-bottom:6px">Médecin remplacé</p>
+          <input type="text" id="remplace-nom" class="cabinet-address-input" placeholder="Nom du médecin remplacé" maxlength="40" autocomplete="off" style="margin-bottom:6px">
+          <input type="text" id="remplace-prenom" class="cabinet-address-input" placeholder="Prénom" maxlength="40" autocomplete="off">
+        </div>
       </div>
 
       <div class="section-card">
