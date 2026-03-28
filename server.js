@@ -1130,9 +1130,9 @@ const FDS_LIMIT_TRIAL = 8; // utilisateurs avec compte (essai)
 
 app.get('/api/fds/quota', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
-  const user = db.prepare('SELECT subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
+  const user = db.prepare('SELECT email, subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
-  if (user.subscription_status === 'active') return res.json({ unlimited: true });
+  if (user.subscription_status === 'active' || ADMIN_EMAILS.includes(user.email)) return res.json({ unlimited: true });
   const monthKey = new Date().toISOString().slice(0, 7);
   const count = user.fds_month_key === monthKey ? (user.fds_month_count || 0) : 0;
   res.json({ count, limit: FDS_LIMIT_TRIAL, remaining: Math.max(0, FDS_LIMIT_TRIAL - count), monthKey });
@@ -1140,9 +1140,9 @@ app.get('/api/fds/quota', (req, res) => {
 
 app.post('/api/fds/consume', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
-  const user = db.prepare('SELECT subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
+  const user = db.prepare('SELECT email, subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
-  if (user.subscription_status === 'active') return res.json({ ok: true, unlimited: true });
+  if (user.subscription_status === 'active' || ADMIN_EMAILS.includes(user.email)) return res.json({ ok: true, unlimited: true });
   const monthKey = new Date().toISOString().slice(0, 7);
   const count = user.fds_month_key === monthKey ? (user.fds_month_count || 0) : 0;
   if (count >= FDS_LIMIT_TRIAL) {

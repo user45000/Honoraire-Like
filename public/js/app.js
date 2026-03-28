@@ -1102,7 +1102,7 @@ const App = (() => {
 
     if (user) {
       try {
-        const basePath = App.getBasePath();
+        const basePath = getBasePath();
         const res = await fetch(`${basePath}api/fds/consume`, { method: 'POST' });
         const data = await res.json();
         if (data.ok) return { allowed: true, remaining: data.remaining };
