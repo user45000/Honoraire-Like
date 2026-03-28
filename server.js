@@ -29,6 +29,8 @@ db.exec(`
 // Migration : ajouter les colonnes si elles n'existent pas
 try { db.exec('ALTER TABLE users ADD COLUMN accepted_terms INTEGER DEFAULT 0'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN preferences TEXT'); } catch (e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN fds_month_count INTEGER DEFAULT 0'); } catch (e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN fds_month_key TEXT DEFAULT \'\''); } catch (e) {}
 
 // === Store de session SQLite (persist across restarts) ===
 db.exec(`CREATE TABLE IF NOT EXISTS sessions (
@@ -1120,6 +1122,34 @@ app.get('/.well-known/security.txt', (req, res) => {
     'Expires: 2027-01-01T00:00:00.000Z\n' +
     'Preferred-Languages: fr, en\n'
   );
+});
+
+// === FDS Quota ===
+const FDS_LIMIT_TRIAL = 8; // utilisateurs avec compte (essai)
+// premium (active) = illimité
+
+app.get('/api/fds/quota', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const user = db.prepare('SELECT subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+  if (user.subscription_status === 'active') return res.json({ unlimited: true });
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const count = user.fds_month_key === monthKey ? (user.fds_month_count || 0) : 0;
+  res.json({ count, limit: FDS_LIMIT_TRIAL, remaining: Math.max(0, FDS_LIMIT_TRIAL - count), monthKey });
+});
+
+app.post('/api/fds/consume', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const user = db.prepare('SELECT subscription_status, fds_month_count, fds_month_key FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return res.status(404).json({ error: 'Utilisateur introuvable' });
+  if (user.subscription_status === 'active') return res.json({ ok: true, unlimited: true });
+  const monthKey = new Date().toISOString().slice(0, 7);
+  const count = user.fds_month_key === monthKey ? (user.fds_month_count || 0) : 0;
+  if (count >= FDS_LIMIT_TRIAL) {
+    return res.json({ ok: false, error: 'quota_exceeded', count, limit: FDS_LIMIT_TRIAL });
+  }
+  db.prepare('UPDATE users SET fds_month_count = ?, fds_month_key = ? WHERE id = ?').run(count + 1, monthKey, req.session.userId);
+  res.json({ ok: true, count: count + 1, remaining: FDS_LIMIT_TRIAL - count - 1 });
 });
 
 // === SPA fallback (assets inexistants → 404, routes SPA → index.html) ===

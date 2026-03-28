@@ -2223,6 +2223,43 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 .fds-beta-banner strong { font-weight: 700; }
 
+/* === Quota FDS === */
+#fds-quota-modal {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: flex-end;
+}
+#fds-quota-modal .fds-quota-sheet {
+  border-radius: 20px 20px 0 0;
+}
+@media (min-width: 640px) {
+  #fds-quota-modal { align-items: center; justify-content: center; }
+  #fds-quota-modal .fds-quota-sheet {
+    width: min(420px, 95vw); border-radius: 16px;
+  }
+}
+.fds-quota-body {
+  padding: 24px 20px 32px;
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  text-align: center;
+  padding-bottom: calc(env(safe-area-inset-bottom) + 32px);
+}
+.fds-quota-icon { font-size: 40px; line-height: 1; }
+.fds-quota-msg { font-size: 15px; font-weight: 600; color: #1e293b; line-height: 1.4; }
+.fds-quota-sub { font-size: 13px; color: #64748b; line-height: 1.5; }
+.fds-quota-actions { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-top: 8px; }
+.fds-quota-btn-signup {
+  padding: 12px 16px; border: none; border-radius: 10px; cursor: pointer;
+  font-size: 14px; font-weight: 600;
+  background: #1B2D4F; color: #fff;
+}
+.fds-quota-btn-signup:hover { background: #243d66; }
+.fds-quota-btn-premium {
+  padding: 12px 16px; border: none; border-radius: 10px; cursor: pointer;
+  font-size: 14px; font-weight: 700;
+  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+}
+.fds-quota-btn-premium:hover { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+
 /* === Overlay sur le vrai formulaire S3116 === */
 .fds-overlay-container {
   position: relative;

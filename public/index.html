@@ -732,6 +732,23 @@
     </div>
   </div>
 
+  <!-- Modale quota FDS dépassé -->
+  <div id="fds-quota-modal" style="display:none" role="dialog" aria-modal="true">
+    <div class="fds-backdrop" id="fds-quota-backdrop"></div>
+    <div class="fds-sheet fds-quota-sheet">
+      <div class="fds-header">
+        <span class="fds-title">Quota mensuel atteint</span>
+        <button class="fds-close" id="fds-quota-close">✕</button>
+      </div>
+      <div class="fds-quota-body">
+        <div class="fds-quota-icon">📋</div>
+        <p class="fds-quota-msg" id="fds-quota-msg"></p>
+        <p class="fds-quota-sub" id="fds-quota-sub"></p>
+        <div class="fds-quota-actions" id="fds-quota-actions"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Navigation bottom -->
   <nav class="bottom-nav">
     <button class="nav-btn active" data-tab="consultation">

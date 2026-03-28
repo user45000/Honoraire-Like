@@ -1085,13 +1085,108 @@ const App = (() => {
     document.getElementById('fds-modal').style.display = 'none';
   }
 
+  // === FDS Quota ===
+  const FDS_LIMIT_ANON  = 3;
+  const FDS_LIMIT_TRIAL = 8;
+  const FDS_QUOTA_KEY   = 'fds_month_count';
+  const FDS_MONTH_KEY   = 'fds_month_key';
+
+  function getMonthKey() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  }
+
+  async function checkAndConsumeFDSQuota() {
+    const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+    if (user && user.subscription_status === 'active') return { allowed: true };
+
+    if (user) {
+      try {
+        const basePath = App.getBasePath();
+        const res = await fetch(`${basePath}api/fds/consume`, { method: 'POST' });
+        const data = await res.json();
+        if (data.ok) return { allowed: true, remaining: data.remaining };
+        return { allowed: false, reason: 'trial', limit: FDS_LIMIT_TRIAL };
+      } catch (e) {
+        return { allowed: true }; // fail open
+      }
+    }
+
+    // Anonyme : localStorage
+    const monthKey = getMonthKey();
+    const storedMonth = localStorage.getItem(FDS_MONTH_KEY);
+    let count = parseInt(localStorage.getItem(FDS_QUOTA_KEY) || '0');
+    if (storedMonth !== monthKey) {
+      count = 0;
+      localStorage.setItem(FDS_MONTH_KEY, monthKey);
+    }
+    if (count >= FDS_LIMIT_ANON) {
+      return { allowed: false, reason: 'anon', limit: FDS_LIMIT_ANON };
+    }
+    localStorage.setItem(FDS_QUOTA_KEY, String(count + 1));
+    return { allowed: true, remaining: FDS_LIMIT_ANON - count - 1 };
+  }
+
+  function showFDSQuotaModal(reason) {
+    const modal = document.getElementById('fds-quota-modal');
+    const msgEl = document.getElementById('fds-quota-msg');
+    const subEl = document.getElementById('fds-quota-sub');
+    const actEl = document.getElementById('fds-quota-actions');
+    if (!modal) return;
+
+    // Vider les boutons précédents
+    actEl.innerHTML = '';
+
+    if (reason === 'anon') {
+      msgEl.textContent = `Vous avez utilisé vos ${FDS_LIMIT_ANON} générations gratuites ce mois-ci.`;
+      subEl.textContent = `Créez un compte gratuit pour ${FDS_LIMIT_TRIAL - FDS_LIMIT_ANON} générations supplémentaires, ou passez Premium pour une utilisation illimitée.`;
+
+      const btnSignup = document.createElement('button');
+      btnSignup.className = 'fds-quota-btn-signup';
+      btnSignup.textContent = 'Créer un compte gratuit';
+      btnSignup.addEventListener('click', () => { closeFDSQuotaModal(); document.querySelector('.nav-btn[data-tab="compte"]')?.click(); });
+
+      const btnPremium = document.createElement('button');
+      btnPremium.className = 'fds-quota-btn-premium';
+      btnPremium.textContent = '⭐ Passer Premium — illimité';
+      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); document.querySelector('.nav-btn[data-tab="compte"]')?.click(); });
+
+      actEl.appendChild(btnSignup);
+      actEl.appendChild(btnPremium);
+    } else {
+      msgEl.textContent = `Vous avez utilisé vos ${FDS_LIMIT_TRIAL} générations ce mois-ci.`;
+      subEl.textContent = 'Passez Premium pour une utilisation illimitée sans quota mensuel.';
+
+      const btnPremium = document.createElement('button');
+      btnPremium.className = 'fds-quota-btn-premium';
+      btnPremium.textContent = '⭐ Passer Premium — illimité';
+      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); document.querySelector('.nav-btn[data-tab="compte"]')?.click(); });
+
+      actEl.appendChild(btnPremium);
+    }
+
+    modal.style.display = 'flex';
+  }
+
+  function closeFDSQuotaModal() {
+    const modal = document.getElementById('fds-quota-modal');
+    if (modal) modal.style.display = 'none';
+  }
+
   function initFDS() {
-    document.getElementById('fds-open-btn')?.addEventListener('click', (e) => {
+    document.getElementById('fds-open-btn')?.addEventListener('click', async (e) => {
       e.stopPropagation();
+      const quota = await checkAndConsumeFDSQuota();
+      if (!quota.allowed) {
+        showFDSQuotaModal(quota.reason);
+        return;
+      }
       openFDS();
     });
     document.getElementById('fds-close')?.addEventListener('click', closeFDS);
     document.getElementById('fds-backdrop')?.addEventListener('click', closeFDS);
+    document.getElementById('fds-quota-close')?.addEventListener('click', closeFDSQuotaModal);
+    document.getElementById('fds-quota-backdrop')?.addEventListener('click', closeFDSQuotaModal);
   }
 
   return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation };
