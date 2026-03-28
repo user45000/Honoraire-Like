@@ -121,8 +121,8 @@ const Account = (() => {
     const overlay = document.getElementById('paywall-overlay');
     if (!overlay) return;
 
-    // Abonné actif → pas de paywall
-    if (currentUser && currentUser.subscription_status === 'active') {
+    // Abonné actif ou admin → pas de paywall
+    if (currentUser && (currentUser.subscription_status === 'active' || currentUser.isAdmin)) {
       overlay.classList.remove('visible');
       if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
       return;

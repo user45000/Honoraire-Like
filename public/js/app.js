@@ -1098,7 +1098,7 @@ const App = (() => {
 
   async function checkAndConsumeFDSQuota() {
     const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-    if (user && user.subscription_status === 'active') return { allowed: true };
+    if (user && (user.subscription_status === 'active' || user.isAdmin)) return { allowed: true };
 
     if (user) {
       try {
