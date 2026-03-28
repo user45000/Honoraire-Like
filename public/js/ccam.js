@@ -135,6 +135,20 @@ const CCAM = (() => {
       favorites = JSON.parse(localStorage.getItem('hon_ccam_favs') || '[]');
     } catch { favorites = []; }
 
+    // Info modificateur M (urgence)
+    document.getElementById('ccam-modif-m-info')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Modificateur M — Urgence';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Définition</span><span class="pinfo-detail">Majoration pour soins d'urgence faits <strong>au cabinet</strong> par un médecin généraliste, un pédiatre ou une sage-femme, après examen en urgence d'un patient.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Exception</span><span class="pinfo-detail">Applicable aussi pour une <strong>suture de plaie en urgence au domicile</strong> du patient.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Urgence ?</span><span class="pinfo-detail">La CCAM ne définit pas de liste de situations. C'est le <strong>jugement clinique du médecin</strong> : le patient devait être vu immédiatement, sans pouvoir attendre un rendez-vous ordinaire.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Horaires</span><span class="pinfo-detail">Entre 8h et 20h en semaine, week-end et jours fériés inclus. Hors plages nuit (P/S) et hors dimanche/JF si F applicable.</span></div>
+        <div class="pinfo-row" style="margin-top:4px"><span class="pinfo-detail" style="font-size:11px;color:#64748b">Incompatible avec P, S et F. Source : nomenclature CCAM, AMELI.</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
     // Info modificateurs CCAM
     document.getElementById('ccam-modif-info-btn')?.addEventListener('click', (e) => {
       e.stopPropagation();
