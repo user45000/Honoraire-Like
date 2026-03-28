@@ -135,6 +135,20 @@ const CCAM = (() => {
       favorites = JSON.parse(localStorage.getItem('hon_ccam_favs') || '[]');
     } catch { favorites = []; }
 
+    // Info modificateurs CCAM
+    document.getElementById('ccam-modif-info-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Modificateurs CCAM';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">M</span><span class="pinfo-detail"><strong>Urgence</strong> (+26,88€)<br>Acte réalisé en urgence entre 8h et 20h, y compris le week-end et les jours fériés. Ne peut pas être cumulé avec P, S ou F.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">F</span><span class="pinfo-detail"><strong>Dimanche / Jour férié</strong> (+19,06€)<br>Acte réalisé entre 8h et 20h un dimanche ou un jour férié (hors plages nuit).</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">P</span><span class="pinfo-detail"><strong>Nuit</strong> (+35,00€)<br>Acte réalisé entre 20h et 0h ou entre 6h et 8h, tous les jours.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">S</span><span class="pinfo-detail"><strong>Nuit profonde</strong> (+40,00€)<br>Acte réalisé entre 0h et 6h, tous les jours. Majoration la plus élevée.</span></div>
+        <div class="pinfo-row" style="margin-top:8px"><span class="pinfo-detail" style="font-size:11px;color:#64748b">P, S et F sont mutuellement exclusifs. Le modificateur est applicable uniquement si l'acte CCAM l'autorise (champ « modificateurs » de la nomenclature).<br>Source : AMELI / nomenclature CCAM, livre III.</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
     // Modificateurs CCAM
     const modifToggles = document.getElementById('ccam-modif-toggles');
     if (modifToggles) {
