@@ -464,6 +464,13 @@ app.use(session({
 }));
 
 // === Analytics middleware ===
+const BOT_UA_RE = /bot|crawler|spider|scraper|slurp|mediapartners|adsbot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegram|discordbot|applebot|duckduckbot|baiduspider|yandex|sogou|exabot|ia_archiver|archive\.org|wget|curl|python-requests|go-http|java\/|httpclient|axios|node-fetch|undici|lighthouse|headlesschrome|phantomjs|selenium|puppeteer|playwright/i;
+
+function isBot(ua) {
+  if (!ua) return true; // pas d'UA = très probablement un bot
+  return BOT_UA_RE.test(ua);
+}
+
 function parseUA(ua) {
   ua = ua || '';
   const device = /Mobi|Android/i.test(ua) ? 'mobile' : /Tablet|iPad/i.test(ua) ? 'tablet' : 'desktop';
@@ -479,6 +486,7 @@ const insertTabUsage = db.prepare('INSERT INTO tab_usage (user_id, session_hash,
 
 app.use((req, res, next) => {
   if (req.path.match(/\.(js|css|woff2?|png|jpg|ico|svg|json|webmanifest|map)$/) || req.path === '/api/stripe/webhook') return next();
+  if (isBot(req.headers['user-agent'])) return next(); // bots exclus des analytics
   try {
     const sid = req.sessionID || '';
     const sessionHash = crypto.createHash('sha256').update(sid).digest('hex').slice(0, 16);
