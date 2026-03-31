@@ -31,6 +31,7 @@ try { db.exec('ALTER TABLE users ADD COLUMN accepted_terms INTEGER DEFAULT 0'); 
 try { db.exec('ALTER TABLE users ADD COLUMN preferences TEXT'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN fds_month_count INTEGER DEFAULT 0'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN fds_month_key TEXT DEFAULT \'\''); } catch (e) {}
+try { db.exec('ALTER TABLE page_views ADD COLUMN is_bot INTEGER DEFAULT 0'); } catch (e) {}
 
 // === Store de session SQLite (persist across restarts) ===
 db.exec(`CREATE TABLE IF NOT EXISTS sessions (

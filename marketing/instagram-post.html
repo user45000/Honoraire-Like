@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Honoraires MG — Post Instagram 1080×1080</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,700;1,9..144,400&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { width: 1080px; height: 1080px; overflow: hidden; background: #0d1f3c; }
+
+    .poster {
+      width: 1080px;
+      height: 1080px;
+      background: linear-gradient(145deg, #0a1929 0%, #1B2D4F 55%, #1a3a62 100%);
+      position: relative;
+      font-family: 'DM Sans', sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Orbs décoratifs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 680px; height: 680px;
+      top: -220px; right: -180px;
+      background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%);
+    }
+    .orb-2 {
+      width: 480px; height: 480px;
+      bottom: -120px; left: -100px;
+      background: radial-gradient(circle, rgba(52,211,153,0.12) 0%, transparent 70%);
+    }
+    .orb-3 {
+      width: 200px; height: 200px;
+      top: 300px; left: 60px;
+      background: radial-gradient(circle, rgba(96,165,250,0.08) 0%, transparent 70%);
+    }
+
+    /* Grille de points */
+    .dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+
+    /* En-tête logo */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 52px;
+      position: relative;
+    }
+
+    .logo-mark {
+      width: 82px; height: 82px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      border-radius: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .logo-text {
+      font-family: 'Fraunces', serif;
+      font-size: 58px;
+      font-weight: 300;
+      letter-spacing: -0.025em;
+      line-height: 1;
+    }
+    .logo-text .accent { color: #60a5fa; }
+
+    /* Badge */
+    .badge {
+      position: absolute;
+      right: -90px;
+      top: -10px;
+      background: rgba(52,211,153,0.15);
+      border: 1.5px solid rgba(52,211,153,0.35);
+      color: #34d399;
+      border-radius: 100px;
+      padding: 6px 16px;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Tagline */
+    .tagline {
+      font-size: 26px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.60);
+      text-align: center;
+      margin-bottom: 56px;
+      line-height: 1.5;
+      position: relative;
+    }
+
+    /* Mock UI calculateur */
+    .calc-card {
+      width: 720px;
+      background: rgba(255,255,255,0.055);
+      border: 1.5px solid rgba(255,255,255,0.12);
+      border-radius: 26px;
+      padding: 32px 44px;
+      margin-bottom: 56px;
+      position: relative;
+      backdrop-filter: blur(4px);
+    }
+
+    .calc-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(96,165,250,0.12);
+      border: 1px solid rgba(96,165,250,0.2);
+      border-radius: 100px;
+      padding: 5px 14px;
+      font-size: 14px;
+      color: #93c5fd;
+      margin-bottom: 22px;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 13px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .calc-row:last-of-type { border-bottom: none; }
+
+    .calc-left { display: flex; align-items: center; gap: 14px; }
+    .calc-code {
+      font-family: 'DM Sans', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      color: #60a5fa;
+      background: rgba(96,165,250,0.1);
+      padding: 3px 9px;
+      border-radius: 6px;
+      letter-spacing: 0.03em;
+    }
+    .calc-desc { font-size: 19px; color: rgba(255,255,255,0.75); }
+    .calc-amount { font-size: 20px; font-weight: 600; }
+
+    .calc-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.12);
+      margin: 16px 0;
+    }
+
+    .calc-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .calc-total-label { font-size: 22px; color: rgba(255,255,255,0.5); }
+    .calc-total-amount {
+      font-size: 44px;
+      font-weight: 700;
+      color: #34d399;
+      letter-spacing: -0.02em;
+    }
+
+    /* Features grid */
+    .features {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    .feat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      width: 120px;
+    }
+
+    .feat-icon {
+      width: 56px; height: 56px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .feat-label {
+      font-size: 14px;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.35;
+      font-weight: 400;
+    }
+
+    /* Pied */
+    .footer {
+      position: absolute;
+      bottom: 44px;
+      left: 0; right: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 60px;
+    }
+
+    .footer-url {
+      font-size: 19px;
+      color: rgba(255,255,255,0.30);
+      letter-spacing: 0.02em;
+    }
+
+    .footer-badges { display: flex; gap: 10px; }
+
+    .fb {
+      padding: 7px 16px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .fb-ngap {
+      background: rgba(96,165,250,0.1);
+      border: 1px solid rgba(96,165,250,0.22);
+      color: #93c5fd;
+    }
+    .fb-offline {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.5);
+    }
+  </style>
+</head>
+<body>
+<div class="poster">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="dots"></div>
+
+  <div class="header">
+    <div class="logo-mark">
+      <svg width="46" height="46" viewBox="0 0 46 46" fill="none">
+        <circle cx="23" cy="23" r="18" stroke="rgba(255,255,255,0.45)" stroke-width="2"/>
+        <path d="M23 13V33M13 23H33" stroke="white" stroke-width="3.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="logo-text">Honoraires<span class="accent">MG</span></div>
+    <div class="badge">✓ Gratuit</div>
+  </div>
+
+  <div class="tagline">
+    Le calculateur d'honoraires du médecin généraliste
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-chip">⚡ Calcul en temps réel · NGAP 2026</div>
+
+    <div class="calc-row">
+      <div class="calc-left">
+        <span class="calc-code">VG</span>
+        <span class="calc-desc">Visite au domicile</span>
+      </div>
+      <span class="calc-amount">35,00 €</span>
+    </div>
+    <div class="calc-row">
+      <div class="calc-left">
+        <span class="calc-code">MN</span>
+        <span class="calc-desc">Nuit (0h–6h)</span>
+      </div>
+      <span class="calc-amount">35,15 €</span>
+    </div>
+    <div class="calc-row">
+      <div class="calc-left">
+        <span class="calc-code">MDN</span>
+        <span class="calc-desc">Déplacement nuit</span>
+      </div>
+      <span class="calc-amount">50,16 €</span>
+    </div>
+
+    <div class="calc-divider"></div>
+
+    <div class="calc-total">
+      <span class="calc-total-label">Total</span>
+      <span class="calc-total-amount">120,31 €</span>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">🏥</div>
+      <div class="feat-label">Consultations<br>& Visites</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🌙</div>
+      <div class="feat-label">PDSA<br>& Urgences</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🧬</div>
+      <div class="feat-label">CCAM<br>intégrée</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📍</div>
+      <div class="feat-label">IK auto<br>& montagne</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📴</div>
+      <div class="feat-label">100 %<br>hors connexion</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-url">honorairesmg.fr</div>
+    <div class="footer-badges">
+      <div class="fb fb-ngap">NGAP 2026</div>
+      <div class="fb fb-offline">PWA Offline</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
