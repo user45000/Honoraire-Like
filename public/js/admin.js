@@ -95,18 +95,20 @@ async function loadChart() {
 function renderBarChart(data) {
   const container = document.getElementById('traffic-chart');
   if (!data.length) { container.innerHTML = '<div style="color:#94a3b8;font-size:13px;text-align:center;width:100%;align-self:center">Pas encore de données</div>'; return; }
-  const maxVal = Math.max(1, ...data.map(d => d.views));
+  const maxVal = Math.max(1, ...data.map(d => Math.max(d.views, d.bots || 0)));
   // For 90d, show every 7th label; for 30d every 3rd
   const labelEvery = data.length > 60 ? 7 : data.length > 14 ? 3 : 1;
   container.innerHTML = data.map((d, i) => {
     const h1 = Math.max(2, (d.views / maxVal) * 100);
     const h2 = Math.max(2, (d.visitors / maxVal) * 100);
+    const h3 = Math.max(2, ((d.bots || 0) / maxVal) * 100);
     const label = i % labelEvery === 0 ? d.day.slice(5) : '';
     return '<div class="bar-col">' +
       '<div class="bar-val">' + (d.views > 0 ? d.views : '') + '</div>' +
-      '<div style="display:flex;gap:1px;align-items:flex-end;width:100%;height:100%">' +
-        '<div class="bar" style="height:' + h1 + '%;flex:1"></div>' +
-        '<div class="bar secondary" style="height:' + h2 + '%;flex:1"></div>' +
+      '<div class="bar-bars">' +
+        '<div class="bar" style="height:' + h1 + '%"></div>' +
+        '<div class="bar secondary" style="height:' + h2 + '%"></div>' +
+        ((d.bots || 0) > 0 ? '<div class="bar bot" style="height:' + h3 + '%"></div>' : '') +
       '</div>' +
       '<div class="bar-label">' + label + '</div>' +
     '</div>';

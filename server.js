@@ -482,12 +482,12 @@ function parseUA(ua) {
   return { device, os, browser };
 }
 
-const insertPageView = db.prepare('INSERT INTO page_views (user_id, session_hash, visitor_id, path, method, device_type, os, browser) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
+const insertPageView = db.prepare('INSERT INTO page_views (user_id, session_hash, visitor_id, path, method, device_type, os, browser, is_bot) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)');
 const insertTabUsage = db.prepare('INSERT INTO tab_usage (user_id, session_hash, tab_name) VALUES (?, ?, ?)');
 
 app.use((req, res, next) => {
   if (req.path.match(/\.(js|css|woff2?|png|jpg|ico|svg|json|webmanifest|map)$/) || req.path === '/api/stripe/webhook') return next();
-  if (isBot(req.headers['user-agent'])) return next(); // bots exclus des analytics
+  const bot = isBot(req.headers['user-agent']) ? 1 : 0;
   try {
     const sid = req.sessionID || '';
     const sessionHash = crypto.createHash('sha256').update(sid).digest('hex').slice(0, 16);
@@ -500,7 +500,7 @@ app.use((req, res, next) => {
       res.cookie('vid', visitorId, { maxAge: 365 * 24 * 60 * 60 * 1000, httpOnly: true, sameSite: 'strict' });
     }
     const { device, os, browser } = parseUA(req.headers['user-agent']);
-    insertPageView.run(req.session?.userId || null, sessionHash, visitorId, req.path, req.method, device, os, browser);
+    insertPageView.run(req.session?.userId || null, sessionHash, visitorId, req.path, req.method, device, os, browser, bot);
   } catch (e) { /* never block request */ }
   next();
 });
@@ -917,39 +917,39 @@ app.get('/api/admin/analytics/overview', requireAdmin, (req, res) => {
   const d7 = new Date(now - 7 * 86400000).toISOString().slice(0, 10);
   const d30 = new Date(now - 30 * 86400000).toISOString().slice(0, 10);
 
-  const dau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
-  const wau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
-  const mau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+  const dau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND date(created_at) = ?").get(today).n;
+  const wau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d7).n;
+  const mau = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d30).n;
 
-  const viewsToday = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
-  const views7d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
-  const views30d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+  const viewsToday = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0 AND date(created_at) = ?").get(today).n;
+  const views7d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d7).n;
+  const views30d = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d30).n;
 
-  const visitorsToday = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) = ?").get(today).n;
-  const visitors7d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(d7).n;
-  const visitors30d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(d30).n;
+  const visitorsToday = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0 AND date(created_at) = ?").get(today).n;
+  const visitors7d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d7).n;
+  const visitors30d = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(d30).n;
 
   const signups7d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d7).n;
   const signups30d = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(d30).n;
 
   // Mois en cours
   const monthStart = now.toISOString().slice(0, 7) + '-01';
-  const viewsMonth = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
-  const visitorsMonth = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
-  const usersMonth = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(monthStart).n;
+  const viewsMonth = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(monthStart).n;
+  const visitorsMonth = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(monthStart).n;
+  const usersMonth = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(monthStart).n;
   const signupsMonth = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(monthStart).n;
 
   // Année en cours
   const yearStart = now.getFullYear() + '-01-01';
-  const viewsYear = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
-  const visitorsYear = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
-  const usersYear = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE date(created_at) >= ?").get(yearStart).n;
+  const viewsYear = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(yearStart).n;
+  const visitorsYear = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(yearStart).n;
+  const usersYear = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND date(created_at) >= ?").get(yearStart).n;
   const signupsYear = db.prepare("SELECT COUNT(*) as n FROM users WHERE date(created_at) >= ?").get(yearStart).n;
 
   // Tout temps
-  const viewsAll = db.prepare("SELECT COUNT(*) as n FROM page_views").get().n;
-  const visitorsAll = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views").get().n;
-  const usersAll = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE user_id IS NOT NULL").get().n;
+  const viewsAll = db.prepare("SELECT COUNT(*) as n FROM page_views WHERE is_bot=0").get().n;
+  const visitorsAll = db.prepare("SELECT COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as n FROM page_views WHERE is_bot=0").get().n;
+  const usersAll = db.prepare("SELECT COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as n FROM page_views WHERE is_bot=0 AND user_id IS NOT NULL").get().n;
 
   const totalUsers = db.prepare('SELECT COUNT(*) as n FROM users').get().n;
   const totalActive = db.prepare("SELECT COUNT(*) as n FROM users WHERE subscription_status = 'active'").get().n;
@@ -968,8 +968,11 @@ app.get('/api/admin/analytics/chart', requireAdmin, (req, res) => {
   const since = new Date(Date.now() - days * 86400000).toISOString().slice(0, 10);
 
   const rows = db.prepare(`
-    SELECT date(created_at) as day, COUNT(*) as views, COUNT(DISTINCT COALESCE(visitor_id, session_hash)) as visitors,
-           COUNT(DISTINCT CASE WHEN user_id IS NOT NULL THEN user_id END) as users
+    SELECT date(created_at) as day,
+      SUM(CASE WHEN is_bot=0 THEN 1 ELSE 0 END) as views,
+      COUNT(DISTINCT CASE WHEN is_bot=0 THEN COALESCE(visitor_id, session_hash) END) as visitors,
+      COUNT(DISTINCT CASE WHEN is_bot=0 AND user_id IS NOT NULL THEN user_id END) as users,
+      SUM(CASE WHEN is_bot=1 THEN 1 ELSE 0 END) as bots
     FROM page_views WHERE date(created_at) >= ? GROUP BY day ORDER BY day
   `).all(since);
 
@@ -983,7 +986,7 @@ app.get('/api/admin/analytics/chart', requireAdmin, (req, res) => {
   while (d <= end) {
     const ds = d.toISOString().slice(0, 10);
     const row = rows.find(r => r.day === ds);
-    result.push({ day: ds, views: row?.views || 0, visitors: row?.visitors || 0, users: row?.users || 0, signups: signupMap[ds] || 0 });
+    result.push({ day: ds, views: row?.views || 0, visitors: row?.visitors || 0, users: row?.users || 0, signups: signupMap[ds] || 0, bots: row?.bots || 0 });
     d.setDate(d.getDate() + 1);
   }
   res.json(result);
