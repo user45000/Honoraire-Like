@@ -16,7 +16,7 @@ const Account = (() => {
     }
   }
 
-  const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_cabinet_address','hon_cabinet_citycode','hon_ccam_favs','hon_praticien_nom','hon_praticien_prenom','hon_praticien_rpps','hon_praticien_remplacant','hon_remplace_nom','hon_remplace_prenom'];
+  const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_default_relation','hon_cabinet_address','hon_cabinet_citycode','hon_ccam_favs','hon_praticien_nom','hon_praticien_prenom','hon_praticien_rpps','hon_praticien_remplacant','hon_remplace_nom','hon_remplace_prenom'];
   let prefsSaving = false;
 
   // Charge les préférences depuis le serveur → localStorage
