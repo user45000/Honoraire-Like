@@ -319,22 +319,14 @@ const App = (() => {
     // En onglet CCAM : afficher tous les codes du résultat (G + DEQP003, ou acte isolé seul)
     if (currentTab === 'ccam') {
       const ccamSel = CCAM.getSelectedActes();
-      if (ccamSel.length === 0) {
-        codesEl.textContent = '';
-        totalEl.textContent = '0,00€';
-        if (amoAmcEl) amoAmcEl.textContent = '';
-        if (fdsBtn) fdsBtn.style.display = 'none';
-        lastResult = null;
-      } else {
-        codesEl.textContent = result.codes.filter(c => !c.startsWith('(')).join(' + ');
-        totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
-        if (amoAmcEl) {
-          amoAmcEl.textContent = result.amo !== undefined
-            ? `AMO ${result.amo.toFixed(2).replace('.', ',')}€ | AMC ${result.amc.toFixed(2).replace('.', ',')}€`
-            : '';
-        }
-        if (fdsBtn) fdsBtn.style.display = '';
+      codesEl.textContent = result.codes.filter(c => !c.startsWith('(')).join(' + ');
+      totalEl.textContent = result.total.toFixed(2).replace('.', ',') + '€';
+      if (amoAmcEl) {
+        amoAmcEl.textContent = result.amo !== undefined
+          ? `AMO ${result.amo.toFixed(2).replace('.', ',')}€ | AMC ${result.amc.toFixed(2).replace('.', ',')}€`
+          : '';
       }
+      if (fdsBtn) fdsBtn.style.display = ccamSel.length > 0 ? '' : 'none';
       return;
     }
 
