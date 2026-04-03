@@ -261,9 +261,14 @@ const App = (() => {
     window.scrollTo(0, 0);
     fetch('/api/analytics/tab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab: tabName }) }).catch(() => {});
 
-    // Contexte CCAM : toujours cabinet par défaut, sauf si visite a été modifiée
+    // Contexte CCAM
     if (tabName === 'ccam') {
-      ccamContext = Visite.isModified() ? 'visite' : 'consultation';
+      if (prevTab === 'consultation') {
+        ccamContext = 'consultation';
+      } else if (prevTab === 'visite') {
+        ccamContext = Visite.isModified() ? 'visite' : 'consultation';
+      }
+      // Sinon (depuis params, compte…) on conserve le contexte actuel
       updateCCAMContextBar();
     }
     updateInstallBanner(tabName);
