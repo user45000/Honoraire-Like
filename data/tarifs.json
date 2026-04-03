@@ -2542,6 +2542,28 @@
       ]
     },
     {
+      "code": "MHMP002",
+      "label": "Orthèse statique de 2 doigts",
+      "tarif": 38.4,
+      "cumulG": "non",
+      "note": "Acte isolé. Orthèse sur-mesure non inscrite LPP.",
+      "tarif_optam": 38.4,
+      "tarif_non_optam": 38.4,
+      "modificateurs": [
+        "F",
+        "P",
+        "S"
+      ],
+      "keywords": [
+        "orthèse doigt",
+        "attelle 2 doigts",
+        "deux doigts",
+        "immobilisation doigts",
+        "entorse doigts",
+        "fracture doigts"
+      ]
+    },
+    {
       "code": "MHMP007",
       "label": "Orthèse statique d'un doigt",
       "tarif": 38.4,

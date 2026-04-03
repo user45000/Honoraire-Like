@@ -116,6 +116,21 @@ const App = (() => {
       document.getElementById('modal-overlay').classList.add('active');
     });
 
+    // Info zone géographique IK
+    document.getElementById('geo-info-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Zone géographique — IK';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Plaine</span><span class="pinfo-detail">Franchise 4 km · 0,61€/km (métropole)</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Montagne</span><span class="pinfo-detail">Franchise 2 km · 1,00€/km (métropole)</span></div>
+        <div style="margin-top:10px;font-size:0.82em;color:#888">
+          Source : <a href="https://www.ameli.fr/medecin/exercice-liberal/remuneration/honoraires-conventionnels/consultations-visites/indemnites-deplacement" target="_blank" style="color:#60a5fa">ameli.fr — Indemnités de déplacement</a><br>
+          Art. 13 de la nomenclature des actes professionnels (NGAP)
+        </div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
     // Identification médecin
     ['praticien-nom', 'praticien-prenom', 'praticien-rpps', 'remplace-nom', 'remplace-prenom'].forEach(id => {
       const el = document.getElementById(id);
