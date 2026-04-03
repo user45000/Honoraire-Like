@@ -121,14 +121,44 @@ const App = (() => {
       e.stopPropagation();
       document.getElementById('modal-title').textContent = 'Zone géographique — IK';
       document.getElementById('modal-body').innerHTML = `
-        <div class="pinfo-row"><span class="pinfo-chip">Plaine</span><span class="pinfo-detail">Franchise 4 km · 0,61€/km (métropole)</span></div>
-        <div class="pinfo-row"><span class="pinfo-chip">Montagne</span><span class="pinfo-detail">Franchise 2 km · 1,00€/km (métropole)</span></div>
-        <div style="margin-top:10px;font-size:0.82em;color:#888">
-          Source : <a href="https://www.ameli.fr/medecin/exercice-liberal/remuneration/honoraires-conventionnels/consultations-visites/indemnites-deplacement" target="_blank" style="color:#60a5fa">ameli.fr — Indemnités de déplacement</a><br>
-          Art. 13 de la nomenclature des actes professionnels (NGAP)
-        </div>
+        <div class="pinfo-row"><span class="pinfo-chip">Plaine</span><span class="pinfo-detail">Franchise 4 km · 0,61€/km</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Montagne</span><span class="pinfo-detail">Franchise 2 km · 1,00€/km</span></div>
+        <div style="margin-top:12px;font-size:0.85em;color:#ccc;margin-bottom:6px">Vérifier une commune :</div>
+        <input id="geo-commune-input" type="text" placeholder="Ex : Chamonix" style="width:100%;box-sizing:border-box;padding:6px 8px;border-radius:6px;border:1px solid #444;background:#1e293b;color:#fff;font-size:0.9em">
+        <div id="geo-commune-result" style="margin-top:8px;font-size:0.88em"></div>
+        <div style="margin-top:10px;font-size:0.78em;color:#666">Source : Loi Montagne 1985 — Cerema / data.gouv.fr</div>
       `;
       document.getElementById('modal-overlay').classList.add('active');
+
+      const input = document.getElementById('geo-commune-input');
+      const result = document.getElementById('geo-commune-result');
+      let timer;
+      input.addEventListener('input', () => {
+        clearTimeout(timer);
+        const q = input.value.trim();
+        if (q.length < 2) { result.textContent = ''; return; }
+        result.textContent = '…';
+        timer = setTimeout(async () => {
+          try {
+            const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&type=municipality&limit=5`);
+            const data = await res.json();
+            const features = data.features || [];
+            if (!features.length) { result.textContent = 'Commune introuvable.'; return; }
+            const seen = new Set();
+            result.innerHTML = features.filter(f => {
+              const code = f.properties.citycode;
+              if (seen.has(code)) return false;
+              seen.add(code); return true;
+            }).map(f => {
+              const isMontagne = typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(f.properties.citycode);
+              const badge = isMontagne
+                ? '<span style="color:#34d399;font-weight:600">Montagne ✓</span>'
+                : '<span style="color:#94a3b8">Plaine</span>';
+              return `<div style="padding:3px 0">${f.properties.city} — ${badge}</div>`;
+            }).join('');
+          } catch { result.textContent = 'Erreur réseau.'; }
+        }, 400);
+      });
     });
 
     // Identification médecin
