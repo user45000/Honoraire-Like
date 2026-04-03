@@ -527,5 +527,13 @@ const Visite = (() => {
     }
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI };
+  function isModified() {
+    return state.ikEnabled ||
+      state.actesCourants.length > 0 ||
+      state.majorations.length > 0 ||
+      state.acte !== 'VG' ||
+      state.deplacement !== 'MD';
+  }
+
+  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI, isModified };
 })();

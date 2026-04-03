@@ -261,11 +261,9 @@ const App = (() => {
     window.scrollTo(0, 0);
     fetch('/api/analytics/tab', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tab: tabName }) }).catch(() => {});
 
-    // Mémoriser le contexte consultation/visite quand on entre dans CCAM
+    // Contexte CCAM : toujours cabinet par défaut, sauf si visite a été modifiée
     if (tabName === 'ccam') {
-      if (prevTab === 'consultation' || prevTab === 'visite') {
-        ccamContext = prevTab;
-      }
+      ccamContext = Visite.isModified() ? 'visite' : 'consultation';
       updateCCAMContextBar();
     }
     updateInstallBanner(tabName);
@@ -619,7 +617,8 @@ const App = (() => {
 
   // === Patientèle (MT / hors patientèle) ===
   function initRelation() {
-    const saved = localStorage.getItem('hon_relation') || 'mt';
+    const defaultRel = localStorage.getItem('hon_default_relation') || 'mt';
+    const saved = localStorage.getItem('hon_relation') || defaultRel;
     applyRelation(saved, true);
 
     // Écoute tous les [data-field="relation"] (consultation + visite)
@@ -629,6 +628,22 @@ const App = (() => {
       if (!btn.closest('[data-field="relation"]')) return;
       applyRelation(btn.dataset.value, true);
     });
+
+    // Toggle "Patientèle par défaut" dans params
+    const defaultRelGroup = document.querySelector('[data-field="default_relation"]');
+    if (defaultRelGroup) {
+      defaultRelGroup.querySelectorAll('.toggle-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.value === defaultRel);
+      });
+      defaultRelGroup.addEventListener('click', (e) => {
+        const btn = e.target.closest('.toggle-btn');
+        if (!btn) return;
+        const val = btn.dataset.value;
+        localStorage.setItem('hon_default_relation', val);
+        defaultRelGroup.querySelectorAll('.toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === val));
+        applyRelation(val, true);
+      });
+    }
   }
 
   function applyRelation(value, notify) {
