@@ -632,8 +632,6 @@ const App = (() => {
       item.querySelector('.cabinet-item-edit').addEventListener('click', () => openCabinetEditForm(i));
       container.appendChild(item);
     });
-    // Auto-ouvrir le form pour les cabinets sans adresse
-    list.forEach((cab, i) => { if (!cab.address) openCabinetEditForm(i); });
   }
 
   function openCabinetEditForm(idx) {
