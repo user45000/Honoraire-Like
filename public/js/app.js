@@ -126,7 +126,7 @@ const App = (() => {
         <div style="margin-top:12px;font-size:0.85em;color:#ccc;margin-bottom:6px">Vérifier une commune :</div>
         <input id="geo-commune-input" type="text" placeholder="Ex : Chamonix" style="width:100%;box-sizing:border-box;padding:6px 8px;border-radius:6px;border:1px solid #444;background:#1e293b;color:#fff;font-size:0.9em">
         <div id="geo-commune-result" style="margin-top:8px;font-size:0.88em"></div>
-        <div style="margin-top:10px;font-size:0.78em;color:#666">Source : Loi Montagne 1985 — Cerema / data.gouv.fr</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#666">Source : <a href="https://www.data.gouv.fr/datasets/communes-de-la-loi-montagne-au-code-officiel-geographique-cog-2020-2022" target="_blank" style="color:#60a5fa">Loi Montagne 1985 — Cerema / data.gouv.fr</a></div>
       `;
       document.getElementById('modal-overlay').classList.add('active');
 
