@@ -617,20 +617,20 @@ const App = (() => {
     const activeIdx = getActiveCabinetIdx();
     container.innerHTML = '';
     list.forEach((cab, i) => {
+      const isActive = i === activeIdx;
       const item = document.createElement('div');
-      item.className = 'cabinet-item' + (i === activeIdx ? ' active' : '');
+      item.className = 'cabinet-item' + (isActive ? ' active' : '');
       item.innerHTML = `
         <div style="flex:1;min-width:0">
           <span class="cabinet-item-label">${cab.label || 'Cabinet ' + (i + 1)}</span>
           <span class="cabinet-item-address">${cab.address || 'Adresse non renseignée'}</span>
         </div>
-        <button class="cabinet-item-edit" data-idx="${i}" aria-label="Modifier">✎</button>`;
-      item.addEventListener('click', (e) => {
-        if (e.target.closest('.cabinet-item-edit')) return;
-        setActiveCabinet(i);
-      });
-      item.querySelector('.cabinet-item-edit').addEventListener('click', () => openCabinetEditForm(i));
+        ${!isActive ? '<span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">Sélectionner</span>' : ''}`;
+      if (!isActive) {
+        item.addEventListener('click', () => { setActiveCabinet(i); openCabinetEditForm(i); });
+      }
       container.appendChild(item);
+      if (isActive) openCabinetEditForm(i);
     });
   }
 
@@ -668,7 +668,6 @@ const App = (() => {
         ${list.length > 1 ? '<button class="cabinet-form-delete" id="cedit-delete">Supprimer</button>' : ''}
       </div>`;
     targetItem.insertAdjacentElement('afterend', form);
-    setTimeout(() => form.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
 
     const addrInput = form.querySelector('#cedit-address');
     const suggList = form.querySelector('#cedit-suggestions');
