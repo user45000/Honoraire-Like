@@ -34,7 +34,7 @@ const Account = (() => {
         }
       }
     }
-    if (changed) location.reload(); // recharger pour appliquer les préférences
+    if (changed) App.applyPreferences(); // appliquer les préférences sans rechargement
   }
 
   // Sauvegarde les préférences localStorage → serveur (debounced)

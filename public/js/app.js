@@ -1440,7 +1440,18 @@ const App = (() => {
     document.getElementById('fds-quota-backdrop')?.addEventListener('click', closeFDSQuotaModal);
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation };
+  function applyPreferences() {
+    // Réapplique les préférences serveur sans rechargement de page
+    initParams();
+    initRelation();
+    renderCabinetList();
+    Consultation.updateActePrices();
+    Visite.updateActePrices();
+    Visite.updateDeplacementPrices();
+    if (getCurrentTab() === 'ccam') onCCAMChanged();
+  }
+
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyPreferences };
 })();
 
 /**
