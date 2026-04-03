@@ -136,11 +136,11 @@ const App = (() => {
       input.addEventListener('input', () => {
         clearTimeout(timer);
         const q = input.value.trim();
-        if (q.length < 2) { result.textContent = ''; return; }
+        if (q.length < 1) { result.textContent = ''; return; }
         result.textContent = '…';
         timer = setTimeout(async () => {
           try {
-            const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&type=municipality&limit=5`);
+            const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&type=municipality&limit=8&autocomplete=1`);
             const data = await res.json();
             const features = data.features || [];
             if (!features.length) { result.textContent = 'Commune introuvable.'; return; }
