@@ -407,6 +407,25 @@
       ],
       "mtOnly": true
     },
+    "MCU": {
+      "label": "Majoration correspondant urgence",
+      "tarif": 15,
+      "description": "Consultation réalisée dans les 4 jours ouvrés à la demande du médecin traitant, d'un médecin urgentiste ou du médecin régulateur du Centre 15/SAS. Médecin correspondant uniquement (non applicable si médecin traitant du patient, ni aux psychiatres). Tarif opposable obligatoire. Non applicable en PDSA. Conserver la preuve de l'orientation par le MT. (Délai porté de 2 à 4 jours ouvrés depuis le 01/01/2026.)",
+      "applicableTo": [
+        "G",
+        "VG",
+        "APC",
+        "TCG"
+      ],
+      "exclusifs": [
+        "MUT",
+        "MCG",
+        "SNP",
+        "MHP",
+        "MRT"
+      ],
+      "horsPatOnly": true
+    },
     "SHE": {
       "label": "Majoration horaire étendu SAS",
       "tarif": 5,

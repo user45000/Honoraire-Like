@@ -86,7 +86,7 @@ const Engine = (() => {
     // F, MN, MM : majorations horaires non-régulées → 70% AMO standard (ticket modérateur)
     'CRN', 'CRM', 'CRD', 'CRS',
     'VRN', 'VRM', 'VRD', 'VRS',
-    'SNP', 'MRT', 'SHE',
+    'SNP', 'MRT', 'MCU', 'SHE',
     'COE', 'COB', 'COD', 'CCP',
     // RDV : Mon bilan de prévention → 100% AMO (+ G devient AMO100 quand RDV actif)
     'RDV',
