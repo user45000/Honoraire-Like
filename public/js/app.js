@@ -632,6 +632,8 @@ const App = (() => {
       item.querySelector('.cabinet-item-edit').addEventListener('click', () => openCabinetEditForm(i));
       container.appendChild(item);
     });
+    // Auto-ouvrir le form pour les cabinets sans adresse
+    list.forEach((cab, i) => { if (!cab.address) openCabinetEditForm(i); });
   }
 
   function openCabinetEditForm(idx) {
@@ -643,19 +645,32 @@ const App = (() => {
     const targetItem = items[idx];
     if (!targetItem) return;
 
+    const cabZone = cab.zone || localStorage.getItem('hon_zone') || 'metro';
+    const cabGeo = cab.geo || localStorage.getItem('hon_geo') || 'plaine';
+    const zoneOpts = [['metro','Métropole'],['antilles','Antilles'],['reunion','Réunion/Guyane']];
+    const geoOpts = [['plaine','Plaine'],['montagne','Montagne']];
     const form = document.createElement('div');
     form.className = 'cabinet-edit-form';
     form.innerHTML = `
       <input type="text" class="cabinet-address-input" id="cedit-label" placeholder="Nom du cabinet" value="${cab.label || ''}" style="margin-bottom:6px">
-      <div class="cabinet-address-wrapper">
+      <div class="cabinet-address-wrapper" style="margin-bottom:8px">
         <input type="text" class="cabinet-address-input" id="cedit-address" placeholder="Adresse" value="${cab.address || ''}" autocomplete="honoraires-cedit-nofill">
         <ul class="address-suggestions" id="cedit-suggestions" hidden></ul>
+      </div>
+      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone de tarification</div>
+      <div class="toggle-group cedit-zone" style="margin-bottom:8px">
+        ${zoneOpts.map(([v,l]) => `<button class="toggle-btn${cabZone===v?' active':''}" data-value="${v}">${l}</button>`).join('')}
+      </div>
+      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone géographique IK</div>
+      <div class="toggle-group cedit-geo" style="margin-bottom:8px">
+        ${geoOpts.map(([v,l]) => `<button class="toggle-btn${cabGeo===v?' active':''}" data-value="${v}">${l}</button>`).join('')}
       </div>
       <div class="cabinet-form-actions">
         <button class="cabinet-form-save" id="cedit-save">Enregistrer</button>
         ${list.length > 1 ? '<button class="cabinet-form-delete" id="cedit-delete">Supprimer</button>' : ''}
       </div>`;
     targetItem.insertAdjacentElement('afterend', form);
+    setTimeout(() => form.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
 
     const addrInput = form.querySelector('#cedit-address');
     const suggList = form.querySelector('#cedit-suggestions');
@@ -674,16 +689,36 @@ const App = (() => {
       }), 300);
     });
 
+    // Toggle zone/géo dans le formulaire
+    form.querySelector('.cedit-zone').addEventListener('click', e => {
+      const btn = e.target.closest('.toggle-btn'); if (!btn) return;
+      form.querySelectorAll('.cedit-zone .toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    form.querySelector('.cedit-geo').addEventListener('click', e => {
+      const btn = e.target.closest('.toggle-btn'); if (!btn) return;
+      form.querySelectorAll('.cedit-geo .toggle-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+
     form.querySelector('#cedit-save').addEventListener('click', () => {
       const updatedList = getCabinets();
+      const selZone = form.querySelector('.cedit-zone .toggle-btn.active')?.dataset.value || 'metro';
+      const selGeo = form.querySelector('.cedit-geo .toggle-btn.active')?.dataset.value || 'plaine';
       updatedList[idx].label = form.querySelector('#cedit-label').value.trim() || `Cabinet ${idx + 1}`;
       updatedList[idx].address = addrInput.value.trim();
+      updatedList[idx].zone = selZone;
+      updatedList[idx].geo = selGeo;
       if (form._pendingCitycode !== undefined) updatedList[idx].citycode = form._pendingCitycode;
       if (getActiveCabinetIdx() === idx) {
-        updatedList[idx].zone = localStorage.getItem('hon_zone') || 'metro';
-        updatedList[idx].geo = localStorage.getItem('hon_geo') || 'plaine';
         localStorage.setItem('hon_cabinet_address', updatedList[idx].address);
         if (form._pendingCitycode) localStorage.setItem('hon_cabinet_citycode', form._pendingCitycode);
+        // Appliquer zone/géo au cabinet actif
+        localStorage.setItem('hon_zone', selZone);
+        localStorage.setItem('hon_geo', selGeo);
+        document.querySelectorAll('#tab-params .toggle-group[data-field="zone"] .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === selZone));
+        document.querySelectorAll('#tab-params .toggle-group[data-field="geo"] .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === selGeo));
+        Consultation.updateActePrices(); Visite.updateActePrices(); Visite.updateDeplacementPrices();
       }
       saveCabinets(updatedList);
       form.remove();

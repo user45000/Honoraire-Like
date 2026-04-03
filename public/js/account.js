@@ -311,8 +311,9 @@ const Account = (() => {
       // Bouton abonnement
       const subBtn = document.getElementById('subscribe-btn');
       const planPicker = document.getElementById('subscribe-plan-picker');
-      if (status === 'active') {
-        subBtn.textContent = 'Gérer mon abonnement';
+      if (status === 'active' || currentUser.isAdmin) {
+        subBtn.textContent = currentUser.isAdmin ? 'Compte admin' : 'Gérer mon abonnement';
+        subBtn.disabled = !!currentUser.isAdmin;
         if (planPicker) planPicker.style.display = 'none';
       } else {
         subBtn.textContent = 'S\'abonner';
