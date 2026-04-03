@@ -655,7 +655,7 @@ app.post('/api/auth/change-password', (req, res) => {
 });
 
 // === Préférences utilisateur (sync localStorage ↔ serveur) ===
-const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_default_relation','hon_cabinet_address','hon_cabinet_citycode','hon_ccam_favs','hon_praticien_nom','hon_praticien_prenom','hon_praticien_rpps','hon_praticien_remplacant','hon_remplace_nom','hon_remplace_prenom'];
+const PREF_KEYS = ['hon_secteur','hon_zone','hon_geo','hon_garde_samedi','hon_startup_mode','hon_relation','hon_default_relation','hon_cabinet_address','hon_cabinet_citycode','hon_cabinets','hon_cabinet_active','hon_ccam_favs','hon_praticien_nom','hon_praticien_prenom','hon_praticien_rpps','hon_praticien_remplacant','hon_remplace_nom','hon_remplace_prenom'];
 
 app.get('/api/preferences', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });

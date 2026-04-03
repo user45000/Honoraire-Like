@@ -952,6 +952,95 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 
 .cz-dismiss:hover { opacity: 1; }
 
+/* === Multi-cabinets === */
+.cabinet-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border);
+  background: var(--bg-card);
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.cabinet-item.active {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.07);
+}
+.cabinet-item-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  display: block;
+}
+.cabinet-item-address {
+  font-size: 12px;
+  color: var(--text-secondary);
+  display: block;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cabinet-item-edit {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 15px;
+  cursor: pointer;
+  padding: 2px 6px;
+  flex-shrink: 0;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+.cabinet-item-edit:hover { opacity: 1; }
+.cabinet-add-btn {
+  width: 100%;
+  padding: 9px;
+  border: 1.5px dashed var(--border);
+  background: none;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-family: var(--font-body, inherit);
+  margin-top: 2px;
+  transition: border-color 0.15s, color 0.15s;
+}
+.cabinet-add-btn:hover { border-color: var(--primary); color: var(--primary); }
+.cabinet-edit-form {
+  margin: 6px 0 4px;
+  padding: 10px;
+  background: var(--bg);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.cabinet-form-actions { display: flex; gap: 8px; margin-top: 8px; }
+.cabinet-form-save {
+  flex: 1;
+  padding: 8px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font-body, inherit);
+}
+.cabinet-form-delete {
+  padding: 8px 12px;
+  background: none;
+  border: 1.5px solid #ef4444;
+  color: #ef4444;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-body, inherit);
+}
+
 /* === Bannière installation PWA === */
 .pwa-install-banner {
   display: flex;

@@ -474,6 +474,7 @@ const App = (() => {
     initToggleParam('garde_samedi', 'hon_garde_samedi', '14', onGardeSamediChange);
     // Mode à l'ouverture
     initToggleParam('startup_mode', 'hon_startup_mode', 'simple');
+    initCabinets();
   }
 
   function initToggleParam(field, storageKey, defaultVal, onChange) {
@@ -518,7 +519,7 @@ const App = (() => {
     }, 2000);
   }
 
-  async function fetchAddressSuggestions(q, listEl, input, savedEl) {
+  async function fetchAddressSuggestions(q, listEl, input, savedEl, onCitycode) {
     try {
       const res = await fetch(`https://api-adresse.data.gouv.fr/search/?q=${encodeURIComponent(q)}&limit=5`);
       const data = await res.json();
@@ -531,15 +532,174 @@ const App = (() => {
           e.preventDefault();
           input.value = f.properties.label;
           listEl.hidden = true;
-          saveCabinetAddress(input, savedEl);
           const citycode = f.properties.citycode || '';
-          localStorage.setItem('hon_cabinet_citycode', citycode);
-          checkCabinetAutoZone(citycode);
+          if (onCitycode) {
+            onCitycode(f.properties.label, citycode);
+          } else {
+            saveCabinetAddress(input, savedEl);
+            localStorage.setItem('hon_cabinet_citycode', citycode);
+            checkCabinetAutoZone(citycode);
+          }
         });
         listEl.appendChild(li);
       });
       listEl.hidden = false;
     } catch (_) { listEl.hidden = true; }
+  }
+
+  // === Multi-cabinets ===
+
+  function getCabinets() {
+    try { return JSON.parse(localStorage.getItem('hon_cabinets') || '[]'); } catch (_) { return []; }
+  }
+  function saveCabinets(list) { localStorage.setItem('hon_cabinets', JSON.stringify(list)); }
+  function getActiveCabinetIdx() {
+    const idx = parseInt(localStorage.getItem('hon_cabinet_active') || '0', 10);
+    return isNaN(idx) ? 0 : idx;
+  }
+
+  function setActiveCabinet(idx) {
+    const list = getCabinets();
+    if (!list[idx]) return;
+    localStorage.setItem('hon_cabinet_active', String(idx));
+    const cab = list[idx];
+    localStorage.setItem('hon_cabinet_address', cab.address || '');
+    localStorage.setItem('hon_cabinet_citycode', cab.citycode || '');
+    const cabinetInput = document.getElementById('cabinet-address');
+    if (cabinetInput) cabinetInput.value = cab.address || '';
+    if (cab.zone) {
+      localStorage.setItem('hon_zone', cab.zone);
+      document.querySelectorAll('#tab-params .toggle-group[data-field="zone"] .toggle-btn')
+        .forEach(b => b.classList.toggle('active', b.dataset.value === cab.zone));
+      Consultation.updateActePrices(); Visite.updateActePrices(); Visite.updateDeplacementPrices();
+    }
+    if (cab.geo) {
+      localStorage.setItem('hon_geo', cab.geo);
+      document.querySelectorAll('#tab-params .toggle-group[data-field="geo"] .toggle-btn')
+        .forEach(b => b.classList.toggle('active', b.dataset.value === cab.geo));
+      Visite.updateDeplacementPrices();
+    }
+    renderCabinetList();
+  }
+
+  function updateActiveCabinetField(field, value) {
+    const list = getCabinets();
+    const idx = getActiveCabinetIdx();
+    if (list[idx]) { list[idx][field] = value; saveCabinets(list); }
+  }
+
+  function initCabinets() {
+    // Migration one-shot si hon_cabinets absent
+    if (!localStorage.getItem('hon_cabinets')) {
+      const addr = localStorage.getItem('hon_cabinet_address') || '';
+      const citycode = localStorage.getItem('hon_cabinet_citycode') || '';
+      const zone = localStorage.getItem('hon_zone') || 'metro';
+      const geo = localStorage.getItem('hon_geo') || 'plaine';
+      saveCabinets(addr ? [{ id: Date.now(), label: 'Cabinet principal', address: addr, citycode, zone, geo }] : []);
+      localStorage.setItem('hon_cabinet_active', '0');
+    }
+    document.getElementById('cabinet-add-btn')?.addEventListener('click', () => {
+      const list = getCabinets();
+      const newIdx = list.length;
+      list.push({ id: Date.now(), label: `Cabinet ${newIdx + 1}`, address: '', citycode: '', zone: localStorage.getItem('hon_zone') || 'metro', geo: localStorage.getItem('hon_geo') || 'plaine' });
+      saveCabinets(list);
+      localStorage.setItem('hon_cabinet_active', String(newIdx));
+      renderCabinetList();
+      openCabinetEditForm(newIdx);
+    });
+    renderCabinetList();
+  }
+
+  function renderCabinetList() {
+    const container = document.getElementById('cabinets-list');
+    if (!container) return;
+    const list = getCabinets();
+    const activeIdx = getActiveCabinetIdx();
+    container.innerHTML = '';
+    list.forEach((cab, i) => {
+      const item = document.createElement('div');
+      item.className = 'cabinet-item' + (i === activeIdx ? ' active' : '');
+      item.innerHTML = `
+        <div style="flex:1;min-width:0">
+          <span class="cabinet-item-label">${cab.label || 'Cabinet ' + (i + 1)}</span>
+          <span class="cabinet-item-address">${cab.address || 'Adresse non renseignée'}</span>
+        </div>
+        <button class="cabinet-item-edit" data-idx="${i}" aria-label="Modifier">✎</button>`;
+      item.addEventListener('click', (e) => {
+        if (e.target.closest('.cabinet-item-edit')) return;
+        setActiveCabinet(i);
+      });
+      item.querySelector('.cabinet-item-edit').addEventListener('click', () => openCabinetEditForm(i));
+      container.appendChild(item);
+    });
+  }
+
+  function openCabinetEditForm(idx) {
+    document.querySelectorAll('.cabinet-edit-form').forEach(f => f.remove());
+    const list = getCabinets();
+    const cab = list[idx];
+    if (!cab) return;
+    const items = document.getElementById('cabinets-list').querySelectorAll('.cabinet-item');
+    const targetItem = items[idx];
+    if (!targetItem) return;
+
+    const form = document.createElement('div');
+    form.className = 'cabinet-edit-form';
+    form.innerHTML = `
+      <input type="text" class="cabinet-address-input" id="cedit-label" placeholder="Nom du cabinet" value="${cab.label || ''}" style="margin-bottom:6px">
+      <div class="cabinet-address-wrapper">
+        <input type="text" class="cabinet-address-input" id="cedit-address" placeholder="Adresse" value="${cab.address || ''}" autocomplete="honoraires-cedit-nofill">
+        <ul class="address-suggestions" id="cedit-suggestions" hidden></ul>
+      </div>
+      <div class="cabinet-form-actions">
+        <button class="cabinet-form-save" id="cedit-save">Enregistrer</button>
+        ${list.length > 1 ? '<button class="cabinet-form-delete" id="cedit-delete">Supprimer</button>' : ''}
+      </div>`;
+    targetItem.insertAdjacentElement('afterend', form);
+
+    const addrInput = form.querySelector('#cedit-address');
+    const suggList = form.querySelector('#cedit-suggestions');
+    let debounce = null;
+    addrInput.addEventListener('input', () => {
+      clearTimeout(debounce);
+      const q = addrInput.value.trim();
+      if (q.length < 3) { suggList.hidden = true; return; }
+      debounce = setTimeout(() => fetchAddressSuggestions(q, suggList, addrInput, null, (label, citycode) => {
+        addrInput.value = label;
+        suggList.hidden = true;
+        form._pendingAddress = label;
+        form._pendingCitycode = citycode;
+        // Auto-détecter zone/geo si c'est le cabinet actif
+        if (getActiveCabinetIdx() === idx) checkCabinetAutoZone(citycode);
+      }), 300);
+    });
+
+    form.querySelector('#cedit-save').addEventListener('click', () => {
+      const updatedList = getCabinets();
+      updatedList[idx].label = form.querySelector('#cedit-label').value.trim() || `Cabinet ${idx + 1}`;
+      updatedList[idx].address = addrInput.value.trim();
+      if (form._pendingCitycode !== undefined) updatedList[idx].citycode = form._pendingCitycode;
+      if (getActiveCabinetIdx() === idx) {
+        updatedList[idx].zone = localStorage.getItem('hon_zone') || 'metro';
+        updatedList[idx].geo = localStorage.getItem('hon_geo') || 'plaine';
+        localStorage.setItem('hon_cabinet_address', updatedList[idx].address);
+        if (form._pendingCitycode) localStorage.setItem('hon_cabinet_citycode', form._pendingCitycode);
+      }
+      saveCabinets(updatedList);
+      form.remove();
+      renderCabinetList();
+    });
+
+    form.querySelector('#cedit-delete')?.addEventListener('click', () => {
+      const updatedList = getCabinets();
+      updatedList.splice(idx, 1);
+      saveCabinets(updatedList);
+      const newActive = Math.max(0, Math.min(getActiveCabinetIdx(), updatedList.length - 1));
+      localStorage.setItem('hon_cabinet_active', String(newActive));
+      if (updatedList[newActive]) setActiveCabinet(newActive);
+      form.remove();
+      renderCabinetList();
+    });
   }
 
   // === Détection automatique zone géographique depuis l'adresse cabinet ===
@@ -639,13 +799,14 @@ const App = (() => {
   }
 
   function onZoneChange() {
-    // Recalculer les prix affichés
+    updateActiveCabinetField('zone', localStorage.getItem('hon_zone') || 'metro');
     Consultation.updateActePrices();
     Visite.updateActePrices();
     Visite.updateDeplacementPrices();
   }
 
   function onGeoChange() {
+    updateActiveCabinetField('geo', localStorage.getItem('hon_geo') || 'plaine');
     Visite.updateDeplacementPrices();
   }
 
