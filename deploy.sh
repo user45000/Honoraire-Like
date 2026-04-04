@@ -4,6 +4,8 @@
 set -e
 cd /opt/honoraire-like
 git pull
-node scripts/restore-calib.js
+sudo node scripts/restore-calib.js
+sudo chown www-data public/js/app.js data/fds-calib.json
+sudo chmod 664 public/js/app.js data/fds-calib.json
 sudo systemctl restart honoraire-like
 echo "✓ Déploiement terminé"
