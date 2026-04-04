@@ -1312,7 +1312,7 @@ const App = (() => {
       //  NGAP lettre-clé → col "C,CS/V,VS" (40.44%)
       //  Majorations NGAP → col "autres actes" (48.2%)
       const isCCAM = /^[A-Z]{4}[A-Z0-9]{3}$/.test(d.code);
-      const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS)$/.test(d.code);
+      const isNGAPLettre = /^(G|VG|V|C|CS|TC|CO|GL|IM|AP|CP|CC|EP|MS|MP|AS|APC)$/.test(d.code);
       if (isCCAM) {
         // Code principal : chaque char dans sa case (19.41–34.07%)
         d.code.split('').forEach((c, j) => {
