@@ -1203,10 +1203,13 @@ const App = (() => {
   const REMP_ID_Y     = 39.57;  // remplaçant identifiant Y
 
   // ── Cases à cocher ──
-  const MALADIE_X = 6.0;
-  const MALADIE_Y = 43.2;
-  const ACCES_X   = 93.2;
-  const ACCES_Y   = 61.5;
+  const MALADIE_X   = 6.0;
+  const MALADIE_Y   = 43.2;
+  const ACCES_X     = 93.2;
+  const ACCES_Y     = 61.5;
+  // Ligne "nom et prénom du médecin traitant" (APC = patient envoyé par son MT)
+  const APC_MT_X    = 28.0;
+  const APC_MT_Y    = 57.2;
 
   const DEPL_CODES = ['MD', 'MDN', 'MDI', 'MDD', 'ID', 'VD'];
 
@@ -1224,6 +1227,7 @@ const App = (() => {
     if (!lastResult || !lastResult.details || lastResult.details.length === 0) return;
 
     const isMT = getRelation() === 'mt';
+    const isAPC = Consultation.getState && Consultation.getState().acte === 'APC';
     const today = new Date();
     const dd = String(today.getDate()).padStart(2,'0');
     const mm = String(today.getMonth()+1).padStart(2,'0');
@@ -1287,8 +1291,10 @@ const App = (() => {
     // ── MALADIE ✓ (centre de la case à 6.88%, 43.74%) ──
     html += fdsOverlay(MALADIE_X, MALADIE_Y, '✓', 'fds-fill-check');
 
-    // ── Accès hors coordination ✓ (case droite, centre 94.0%, 62.0%) ──
-    if (!isMT) {
+    // ── Accès : APC = envoyé par MT (ligne nom médecin), sinon hors coordination ──
+    if (isAPC) {
+      html += fdsOverlay(APC_MT_X, APC_MT_Y, '(médecin traitant)', 'fds-fill-med');
+    } else if (!isMT) {
       html += fdsOverlay(ACCES_X, ACCES_Y, '✓', 'fds-fill-check');
     }
 
