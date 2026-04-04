@@ -1293,7 +1293,7 @@ const App = (() => {
 
     // ── Accès : APC = envoyé par MT (ligne nom médecin), sinon hors coordination ──
     if (isAPC) {
-      html += fdsOverlay(APC_MT_X, APC_MT_Y, '(médecin traitant)', 'fds-fill-med');
+      html += fdsOverlay(APC_MT_X, APC_MT_Y, 'Médecin traitant du patient', 'fds-fill-med');
     } else if (!isMT) {
       html += fdsOverlay(ACCES_X, ACCES_Y, '✓', 'fds-fill-check');
     }
