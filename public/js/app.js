@@ -618,19 +618,29 @@ const App = (() => {
     container.innerHTML = '';
     list.forEach((cab, i) => {
       const isActive = i === activeIdx;
+      const zoneLabel = { metro: 'Métropole', antilles: 'Antilles', reunion: 'Réunion/Guyane' }[cab.zone || 'metro'];
+      const geoLabel = cab.geo === 'montagne' ? 'Montagne' : 'Plaine';
       const item = document.createElement('div');
       item.className = 'cabinet-item' + (isActive ? ' active' : '');
       item.innerHTML = `
         <div style="flex:1;min-width:0">
           <span class="cabinet-item-label">${cab.label || 'Cabinet ' + (i + 1)}</span>
           <span class="cabinet-item-address">${cab.address || 'Adresse non renseignée'}</span>
+          ${isActive ? `<span style="font-size:11px;color:var(--text-secondary)">${zoneLabel} · ${geoLabel}</span>` : ''}
         </div>
-        ${!isActive ? '<span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">Sélectionner</span>' : ''}`;
+        ${isActive
+          ? '<button class="cabinet-item-edit" aria-label="Modifier">Modifier</button>'
+          : '<span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">Sélectionner</span>'}`;
       if (!isActive) {
-        item.addEventListener('click', () => { setActiveCabinet(i); openCabinetEditForm(i); });
+        item.addEventListener('click', (e) => { if (!e.target.closest('.cabinet-item-edit')) setActiveCabinet(i); });
+      } else {
+        item.querySelector('.cabinet-item-edit').addEventListener('click', () => {
+          const existing = item.nextElementSibling;
+          if (existing?.classList.contains('cabinet-edit-form')) { existing.remove(); return; }
+          openCabinetEditForm(i);
+        });
       }
       container.appendChild(item);
-      if (isActive) openCabinetEditForm(i);
     });
   }
 
@@ -655,11 +665,11 @@ const App = (() => {
         <input type="text" class="cabinet-address-input" id="cedit-address" placeholder="Adresse" value="${cab.address || ''}" autocomplete="honoraires-cedit-nofill">
         <ul class="address-suggestions" id="cedit-suggestions" hidden></ul>
       </div>
-      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone de tarification</div>
+      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone de tarification <span style="opacity:0.5">(auto-détectée)</span></div>
       <div class="toggle-group cedit-zone" style="margin-bottom:8px">
         ${zoneOpts.map(([v,l]) => `<button class="toggle-btn${cabZone===v?' active':''}" data-value="${v}">${l}</button>`).join('')}
       </div>
-      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone géographique IK</div>
+      <div style="font-size:0.8em;color:var(--text-secondary);margin-bottom:4px">Zone géographique IK <span style="opacity:0.5">(auto-détectée)</span></div>
       <div class="toggle-group cedit-geo" style="margin-bottom:8px">
         ${geoOpts.map(([v,l]) => `<button class="toggle-btn${cabGeo===v?' active':''}" data-value="${v}">${l}</button>`).join('')}
       </div>
@@ -681,7 +691,16 @@ const App = (() => {
         suggList.hidden = true;
         form._pendingAddress = label;
         form._pendingCitycode = citycode;
-        // Auto-détecter zone/geo si c'est le cabinet actif
+        // Auto-détecter zone/geo et mettre à jour les toggles du form
+        const dept = getDepartementCode(citycode);
+        if (dept) {
+          const detectedZone = getDepartementZone(dept);
+          const detectedGeo = (typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode)) ? 'montagne' : 'plaine';
+          if (detectedZone) {
+            form.querySelectorAll('.cedit-zone .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === detectedZone));
+          }
+          form.querySelectorAll('.cedit-geo .toggle-btn').forEach(b => b.classList.toggle('active', b.dataset.value === detectedGeo));
+        }
         if (getActiveCabinetIdx() === idx) checkCabinetAutoZone(citycode);
       }), 300);
     });
@@ -747,6 +766,13 @@ const App = (() => {
     if (!citycode) return false;
     if (citycode.startsWith('2A') || citycode.startsWith('2B')) return true; // Corse = montagne depuis jan 2026
     return typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode);
+  }
+
+  function getDepartementZone(dep) {
+    if (!dep) return 'metro';
+    if (dep === '971' || dep === '972') return 'antilles';
+    if (dep === '973' || dep === '974' || dep === '976') return 'reunion';
+    return 'metro';
   }
 
   function checkCabinetAutoZone(citycode) {
