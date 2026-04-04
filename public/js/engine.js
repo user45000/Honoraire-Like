@@ -309,6 +309,8 @@ const Engine = (() => {
     if (acte === 'TE2') return false;
     // TCG : pas de F/MN/MM (art. 14.9.3), mais PDSA ok
     if (acte === 'TCG' && mode !== 'regule') return false;
+    // APC : avis de consultant, pas de majoration PDSA (CRS, CRN, F, MN, MM…)
+    if (acte === 'APC') return false;
     return true;
   }
 
