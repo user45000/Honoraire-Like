@@ -1476,7 +1476,7 @@ const App = (() => {
     if (getCurrentTab() === 'ccam') onCCAMChanged();
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyPreferences };
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyRelation, applyPreferences };
 })();
 
 /**

@@ -38,9 +38,11 @@ const Consultation = (() => {
       }
       const btn = e.target.closest('.acte-btn');
       if (!btn || btn.classList.contains('disabled')) return;
+      const prevActe = state.acte;
       document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.acte = btn.dataset.acte;
+      applyApcRelationLock(prevActe, state.acte);
       updateAllMajoStates();
       recalculate();
     });
@@ -74,9 +76,11 @@ const Consultation = (() => {
       }
       const acteBtn = e.target.closest('.acte-btn');
       if (acteBtn && !acteBtn.classList.contains('disabled')) {
+        const prevActe = state.acte;
         document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
         acteBtn.classList.add('active');
         state.acte = acteBtn.dataset.acte;
+        applyApcRelationLock(prevActe, state.acte);
         updateAllMajoStates();
         recalculate();
         return;
@@ -314,9 +318,11 @@ const Consultation = (() => {
   }
 
   function setRelation(value) {
+    // Si APC est actif, bloquer le changement de relation
+    if (state.acte === 'APC') return;
     state.relation = value;
     // Si un acte MT-only était actif (GL1/2/3) → reset sur G
-    if (value === 'hors' && Engine.ACTES_SENIOR.includes(state.acte)) {
+    if ((value === 'hors' || value === 'orient') && Engine.ACTES_SENIOR.includes(state.acte)) {
       state.acte = 'G';
       document.querySelectorAll('#tab-consultation .acte-btn').forEach(b => b.classList.remove('active'));
       document.querySelector('#tab-consultation [data-acte="G"]').classList.add('active');
@@ -324,6 +330,25 @@ const Consultation = (() => {
     updateActeStates();
     updateAllMajoStates();
     if (App.getCurrentTab() === 'consultation') recalculate();
+  }
+
+  // Gère le verrouillage de la relation lors de la sélection/désélection de APC
+  function applyApcRelationLock(prevActe, newActe) {
+    const relationGroup = document.querySelector('#tab-consultation [data-field="relation"]');
+    if (newActe === 'APC') {
+      // Sauvegarder la relation actuelle et forcer "orienté"
+      state._relationBeforeApc = state.relation;
+      state.relation = 'orient';
+      App.applyRelation('orient', false);
+      if (relationGroup) relationGroup.classList.add('locked');
+    } else if (prevActe === 'APC') {
+      // Restaurer la relation précédente et déverrouiller
+      const restored = state._relationBeforeApc || 'mt';
+      state.relation = restored;
+      App.applyRelation(restored, false);
+      if (relationGroup) relationGroup.classList.remove('locked');
+      delete state._relationBeforeApc;
+    }
   }
 
   function setMode(value) {
