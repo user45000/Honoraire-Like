@@ -252,9 +252,9 @@ const Consultation = (() => {
       btn.style.display = (state.age === 'senior' && state.relation === 'mt') ? '' : 'none';
     }
 
-    // Actes non disponibles en PDSA / nuit (COE, COD, APC)
+    // Actes non disponibles en PDSA / nuit (COE, COD)
     const isHorsJour = state.periode !== 'jour';
-    for (const code of ['COE', 'COD', 'APC']) {
+    for (const code of ['COE', 'COD']) {
       const btn = acteGrid.querySelector(`[data-acte="${code}"]`);
       if (!btn) continue;
       btn.classList.toggle('disabled', isHorsJour);
