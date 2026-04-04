@@ -45,6 +45,8 @@ const GROUPS = [
     { id:'MALADIE_Y', label:'Maladie ✓ Y', type:'y',  def:43.2 },
     { id:'ACCES_X',   label:'Accès ✓ X',   type:'xl', def:93.2 },
     { id:'ACCES_Y',   label:'Accès ✓ Y',   type:'y',  def:61.5 },
+    { id:'APC_MT_X',  label:'APC — Médecin traitant X gauche', type:'xl', def:28.0 },
+    { id:'APC_MT_Y',  label:'APC — Médecin traitant Y',        type:'y',  def:57.2 },
   ]},
 ];
 
