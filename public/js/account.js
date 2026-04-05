@@ -194,6 +194,8 @@ const Account = (() => {
 
     document.getElementById('paywall-subscribe-btn')?.addEventListener('click', async () => {
       const btn = document.getElementById('paywall-subscribe-btn');
+      const errEl = document.getElementById('paywall-sub-error');
+      if (errEl) errEl.textContent = '';
       btn.textContent = 'Chargement…';
       btn.disabled = true;
       try {
@@ -213,10 +215,12 @@ const Account = (() => {
         } else {
           btn.textContent = 'S\'abonner';
           btn.disabled = false;
+          if (errEl) errEl.textContent = data.error || 'Erreur — veuillez réessayer';
         }
       } catch (e) {
         btn.textContent = 'S\'abonner';
         btn.disabled = false;
+        if (errEl) errEl.textContent = 'Erreur de connexion';
       }
     });
   }
