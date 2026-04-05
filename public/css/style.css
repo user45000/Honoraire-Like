@@ -23,6 +23,9 @@ input, select, textarea {
   --border: #E2E8F0;
   --success: #059669;        /* emerald */
   --amber: #D97706;
+  --premium: #D97706;      /* couleur uniforme premium */
+  --premium-bg: rgba(217,119,6,0.1);
+  --premium-light: #F59E0B;
   --danger: #DC2626;
   --shadow: 0 1px 3px rgba(15,26,46,0.08);
   --radius: 10px;
@@ -2185,8 +2188,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 }
 
 .account-status-badge.status-trial {
-  background: rgba(217,119,6,0.1);
-  color: var(--amber);
+  background: var(--premium-bg);
+  color: var(--premium);
 }
 
 .account-status-badge.status-expired {
@@ -2361,8 +2364,8 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .premium-chip {
   display: inline-flex;
   align-items: center;
-  background: rgba(37,99,235,0.12);
-  color: var(--primary);
+  background: var(--premium-bg);
+  color: var(--premium);
   font-size: 10px;
   font-weight: 700;
   padding: 2px 6px;
@@ -2453,9 +2456,9 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .fds-quota-btn-premium {
   padding: 12px 16px; border: none; border-radius: 10px; cursor: pointer;
   font-size: 14px; font-weight: 700;
-  background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;
+  background: linear-gradient(135deg, var(--premium-light), var(--premium)); color: #fff;
 }
-.fds-quota-btn-premium:hover { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.fds-quota-btn-premium:hover { background: linear-gradient(135deg, #fbbf24, var(--premium-light)); }
 
 /* === Overlay sur le vrai formulaire S3116 === */
 .fds-overlay-container {
@@ -3087,7 +3090,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-weight: 600;
   padding: 5px 10px;
   border-radius: 8px;
-  background: var(--primary);
+  background: var(--premium);
   color: #fff;
   text-decoration: none;
   white-space: nowrap;
