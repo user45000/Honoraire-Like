@@ -224,11 +224,15 @@ function renderUsers(users) {
       ? new Date(u.subscription_end).toLocaleDateString('fr-FR')
       : '—';
     const created = new Date(u.created_at).toLocaleDateString('fr-FR');
+    const lastLogin = u.last_login_at
+      ? new Date(u.last_login_at + 'Z').toLocaleDateString('fr-FR')
+      : '—';
     const tr = document.createElement('tr');
     tr.innerHTML = '<td style="color:#94a3b8">' + safeId + '</td>' +
       '<td>' + safeEmail + '</td>' +
       '<td>' + badge + '</td>' +
       '<td>' + created + '</td>' +
+      '<td>' + lastLogin + '</td>' +
       '<td id="end-' + safeId + '">' + end + '</td>' +
       '<td><div class="action-cell">' +
         '<button class="ext-btn" data-id="' + safeId + '" data-months="1">+1 mois</button>' +

@@ -32,6 +32,7 @@ try { db.exec('ALTER TABLE users ADD COLUMN preferences TEXT'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN fds_month_count INTEGER DEFAULT 0'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN fds_month_key TEXT DEFAULT \'\''); } catch (e) {}
 try { db.exec('ALTER TABLE page_views ADD COLUMN is_bot INTEGER DEFAULT 0'); } catch (e) {}
+try { db.exec('ALTER TABLE users ADD COLUMN last_login_at TEXT'); } catch (e) {}
 
 // === Store de session SQLite (persist across restarts) ===
 db.exec(`CREATE TABLE IF NOT EXISTS sessions (
@@ -592,6 +593,7 @@ app.post('/api/auth/login', rateLimit(10, 15 * 60 * 1000), (req, res) => {
     return res.status(401).json({ error: 'Identifiants invalides' });
   }
   req.session.userId = user.id;
+  db.prepare('UPDATE users SET last_login_at = datetime(\'now\') WHERE id = ?').run(user.id);
   if (rememberMe) {
     req.session.cookie.maxAge = 180 * 24 * 60 * 60 * 1000; // 6 mois (renouvelé à chaque visite)
   }
@@ -831,7 +833,7 @@ app.get('/api/admin/stats', requireAdmin, (req, res) => {
 
 app.get('/api/admin/users', requireAdmin, (req, res) => {
   const users = db.prepare(
-    'SELECT id, email, created_at, subscription_status, subscription_end, stripe_customer_id FROM users ORDER BY created_at DESC'
+    'SELECT id, email, created_at, subscription_status, subscription_end, stripe_customer_id, last_login_at FROM users ORDER BY created_at DESC'
   ).all();
   res.json(users);
 });

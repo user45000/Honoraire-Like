@@ -90,7 +90,7 @@
     .h-bar-count { font-size: 12px; color: var(--text-secondary); width: 50px; flex-shrink: 0; }
 
     /* Users table */
-    .table-wrap { background: white; border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+    .table-wrap { background: white; border-radius: 10px; border: 1px solid var(--border); overflow-x: auto; }
     table { width: 100%; border-collapse: collapse; }
     th { text-align: left; padding: 10px 14px; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); background: #f8fafc; }
     td { padding: 11px 14px; font-size: 13px; border-bottom: 1px solid var(--border); }
@@ -106,7 +106,7 @@
     .del-btn { background: none; border: 1px solid var(--border); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
     .del-btn:hover { background: rgba(220,38,38,0.06); border-color: var(--danger); }
     .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .search-input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; width: 220px; }
+    .search-input { padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 13px; width: 220px; min-width: 0; }
     .search-input:focus { outline: none; border-color: var(--primary); }
     .refresh-btn { background: none; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer; color: var(--text-secondary); }
     .refresh-btn:hover { border-color: var(--primary); color: var(--primary); }
@@ -129,14 +129,20 @@
     .kpi-row-label { text-align: left !important; font-size: 13px !important; font-weight: 600 !important; color: var(--text-secondary) !important; }
 
     @media (max-width: 600px) {
-      .tab-panel { padding: 16px; }
+      .tab-panel { padding: 12px; }
       .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
       .stat-card .stat-value { font-size: 22px; }
-      table { font-size: 12px; }
-      th, td { padding: 8px 10px; }
+      table { font-size: 12px; min-width: 550px; }
+      th, td { padding: 8px 10px; white-space: nowrap; }
       .del-btn { display: none; }
       .h-bar-name { width: 70px; font-size: 11px; }
       .bar-chart { height: 80px; }
+      .two-col-grid { grid-template-columns: 1fr !important; }
+      .table-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .table-header > div { width: 100%; }
+      .search-input { width: 100%; }
+      .kpi-table { min-width: 420px; }
+      .kpi-table-wrap { overflow-x: auto; }
     }
   </style>
 </head>
@@ -178,7 +184,7 @@
     <div id="panel-analytics" class="tab-panel active">
       <!-- KPI Summary Table -->
       <div class="section" style="margin-bottom:20px">
-        <div class="section-card" style="padding:0;overflow:hidden">
+        <div class="section-card kpi-table-wrap" style="padding:0;overflow-x:auto">
           <table class="kpi-table">
             <thead>
               <tr>
@@ -261,7 +267,7 @@
       </div>
 
       <!-- Two columns: Tabs + Devices -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
+      <div class="two-col-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">
         <!-- Tab usage -->
         <div class="section" style="margin-bottom:0">
           <div class="section-title">Onglets les plus utilisés (7j)</div>
@@ -334,6 +340,7 @@
               <th>Email</th>
               <th>Statut</th>
               <th>Créé le</th>
+              <th>Dernière connexion</th>
               <th>Fin abonnement</th>
               <th></th>
             </tr>
