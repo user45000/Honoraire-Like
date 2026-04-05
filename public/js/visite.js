@@ -12,6 +12,7 @@ const Visite = (() => {
     ikEnabled: false,
     ikKm: 5,
     ikGeoOverride: null,
+    ikFromPrev: false,
     heure: null,
     relation: 'mt',
     actesCourants: []
@@ -412,13 +413,6 @@ const Visite = (() => {
     const btn = document.getElementById('ik-geolocate');
     const status = document.getElementById('ik-geo-status');
 
-    const cabinetAddr = localStorage.getItem('hon_cabinet_address') || '';
-    if (!cabinetAddr.trim()) {
-      status.textContent = '⚠️ Renseignez l\'adresse du cabinet dans Paramètres';
-      status.className = 'ik-geo-status warn';
-      return;
-    }
-
     btn.disabled = true;
     status.textContent = '📡 Géolocalisation en cours…';
     status.className = 'ik-geo-status';
@@ -429,19 +423,46 @@ const Visite = (() => {
       const patLat = pos.coords.latitude;
       const patLng = pos.coords.longitude;
 
-      // 2. Géocodage de l'adresse du cabinet
-      status.textContent = '📍 Localisation du cabinet…';
-      const cab = await geocodeAddress(cabinetAddr);
-      if (!cab) {
-        status.textContent = '⚠️ Cabinet introuvable — vérifiez l\'adresse dans Paramètres';
-        status.className = 'ik-geo-status warn';
-        btn.disabled = false;
-        return;
+      let originLat, originLng, originLabel;
+
+      if (state.ikFromPrev) {
+        // Origine = dernière position patient
+        const lastStr = localStorage.getItem('hon_ik_last_patient');
+        const last = lastStr ? JSON.parse(lastStr) : null;
+        if (!last) {
+          status.textContent = '⚠️ Aucune visite précédente enregistrée';
+          status.className = 'ik-geo-status warn';
+          btn.disabled = false;
+          return;
+        }
+        originLat = last.lat;
+        originLng = last.lng;
+        originLabel = last.label || 'Visite précédente';
+      } else {
+        // Origine = cabinet
+        const cabinetAddr = getCabinetAddress();
+        if (!cabinetAddr.trim()) {
+          status.textContent = '⚠️ Renseignez l\'adresse du cabinet dans Paramètres';
+          status.className = 'ik-geo-status warn';
+          btn.disabled = false;
+          return;
+        }
+        status.textContent = '📍 Localisation du cabinet…';
+        const cab = await geocodeAddress(cabinetAddr);
+        if (!cab) {
+          status.textContent = '⚠️ Cabinet introuvable — vérifiez l\'adresse dans Paramètres';
+          status.className = 'ik-geo-status warn';
+          btn.disabled = false;
+          return;
+        }
+        originLat = cab.lat;
+        originLng = cab.lng;
+        originLabel = cabinetAddr;
       }
 
-      // 3. Calcul de l'itinéraire routier (OSRM)
+      // 2. Calcul de l'itinéraire routier (OSRM)
       status.textContent = '🗺️ Calcul de l\'itinéraire…';
-      const distKm = await getRouteDistance(cab.lng, cab.lat, patLng, patLat);
+      const distKm = await getRouteDistance(originLng, originLat, patLng, patLat);
       if (distKm === null) {
         status.textContent = '⚠️ Itinéraire introuvable';
         status.className = 'ik-geo-status warn';
@@ -449,12 +470,15 @@ const Visite = (() => {
         return;
       }
 
-      // 4. Détecter si la commune du patient est en zone montagne
+      // 3. Adresse inverse du patient
+      let patLabel = `${patLat.toFixed(4)}, ${patLng.toFixed(4)}`;
       try {
         const revUrl = `https://api-adresse.data.gouv.fr/reverse/?lon=${patLng}&lat=${patLat}&limit=1`;
         const revRes = await fetch(revUrl);
         const revData = await revRes.json();
-        const citycode = revData.features?.[0]?.properties?.citycode;
+        const props = revData.features?.[0]?.properties;
+        if (props) patLabel = props.label || patLabel;
+        const citycode = props?.citycode;
         const isMontagne = citycode && (
           citycode.startsWith('2A') || citycode.startsWith('2B') ||
           (typeof COMMUNES_MONTAGNE !== 'undefined' && COMMUNES_MONTAGNE.has(citycode))
@@ -464,16 +488,25 @@ const Visite = (() => {
         state.ikGeoOverride = null;
       }
 
-      // 5. Remplir le champ km (aller simple, franchise gérée par le moteur)
+      // 4. Sauvegarder la position patient pour la prochaine visite
+      localStorage.setItem('hon_ik_last_patient', JSON.stringify({ lat: patLat, lng: patLng, label: patLabel }));
+      updateIKFromPrevBtn();
+
+      // 5. Remplir le champ km
       const km = Math.round(distKm);
       state.ikKm = km;
+      state.ikGeoOrigin = originLabel;
+      state.ikGeoDestination = patLabel;
       document.getElementById('ik-km').value = km;
       updateIKInfo();
       recalculate();
-      let statusMsg = `✅ ${distKm.toFixed(1)} km (aller) — franchise déduite automatiquement`;
-      if (state.ikGeoOverride === 'montagne') {
-        statusMsg += ' — 🏔️ zone montagne, IK montagne appliqués pour cette visite';
+      // Sauvegarder dans l'historique IK (après recalculate pour avoir lastResult)
+      if (typeof saveIKToHistory === 'function') {
+        setTimeout(() => saveIKToHistory(originLabel, patLabel, Math.round(distKm)), 100);
       }
+      let statusMsg = `✅ ${distKm.toFixed(1)} km (aller)`;
+      if (state.ikFromPrev) statusMsg += ' depuis visite précédente';
+      if (state.ikGeoOverride === 'montagne') statusMsg += ' — 🏔️ zone montagne';
       status.textContent = statusMsg;
       status.className = 'ik-geo-status ok';
     } catch (e) {
@@ -482,6 +515,41 @@ const Visite = (() => {
     }
 
     btn.disabled = false;
+  }
+
+  function getCabinetAddress() {
+    // Essaie le cabinet actif en premier
+    try {
+      const list = JSON.parse(localStorage.getItem('hon_cabinets') || '[]');
+      const activeIdx = parseInt(localStorage.getItem('hon_active_cabinet') || '0');
+      const cab = list[activeIdx];
+      if (cab && cab.address) return cab.address;
+    } catch {}
+    return localStorage.getItem('hon_cabinet_address') || '';
+  }
+
+  function updateIKFromPrevBtn() {
+    const hasPrev = !!localStorage.getItem('hon_ik_last_patient');
+    const prevBtn = document.getElementById('ik-from-prev');
+    if (prevBtn) {
+      prevBtn.disabled = !hasPrev;
+      if (!hasPrev && state.ikFromPrev) {
+        state.ikFromPrev = false;
+        document.getElementById('ik-from-cabinet')?.classList.add('active');
+        prevBtn.classList.remove('active');
+      }
+    }
+  }
+
+  function setIKFromPrev(val) {
+    state.ikFromPrev = val;
+    const cabinetBtn = document.getElementById('ik-from-cabinet');
+    const prevBtn = document.getElementById('ik-from-prev');
+    if (cabinetBtn) cabinetBtn.classList.toggle('active', !val);
+    if (prevBtn) prevBtn.classList.toggle('active', val);
+    // Réinitialiser le statut
+    const status = document.getElementById('ik-geo-status');
+    if (status) { status.textContent = ''; status.className = 'ik-geo-status'; }
   }
 
   function getGeolocation() {
@@ -535,5 +603,5 @@ const Visite = (() => {
       state.deplacement !== 'MD';
   }
 
-  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI, isModified };
+  return { init, onShow, recalculate, getState, updateActePrices, updateDeplacementPrices, setPeriode, setMode, setHeure, setRelation, syncCourantUI, isModified, setIKFromPrev, updateIKFromPrevBtn };
 })();

@@ -2944,3 +2944,151 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
 .ccam-modif-tooltip-bar.visible {
   display: block;
 }
+
+/* === IK depuis visite précédente === */
+.ik-from-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.ik-from-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+.ik-from-btn {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.ik-from-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.ik-from-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* === Historique des consultations === */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.history-header h3 {
+  margin: 0;
+}
+.history-clear-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.history-clear-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+.history-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.history-entry:last-child {
+  border-bottom: none;
+}
+.history-date {
+  font-weight: 600;
+  color: var(--primary);
+  min-width: 48px;
+  font-size: 12px;
+}
+.history-tab {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  min-width: 42px;
+}
+.history-codes {
+  flex: 1;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-total {
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+}
+.history-empty {
+  color: var(--text-secondary);
+  font-size: 14px;
+  text-align: center;
+  padding: 16px 0;
+  margin: 0;
+}
+.history-trial-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 0;
+}
+
+/* === Statistiques === */
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stats-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.stats-row:last-child { border-bottom: none; }
+.stats-month {
+  min-width: 60px;
+  font-weight: 600;
+  color: var(--primary);
+}
+.stats-count {
+  flex: 1;
+  color: var(--text-secondary);
+}
+.stats-total {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* === Export IK === */
+.ik-export-btn {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+}

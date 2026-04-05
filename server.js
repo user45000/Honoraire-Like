@@ -34,6 +34,35 @@ try { db.exec('ALTER TABLE users ADD COLUMN fds_month_key TEXT DEFAULT \'\''); }
 try { db.exec('ALTER TABLE page_views ADD COLUMN is_bot INTEGER DEFAULT 0'); } catch (e) {}
 try { db.exec('ALTER TABLE users ADD COLUMN last_login_at TEXT'); } catch (e) {}
 
+// === Historique consultations ===
+db.exec(`CREATE TABLE IF NOT EXISTS consult_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  date TEXT NOT NULL,
+  tab TEXT,
+  codes TEXT,
+  total REAL,
+  amo REAL,
+  amc REAL,
+  details TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_ch_user ON consult_history(user_id, created_at)`);
+
+// === Historique IK ===
+db.exec(`CREATE TABLE IF NOT EXISTS ik_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  date TEXT NOT NULL,
+  from_addr TEXT,
+  to_addr TEXT,
+  km REAL,
+  amount REAL,
+  codes TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`);
+db.exec(`CREATE INDEX IF NOT EXISTS idx_ikh_user ON ik_history(user_id, created_at)`);
+
 // === Store de session SQLite (persist across restarts) ===
 db.exec(`CREATE TABLE IF NOT EXISTS sessions (
   sid TEXT PRIMARY KEY,
@@ -1166,6 +1195,104 @@ app.post('/api/fds/consume', (req, res) => {
   }
   db.prepare('UPDATE users SET fds_month_count = ?, fds_month_key = ? WHERE id = ?').run(count + 1, monthKey, req.session.userId);
   res.json({ ok: true, count: count + 1, remaining: FDS_LIMIT_TRIAL - count - 1 });
+});
+
+// === Historique consultations ===
+const HISTORY_TRIAL_LIMIT = 20;
+
+function isUserPremium(userId) {
+  const user = db.prepare('SELECT subscription_status, email FROM users WHERE id = ?').get(userId);
+  if (!user) return false;
+  return user.subscription_status === 'active' || ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+}
+
+app.post('/api/history/consult', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const { date, tab, codes, total, amo, amc, details } = req.body;
+  if (!date || total === undefined) return res.status(400).json({ error: 'Données manquantes' });
+  db.prepare('INSERT INTO consult_history (user_id, date, tab, codes, total, amo, amc, details) VALUES (?,?,?,?,?,?,?,?)').run(
+    req.session.userId, date, tab || '', codes || '', total, amo ?? null, amc ?? null, JSON.stringify(details || [])
+  );
+  if (!isUserPremium(req.session.userId)) {
+    const old = db.prepare('SELECT id FROM consult_history WHERE user_id = ? ORDER BY created_at DESC LIMIT -1 OFFSET ?').all(req.session.userId, HISTORY_TRIAL_LIMIT);
+    if (old.length > 0) {
+      const idList = old.map(r => r.id).join(',');
+      db.exec(`DELETE FROM consult_history WHERE id IN (${idList})`);
+    }
+  }
+  res.json({ ok: true });
+});
+
+app.get('/api/history/consult', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const isPremium = isUserPremium(req.session.userId);
+  const limit = isPremium ? 500 : HISTORY_TRIAL_LIMIT;
+  const rows = db.prepare('SELECT id, date, tab, codes, total, amo, amc, details, created_at FROM consult_history WHERE user_id = ? ORDER BY created_at DESC LIMIT ?').all(req.session.userId, limit);
+  res.json({ rows: rows.map(r => ({ ...r, details: JSON.parse(r.details || '[]') })), isPremium });
+});
+
+app.delete('/api/history/consult', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  db.prepare('DELETE FROM consult_history WHERE user_id = ?').run(req.session.userId);
+  res.json({ ok: true });
+});
+
+// === Historique IK ===
+app.post('/api/history/ik', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const { date, from_addr, to_addr, km, amount, codes } = req.body;
+  if (!date || km === undefined) return res.status(400).json({ error: 'Données manquantes' });
+  if (!isUserPremium(req.session.userId)) return res.json({ ok: false, error: 'premium_required' });
+  db.prepare('INSERT INTO ik_history (user_id, date, from_addr, to_addr, km, amount, codes) VALUES (?,?,?,?,?,?,?)').run(
+    req.session.userId, date, from_addr || '', to_addr || '', km, amount ?? null, codes || ''
+  );
+  res.json({ ok: true });
+});
+
+app.get('/api/history/ik', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const isPremium = isUserPremium(req.session.userId);
+  if (!isPremium) return res.json({ rows: [], isPremium: false });
+  const rows = db.prepare('SELECT id, date, from_addr, to_addr, km, amount, codes FROM ik_history WHERE user_id = ? ORDER BY date DESC LIMIT 500').all(req.session.userId);
+  res.json({ rows, isPremium });
+});
+
+app.get('/api/history/ik/export.csv', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  if (!isUserPremium(req.session.userId)) return res.status(403).json({ error: 'Réservé aux abonnés Premium' });
+  const rows = db.prepare('SELECT date, from_addr, to_addr, km, amount, codes FROM ik_history WHERE user_id = ? ORDER BY date ASC').all(req.session.userId);
+  const lines = ['Date,Départ,Arrivée,Km (aller),Montant (€),Codes'];
+  for (const r of rows) {
+    lines.push([
+      `"${r.date}"`,
+      `"${(r.from_addr || '').replace(/"/g, '""')}"`,
+      `"${(r.to_addr || '').replace(/"/g, '""')}"`,
+      r.km ?? '',
+      r.amount !== null ? r.amount.toFixed(2) : '',
+      `"${(r.codes || '').replace(/"/g, '""')}"`
+    ].join(','));
+  }
+  res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+  res.setHeader('Content-Disposition', 'attachment; filename="ik-honorairesmg.csv"');
+  res.send('\uFEFF' + lines.join('\r\n'));
+});
+
+// === Statistiques mensuelles (premium) ===
+app.get('/api/history/stats', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  const isPremium = isUserPremium(req.session.userId);
+  if (!isPremium) return res.json({ isPremium: false });
+  const monthly = db.prepare(`
+    SELECT strftime('%Y-%m', date) as month, COUNT(*) as count, SUM(total) as total
+    FROM consult_history WHERE user_id = ?
+    GROUP BY month ORDER BY month DESC LIMIT 24
+  `).all(req.session.userId);
+  const byTab = db.prepare(`
+    SELECT tab, COUNT(*) as count, ROUND(AVG(total),2) as avg
+    FROM consult_history WHERE user_id = ?
+    GROUP BY tab ORDER BY count DESC
+  `).all(req.session.userId);
+  res.json({ isPremium: true, monthly, byTab });
 });
 
 // === SPA fallback (assets inexistants → 404, routes SPA → index.html) ===

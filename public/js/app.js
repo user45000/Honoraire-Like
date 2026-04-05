@@ -322,7 +322,7 @@ const App = (() => {
       resultBar.style.display = 'none';
       periodeBar.style.display = 'none';
       document.getElementById('mode-bar').classList.remove('visible');
-      if (tabName === 'compte') Account.onShow();
+      if (tabName === 'compte') { Account.onShow(); initHistory(); }
     }
   }
 
@@ -415,6 +415,8 @@ const App = (() => {
       panel.classList.add('open');
       backdrop.classList.add('open');
       document.getElementById('result-bar').classList.add('detail-open');
+      // Auto-save à l'historique
+      saveConsultToHistory();
     }
   }
 
@@ -1523,6 +1525,8 @@ const App = (() => {
       const msgs = {
         cabinet: '🏥 Gérez plusieurs cabinets avec Premium',
         fds: '📋 Feuilles de soins illimitées avec Premium',
+        favorites: '⭐ Favoris CCAM illimités avec Premium (3 max en essai)',
+        history: '📊 Historique illimité et statistiques avec Premium',
       };
       const msg = msgs[context];
       if (msg) { ctxEl.textContent = msg; ctxEl.style.display = ''; }
@@ -1590,8 +1594,169 @@ const App = (() => {
     if (getCurrentTab() === 'ccam') onCCAMChanged();
   }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyRelation, applyPreferences };
+  function getLastResult() { return lastResult; }
+
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyRelation, applyPreferences, getLastResult };
 })();
+
+// === Historique des consultations ===
+
+async function saveIKToHistory(fromAddr, toAddr, km) {
+  const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+  if (!user) return;
+  const isPremium = user.subscription_status === 'active' || user.isAdmin;
+  if (!isPremium) return; // IK history premium only
+  const today = new Date().toISOString().slice(0, 10);
+  const r = App.getLastResult();
+  const codes = r ? r.codes.join(' + ') : '';
+  const amount = r ? r.total : null;
+  try {
+    await fetch(App.getBasePath() + 'api/history/ik', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: today, from_addr: fromAddr, to_addr: toAddr, km, amount, codes })
+    });
+  } catch {}
+}
+
+async function saveConsultToHistory() {
+  const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+  if (!user) return; // pas de sauvegarde si non connecté
+  const r = App.getLastResult();
+  if (!r) return;
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    await fetch(App.getBasePath() + 'api/history/consult', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        date: today,
+        tab: App.getCurrentTab(),
+        codes: r.codes.join(' + '),
+        total: r.total,
+        amo: r.amo ?? null,
+        amc: r.amc ?? null,
+        details: r.details || []
+      })
+    });
+  } catch {}
+}
+
+async function loadHistory() {
+  const section = document.getElementById('history-section');
+  const listEl = document.getElementById('history-list');
+  const trialNote = document.getElementById('history-trial-note');
+  if (!section || !listEl) return;
+
+  const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+  if (!user) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  try {
+    const res = await fetch(App.getBasePath() + 'api/history/consult');
+    if (!res.ok) return;
+    const data = await res.json();
+    const rows = data.rows || [];
+    if (trialNote) trialNote.style.display = data.isPremium ? 'none' : '';
+
+    if (rows.length === 0) {
+      listEl.innerHTML = '<p class="history-empty">Aucune consultation enregistrée.</p>';
+      return;
+    }
+    listEl.innerHTML = rows.map(r => {
+      const d = new Date(r.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      const tab = r.tab === 'ccam' ? 'CCAM' : r.tab === 'visite' ? 'Visite' : 'Cabinet';
+      return `<div class="history-entry">
+        <span class="history-date">${d}</span>
+        <span class="history-tab">${tab}</span>
+        <span class="history-codes">${escapeHTML(r.codes || '—')}</span>
+        <span class="history-total">${r.total.toFixed(2).replace('.', ',')}€</span>
+      </div>`;
+    }).join('');
+  } catch {}
+
+  // Bouton effacer
+  const clearBtn = document.getElementById('history-clear');
+  if (clearBtn) {
+    clearBtn.onclick = async () => {
+      if (!confirm('Effacer tout l\'historique ?')) return;
+      await fetch(App.getBasePath() + 'api/history/consult', { method: 'DELETE' });
+      loadHistory();
+    };
+  }
+}
+
+async function loadStats() {
+  const section = document.getElementById('stats-section');
+  const content = document.getElementById('stats-content');
+  if (!section || !content) return;
+
+  const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+  const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
+  if (!user || !isPremium) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  try {
+    const res = await fetch(App.getBasePath() + 'api/history/stats');
+    if (!res.ok) return;
+    const data = await res.json();
+    if (!data.isPremium || !data.monthly || data.monthly.length === 0) {
+      content.innerHTML = '<p class="history-empty">Aucune donnée pour le moment.</p>';
+      return;
+    }
+    const monthNames = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+    let html = '<div class="stats-grid">';
+    for (const m of data.monthly) {
+      const [y, mo] = m.month.split('-');
+      const label = `${monthNames[parseInt(mo)-1]} ${y}`;
+      html += `<div class="stats-row">
+        <span class="stats-month">${label}</span>
+        <span class="stats-count">${m.count} consult.</span>
+        <span class="stats-total">${(m.total||0).toFixed(2).replace('.', ',')}€</span>
+      </div>`;
+    }
+    html += '</div>';
+    content.innerHTML = html;
+  } catch {}
+}
+
+async function loadIKHistory() {
+  const section = document.getElementById('ik-history-section');
+  const listEl = document.getElementById('ik-history-list');
+  if (!section || !listEl) return;
+
+  const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+  const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
+  if (!user || !isPremium) { section.style.display = 'none'; return; }
+
+  section.style.display = '';
+  try {
+    const res = await fetch(App.getBasePath() + 'api/history/ik');
+    if (!res.ok) return;
+    const data = await res.json();
+    const rows = data.rows || [];
+    if (rows.length === 0) {
+      listEl.innerHTML = '<p class="history-empty">Aucune IK enregistrée.</p>';
+      return;
+    }
+    listEl.innerHTML = rows.map(r => {
+      const d = new Date(r.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+      return `<div class="history-entry">
+        <span class="history-date">${d}</span>
+        <span class="history-codes">${escapeHTML(r.from_addr || '—')} → ${escapeHTML(r.to_addr || '—')}</span>
+        <span class="history-total">${r.km} km · ${r.amount !== null ? r.amount.toFixed(2).replace('.', ',') + '€' : '—'}</span>
+      </div>`;
+    }).join('');
+  } catch {}
+}
+
+function initHistory() {
+  loadHistory();
+  loadStats();
+  loadIKHistory();
+  // Bouton from-prev dans visite
+  if (typeof Visite !== 'undefined') Visite.updateIKFromPrevBtn();
+}
 
 /**
  * Affiche une modale d'info pour un acte (GL1, GL2, GL3)

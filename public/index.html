@@ -390,7 +390,12 @@
             <span class="ik-label">Activer IK</span>
           </label>
           <div class="ik-controls" id="ik-controls" style="display:none">
-            <button class="ik-geo-btn" id="ik-geolocate">📍 Distance depuis le cabinet</button>
+            <div class="ik-from-row">
+              <span class="ik-from-label">Depuis :</span>
+              <button class="ik-from-btn active" id="ik-from-cabinet" onclick="Visite.setIKFromPrev(false)">Cabinet</button>
+              <button class="ik-from-btn" id="ik-from-prev" disabled onclick="Visite.setIKFromPrev(true)">Visite précédente</button>
+            </div>
+            <button class="ik-geo-btn" id="ik-geolocate">📍 Calculer la distance</button>
             <div class="ik-geo-status" id="ik-geo-status"></div>
             <div class="ik-km-input">
               <button class="ik-btn" id="ik-minus">-</button>
@@ -668,6 +673,31 @@
           <button id="logout-btn" class="auth-btn-secondary" style="margin-top:8px">Se déconnecter</button>
           <button id="delete-account-btn" class="auth-btn-danger" style="margin-top:8px">Supprimer mon compte</button>
         </div>
+      </div>
+
+      <!-- Historique des consultations -->
+      <div class="section-card" id="history-section" style="display:none">
+        <div class="history-header">
+          <h3>Historique des consultations</h3>
+          <button class="history-clear-btn" id="history-clear" title="Effacer l'historique">✕</button>
+        </div>
+        <div id="history-list"><p class="history-empty">Aucune consultation enregistrée.</p></div>
+        <p class="history-trial-note" id="history-trial-note" style="display:none">20 dernières consultations — <button class="auth-link" onclick="showPaywall('history')">illimité avec Premium</button></p>
+      </div>
+
+      <!-- Statistiques (premium) -->
+      <div class="section-card" id="stats-section" style="display:none">
+        <h3>Statistiques</h3>
+        <div id="stats-content"><p class="history-empty">Aucune donnée.</p></div>
+      </div>
+
+      <!-- Historique IK -->
+      <div class="section-card" id="ik-history-section" style="display:none">
+        <div class="history-header">
+          <h3>Historique IK</h3>
+          <a href="/api/history/ik/export.csv" class="ik-export-btn" id="ik-export-btn">Exporter CSV</a>
+        </div>
+        <div id="ik-history-list"><p class="history-empty">Aucune IK enregistrée.</p></div>
       </div>
 
       <!-- Crédits (toujours en bas) -->

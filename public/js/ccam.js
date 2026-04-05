@@ -415,6 +415,12 @@ const CCAM = (() => {
     if (idx >= 0) {
       favorites.splice(idx, 1);
     } else {
+      const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+      const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
+      if (!isPremium && favorites.length >= 3) {
+        if (typeof showPaywall === 'function') showPaywall('favorites');
+        return;
+      }
       favorites.push(code);
     }
     localStorage.setItem('hon_ccam_favs', JSON.stringify(favorites));
