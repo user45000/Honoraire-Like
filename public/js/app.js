@@ -600,6 +600,15 @@ const App = (() => {
     }
     document.getElementById('cabinet-add-btn')?.addEventListener('click', () => {
       const list = getCabinets();
+      if (list.length >= 1) {
+        const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+        const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
+        if (!isPremium) {
+          const overlay = document.getElementById('paywall-overlay');
+          if (overlay) { overlay.classList.add('visible'); } else { alert('L\'ajout de cabinets supplémentaires est réservé aux abonnés Premium.'); }
+          return;
+        }
+      }
       const newIdx = list.length;
       list.push({ id: Date.now(), label: `Cabinet ${newIdx + 1}`, address: '', citycode: '', zone: localStorage.getItem('hon_zone') || 'metro', geo: localStorage.getItem('hon_geo') || 'plaine' });
       saveCabinets(list);
@@ -1348,7 +1357,6 @@ const App = (() => {
     html += fdsCells(lastResult.total.toFixed(2).replace('.', ','), TOT_RIGHT_X, MT_CELL_W, TOT_Y);
 
     document.getElementById('fds-body').innerHTML = `
-      <div class="fds-beta-banner">🧪 <strong>BÊTA</strong> — Informations indicatives. Vérifiez les règles en vigueur. En cas de doute, consultez votre CPAM.</div>
       <div class="fds-overlay-container" id="fds-overlay-container">
         <img src="/images/fds_form.png" class="fds-form-image" alt="Feuille de soins S3116 cerfa 12541">
         ${html}
