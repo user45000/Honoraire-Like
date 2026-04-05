@@ -575,7 +575,8 @@ const App = (() => {
       saveCabinets(addr ? [{ id: Date.now(), label: 'Cabinet principal', address: addr, citycode, zone, geo }] : []);
       localStorage.setItem('hon_cabinet_active', '0');
     }
-    document.getElementById('cabinet-add-btn')?.addEventListener('click', () => {
+    const addBtn = document.getElementById('cabinet-add-btn');
+    if (addBtn) addBtn.onclick = () => {
       const list = getCabinets();
       if (list.length >= 1) {
         const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
@@ -586,13 +587,18 @@ const App = (() => {
           return;
         }
       }
+      // Numéroter à partir du max existant pour éviter les doublons après suppression
+      const maxNum = list.reduce((m, c) => {
+        const n = parseInt((c.label || '').replace(/^Cabinet\s*/i, ''));
+        return isNaN(n) ? m : Math.max(m, n);
+      }, list.length);
       const newIdx = list.length;
-      list.push({ id: Date.now(), label: `Cabinet ${newIdx + 1}`, address: '', citycode: '', zone: localStorage.getItem('hon_zone') || 'metro', geo: localStorage.getItem('hon_geo') || 'plaine' });
+      list.push({ id: Date.now(), label: `Cabinet ${maxNum + 1}`, address: '', citycode: '', zone: localStorage.getItem('hon_zone') || 'metro', geo: localStorage.getItem('hon_geo') || 'plaine' });
       saveCabinets(list);
       localStorage.setItem('hon_cabinet_active', String(newIdx));
       renderCabinetList();
       openCabinetEditForm(newIdx);
-    });
+    };
     renderCabinetList();
   }
 
