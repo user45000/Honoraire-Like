@@ -186,29 +186,6 @@ const App = (() => {
       });
     }
 
-    // Adresse cabinet
-    const cabinetInput = document.getElementById('cabinet-address');
-    const cabinetSuggestions = document.getElementById('cabinet-suggestions');
-    const cabinetSaved = document.getElementById('cabinet-saved');
-    cabinetInput.value = localStorage.getItem('hon_cabinet_address') || '';
-
-    let cabinetDebounce = null;
-    cabinetInput.addEventListener('input', () => {
-      clearTimeout(cabinetDebounce);
-      const q = cabinetInput.value.trim();
-      if (q.length < 3) { cabinetSuggestions.hidden = true; return; }
-      cabinetDebounce = setTimeout(() => fetchAddressSuggestions(q, cabinetSuggestions, cabinetInput, cabinetSaved), 300);
-    });
-
-    cabinetInput.addEventListener('blur', () => {
-      setTimeout(() => { cabinetSuggestions.hidden = true; }, 200);
-      saveCabinetAddress(cabinetInput, cabinetSaved);
-    });
-
-    cabinetInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') { cabinetSuggestions.hidden = true; saveCabinetAddress(cabinetInput, cabinetSaved); }
-    });
-
     // Paramètres
     initParams();
 
