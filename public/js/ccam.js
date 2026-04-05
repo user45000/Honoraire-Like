@@ -163,10 +163,50 @@ const CCAM = (() => {
       document.getElementById('modal-overlay').classList.add('active');
     });
 
+    // Info modificateur P (nuit)
+    document.getElementById('ccam-modif-p-info')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Modificateur P — Nuit';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Plage horaire</span><span class="pinfo-detail">Acte réalisé entre <strong>20h et 0h</strong> ou entre <strong>6h et 8h</strong>, tous les jours y compris week-end et jours fériés.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Montant</span><span class="pinfo-detail">+35,00€ ajoutés au tarif de base de l'acte CCAM.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Règles</span><span class="pinfo-detail">Mutuellement exclusif avec S. Non cumulable avec M. Peut être associé à F si l'acte tombe un dimanche/JF dans la plage 20h–0h.</span></div>
+        <div class="pinfo-row" style="margin-top:4px"><span class="pinfo-detail" style="font-size:11px;color:#64748b">Source : nomenclature CCAM, AMELI.</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
+    // Info modificateur S (nuit profonde)
+    document.getElementById('ccam-modif-s-info')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Modificateur S — Nuit profonde';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Plage horaire</span><span class="pinfo-detail">Acte réalisé entre <strong>0h et 6h</strong>, tous les jours y compris week-end et jours fériés.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Montant</span><span class="pinfo-detail">+40,00€ ajoutés au tarif de base de l'acte CCAM. C'est la majoration nuit la plus élevée.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Règles</span><span class="pinfo-detail">Mutuellement exclusif avec P. Non cumulable avec M.</span></div>
+        <div class="pinfo-row" style="margin-top:4px"><span class="pinfo-detail" style="font-size:11px;color:#64748b">Source : nomenclature CCAM, AMELI.</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
+    // Info modificateur F (dimanche/jour férié)
+    document.getElementById('ccam-modif-f-info')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      document.getElementById('modal-title').textContent = 'Modificateur F — Dimanche / Jour férié';
+      document.getElementById('modal-body').innerHTML = `
+        <div class="pinfo-row"><span class="pinfo-chip">Plage horaire</span><span class="pinfo-detail">Acte réalisé entre <strong>8h et 20h</strong> un dimanche ou un jour férié.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Montant</span><span class="pinfo-detail">+19,06€ ajoutés au tarif de base de l'acte CCAM.</span></div>
+        <div class="pinfo-row"><span class="pinfo-chip">Règles</span><span class="pinfo-detail">Non cumulable avec M. Peut être associé à P ou S si l'acte tombe un dimanche/JF hors 8h–20h (ex : dimanche 20h–0h → F + P).</span></div>
+        <div class="pinfo-row" style="margin-top:4px"><span class="pinfo-detail" style="font-size:11px;color:#64748b">Source : nomenclature CCAM, AMELI.</span></div>
+      `;
+      document.getElementById('modal-overlay').classList.add('active');
+    });
+
     // Modificateurs CCAM
     const modifToggles = document.getElementById('ccam-modif-toggles');
     if (modifToggles) {
       modifToggles.addEventListener('click', (e) => {
+        if (e.target.closest('.info-icon')) return;
         const btn = e.target.closest('.ccam-modif-btn');
         if (!btn) return;
         const code = btn.dataset.modif;

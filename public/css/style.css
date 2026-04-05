@@ -2819,6 +2819,25 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   opacity: 1;
 }
 
+.ccam-modif-btn .info-icon {
+  width: 100%;
+  height: auto;
+  min-width: 0;
+  margin: 4px 0 0;
+  padding: 3px 0;
+  border-radius: 0;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.02);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  pointer-events: auto;
+}
+.ccam-modif-btn.active .info-icon {
+  border-top-color: rgba(37,99,235,0.25);
+  background: rgba(37,99,235,0.04);
+}
+
 .ccam-modif-btn.disabled {
   opacity: 0.35;
   cursor: not-allowed;
