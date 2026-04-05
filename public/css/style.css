@@ -1970,7 +1970,17 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   margin-bottom: 4px;
 }
 .paywall-title strong { font-weight: 700; color: var(--primary-light); }
-.paywall-subtitle { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.5); margin-bottom: 16px; }
+.paywall-subtitle { font-size: 13px; font-weight: 300; color: rgba(255,255,255,0.5); margin-bottom: 12px; }
+.paywall-context {
+  background: rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  margin-bottom: 14px;
+}
 .paywall-plans { display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; }
 .paywall-plan {
   display: flex;
@@ -2325,8 +2335,43 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   border: none; border-radius: 8px; font-size: 16px;
   padding: 5px 8px; cursor: pointer; margin-right: 10px;
   flex-shrink: 0; line-height: 1; transition: background 0.15s;
+  position: relative;
 }
 .fds-open-btn:active { background: rgba(255,255,255,0.25); }
+
+.fds-counter {
+  position: absolute;
+  bottom: -3px;
+  right: -3px;
+  background: rgba(37,99,235,0.9);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 8px;
+  line-height: 1.5;
+  min-width: 18px;
+  text-align: center;
+  pointer-events: none;
+}
+.fds-counter:empty { display: none; }
+.fds-counter.low { background: rgba(217,119,6,0.95); }
+.fds-counter.exhausted { background: rgba(220,38,38,0.95); }
+
+.premium-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(37,99,235,0.12);
+  color: var(--primary);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 100px;
+  margin-left: 6px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
 
 /* === Modale Feuille de soin === */
 .fds-modal {

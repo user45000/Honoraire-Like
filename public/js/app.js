@@ -582,8 +582,7 @@ const App = (() => {
         const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
         const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
         if (!isPremium) {
-          const overlay = document.getElementById('paywall-overlay');
-          if (overlay) { overlay.classList.add('visible'); } else { alert('L\'ajout de cabinets supplémentaires est réservé aux abonnés Premium.'); }
+          showPaywall('cabinet');
           return;
         }
       }
@@ -632,6 +631,20 @@ const App = (() => {
       container.appendChild(item);
       if (isActive) container.appendChild(buildCabinetZoneControls(cab, i));
     });
+    updateCabinetAddBtn();
+  }
+
+  function updateCabinetAddBtn() {
+    const btn = document.getElementById('cabinet-add-btn');
+    if (!btn) return;
+    const list = getCabinets();
+    const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+    const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
+    if (list.length >= 1 && !isPremium) {
+      btn.innerHTML = '+ Ajouter un cabinet <span class="premium-chip">Premium</span>';
+    } else {
+      btn.textContent = '+ Ajouter un cabinet';
+    }
   }
 
   function buildCabinetZoneControls(cab, idx) {
@@ -1478,7 +1491,7 @@ const App = (() => {
       const btnPremium = document.createElement('button');
       btnPremium.className = 'fds-quota-btn-premium';
       btnPremium.textContent = '⭐ Passer Premium — illimité';
-      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); document.querySelector('.nav-btn[data-tab="compte"]')?.click(); });
+      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); showPaywall('fds'); });
 
       actEl.appendChild(btnSignup);
       actEl.appendChild(btnPremium);
@@ -1489,7 +1502,7 @@ const App = (() => {
       const btnPremium = document.createElement('button');
       btnPremium.className = 'fds-quota-btn-premium';
       btnPremium.textContent = '⭐ Passer Premium — illimité';
-      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); document.querySelector('.nav-btn[data-tab="compte"]')?.click(); });
+      btnPremium.addEventListener('click', () => { closeFDSQuotaModal(); showPaywall('fds'); });
 
       actEl.appendChild(btnPremium);
     }
@@ -1502,10 +1515,56 @@ const App = (() => {
     if (modal) modal.style.display = 'none';
   }
 
+  function showPaywall(context) {
+    const overlay = document.getElementById('paywall-overlay');
+    if (!overlay) return;
+    const ctxEl = document.getElementById('paywall-context');
+    if (ctxEl) {
+      const msgs = {
+        cabinet: '🏥 Gérez plusieurs cabinets avec Premium',
+        fds: '📋 Feuilles de soins illimitées avec Premium',
+      };
+      const msg = msgs[context];
+      if (msg) { ctxEl.textContent = msg; ctxEl.style.display = ''; }
+      else { ctxEl.style.display = 'none'; }
+    }
+    overlay.classList.add('visible');
+  }
+
+  async function updateFDSCounter() {
+    const badge = document.getElementById('fds-counter');
+    if (!badge) return;
+    const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+    if (user && (user.subscription_status === 'active' || user.isAdmin)) {
+      badge.textContent = ''; return;
+    }
+    if (user) {
+      try {
+        const res = await fetch(`${getBasePath()}api/fds/quota`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.unlimited) { badge.textContent = ''; return; }
+          badge.textContent = `${data.remaining}/${data.limit}`;
+          badge.className = 'fds-counter' + (data.remaining === 0 ? ' exhausted' : data.remaining <= 2 ? ' low' : '');
+        }
+      } catch {}
+      return;
+    }
+    // Anonyme — localStorage
+    const monthKey = getMonthKey();
+    const storedMonth = localStorage.getItem(FDS_MONTH_KEY);
+    let count = parseInt(localStorage.getItem(FDS_QUOTA_KEY) || '0');
+    if (storedMonth !== monthKey) count = 0;
+    const remaining = Math.max(0, FDS_LIMIT_ANON - count);
+    badge.textContent = `${remaining}/${FDS_LIMIT_ANON}`;
+    badge.className = 'fds-counter' + (remaining === 0 ? ' exhausted' : remaining <= 1 ? ' low' : '');
+  }
+
   function initFDS() {
     document.getElementById('fds-open-btn')?.addEventListener('click', async (e) => {
       e.stopPropagation();
       const quota = await checkAndConsumeFDSQuota();
+      updateFDSCounter();
       if (!quota.allowed) {
         showFDSQuotaModal(quota.reason);
         return;
@@ -1516,6 +1575,7 @@ const App = (() => {
     document.getElementById('fds-backdrop')?.addEventListener('click', closeFDS);
     document.getElementById('fds-quota-close')?.addEventListener('click', closeFDSQuotaModal);
     document.getElementById('fds-quota-backdrop')?.addEventListener('click', closeFDSQuotaModal);
+    updateFDSCounter();
   }
 
   function applyPreferences() {
@@ -1523,6 +1583,7 @@ const App = (() => {
     initParams();
     initRelation();
     renderCabinetList();
+    updateFDSCounter();
     Consultation.updateActePrices();
     Visite.updateActePrices();
     Visite.updateDeplacementPrices();
