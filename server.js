@@ -696,17 +696,18 @@ app.get('/api/preferences', (req, res) => {
   catch (e) { res.json({}); }
 });
 
-app.put('/api/preferences', (req, res) => {
+function savePreferences(req, res) {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
   const prefs = req.body || {};
-  // Ne garder que les clés autorisées
   const clean = {};
   for (const key of PREF_KEYS) {
     if (prefs[key] !== undefined) clean[key] = prefs[key];
   }
   db.prepare('UPDATE users SET preferences = ? WHERE id = ?').run(JSON.stringify(clean), req.session.userId);
   res.json({ ok: true });
-});
+}
+app.put('/api/preferences', savePreferences);
+app.post('/api/preferences', savePreferences); // sendBeacon utilise POST
 
 // Suppression de compte (RGPD)
 app.delete('/api/auth/account', (req, res) => {
