@@ -3133,7 +3133,7 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   font-weight: 600;
   padding: 5px 10px;
   border-radius: 8px;
-  background: var(--premium);
+  background: var(--primary);
   color: #fff;
   text-decoration: none;
   white-space: nowrap;

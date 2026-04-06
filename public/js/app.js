@@ -670,11 +670,11 @@ const App = (() => {
           const updatedList = getCabinets();
           updatedList.splice(i, 1);
           saveCabinets(updatedList);
+          cabinetEditingIdx = -1;
           const newActive = Math.max(0, Math.min(getActiveCabinetIdx(), updatedList.length - 1));
           localStorage.setItem('hon_cabinet_active', String(newActive));
           if (updatedList[newActive]) setActiveCabinet(newActive);
-          cabinetEditingIdx = -1;
-          renderCabinetList();
+          else renderCabinetList();
         });
 
       } else {
