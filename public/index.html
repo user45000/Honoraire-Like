@@ -689,7 +689,6 @@
       <div class="section-card" id="stats-section" style="display:none">
         <div class="history-header">
           <h3>Statistiques</h3>
-          <span class="premium-chip">Premium</span>
         </div>
         <div id="stats-content"><p class="history-empty">Aucune donnée.</p></div>
       </div>
@@ -818,21 +817,17 @@
   <!-- Paywall abonnement -->
   <div class="paywall-overlay" id="paywall-overlay">
     <div class="paywall-content">
-      <svg class="paywall-logo" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect x="4" y="4" width="64" height="64" rx="16" fill="url(#pwGrad)"/>
-        <rect x="30" y="18" width="12" height="28" rx="2.5" fill="white"/>
-        <rect x="22" y="26" width="28" height="12" rx="2.5" fill="white"/>
-        <path d="M36 46V50C36 54.418 39.582 58 44 58H46C48.209 58 50 56.209 50 54" stroke="white" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
-        <circle cx="50" cy="52" r="3" fill="white" opacity="0.6"/>
-        <defs>
-          <linearGradient id="pwGrad" x1="4" y1="4" x2="68" y2="68">
-            <stop stop-color="#60A5FA"/>
-            <stop offset="1" stop-color="#2563EB"/>
-          </linearGradient>
-        </defs>
-      </svg>
-      <h2 class="paywall-title">Honoraires <strong>MG</strong></h2>
-      <p class="paywall-subtitle">Soutenez le projet pour continuer</p>
+      <div class="paywall-crown">⭐</div>
+      <h2 class="paywall-title">Passez <strong>Premium</strong></h2>
+      <p class="paywall-subtitle">Tout débloquer · sans engagement</p>
+      <ul class="paywall-features">
+        <li>Historique illimité des consultations</li>
+        <li>Statistiques mensuelles (revenus, actes)</li>
+        <li>Indemnités kilométriques + export CSV</li>
+        <li>Plusieurs cabinets</li>
+        <li>Favoris CCAM illimités</li>
+        <li>Feuilles de soins illimitées</li>
+      </ul>
       <div id="paywall-context" class="paywall-context" style="display:none"></div>
       <div class="paywall-plans">
         <div class="paywall-plan active" data-plan="month" data-price="0,99€/mois">
@@ -884,13 +879,13 @@
     });
   </script>
 
-  <script src="js/montagne-communes.js?v=20260406c" defer></script>
-  <script src="js/engine.js?v=20260406c" defer></script>
-  <script src="js/consultation.js?v=20260406c" defer></script>
-  <script src="js/visite.js?v=20260406c" defer></script>
-  <script src="js/fuse.min.js?v=20260406c" defer></script>
-  <script src="js/ccam.js?v=20260406c" defer></script>
-  <script src="js/account.js?v=20260406c" defer></script>
-  <script src="js/app.js?v=20260406c" defer></script>
+  <script src="js/montagne-communes.js?v=20260406d" defer></script>
+  <script src="js/engine.js?v=20260406d" defer></script>
+  <script src="js/consultation.js?v=20260406d" defer></script>
+  <script src="js/visite.js?v=20260406d" defer></script>
+  <script src="js/fuse.min.js?v=20260406d" defer></script>
+  <script src="js/ccam.js?v=20260406d" defer></script>
+  <script src="js/account.js?v=20260406d" defer></script>
+  <script src="js/app.js?v=20260406d" defer></script>
 </body>
 </html>
