@@ -121,28 +121,7 @@ const Account = (() => {
     const overlay = document.getElementById('paywall-overlay');
     if (!overlay) return;
 
-    // Abonné actif ou admin → pas de paywall
-    if (currentUser && (currentUser.subscription_status === 'active' || currentUser.isAdmin)) {
-      overlay.classList.remove('visible');
-      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
-      return;
-    }
-
-    const threshold = (currentUser && currentUser.subscription_status === 'trial') ? THRESHOLD_TRIAL : THRESHOLD_ANON;
-    const count = getPaywallCount() + 1;
-    localStorage.setItem(PAYWALL_KEY, count.toString());
-    if (count < threshold) {
-      // Pas encore de paywall
-      overlay.classList.remove('visible');
-      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
-      return;
-    }
-
-    // Paywall nécessaire → afficher
-    overlay.classList.add('visible');
-    if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
-
-    // Sélection du plan
+    // Toujours attacher les listeners (skip, plan, login) — indépendamment du seuil
     overlay.querySelectorAll('.paywall-plan').forEach(btn => {
       btn.addEventListener('click', () => {
         overlay.querySelectorAll('.paywall-plan').forEach(b => b.classList.remove('active'));
@@ -191,6 +170,23 @@ const Account = (() => {
         errEl.textContent = 'Erreur de connexion';
       }
     });
+
+    // Affichage automatique selon seuil de visites
+    if (currentUser && (currentUser.subscription_status === 'active' || currentUser.isAdmin)) {
+      overlay.classList.remove('visible');
+      if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+    } else {
+      const threshold = (currentUser && currentUser.subscription_status === 'trial') ? THRESHOLD_TRIAL : THRESHOLD_ANON;
+      const count = getPaywallCount() + 1;
+      localStorage.setItem(PAYWALL_KEY, count.toString());
+      if (count < threshold) {
+        overlay.classList.remove('visible');
+        if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+      } else {
+        overlay.classList.add('visible');
+        if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+      }
+    }
 
     document.getElementById('paywall-subscribe-btn')?.addEventListener('click', async () => {
       const btn = document.getElementById('paywall-subscribe-btn');
