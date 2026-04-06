@@ -1596,7 +1596,7 @@ const App = (() => {
 
   function getLastResult() { return lastResult; }
 
-  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyRelation, applyPreferences, getLastResult };
+  return { init, updateResult, switchTab, getBasePath, onCCAMChanged, getCurrentTab, getCCAMContext, updateCCAMContextBar, updateModeBar, getRelation, applyRelation, applyPreferences, getLastResult, showPaywall };
 })();
 
 // === Historique des consultations ===
@@ -1655,7 +1655,7 @@ async function loadHistory() {
     const clearBtn = document.getElementById('history-clear');
     if (clearBtn) clearBtn.style.display = 'none';
     listEl.innerHTML = `<div class="premium-lock-block">
-      <div class="premium-lock-wrap" onclick="showPaywall('history')">
+      <div class="premium-lock-wrap" onclick="App.showPaywall('history')">
         <div class="premium-lock-preview" aria-hidden="true">
           <div class="history-entry"><span class="history-date">05 avr.</span><span class="history-tab">Visite</span><span class="history-codes">V + MCI + MCG</span><span class="history-total">58,82€</span></div>
           <div class="history-entry"><span class="history-date">04 avr.</span><span class="history-tab">Cabinet</span><span class="history-codes">C + MPC + MSF</span><span class="history-total">32,50€</span></div>
@@ -1718,7 +1718,7 @@ async function loadStats() {
 
   if (!isPremium) {
     content.innerHTML = `<div class="premium-lock-block">
-      <div class="premium-lock-wrap" onclick="showPaywall('history')">
+      <div class="premium-lock-wrap" onclick="App.showPaywall('history')">
         <div class="premium-lock-preview" aria-hidden="true">
           <div class="stats-grid">
             <div class="stats-row"><span class="stats-month">Avr 2026</span><span class="stats-count">18 consult.</span><span class="stats-total">621,40€</span></div>
@@ -1774,7 +1774,7 @@ async function loadIKHistory() {
     const exportBtn = document.getElementById('ik-export-btn');
     if (exportBtn) exportBtn.style.display = 'none';
     listEl.innerHTML = `<div class="premium-lock-block">
-      <div class="premium-lock-wrap" onclick="showPaywall('history')">
+      <div class="premium-lock-wrap" onclick="App.showPaywall('history')">
         <div class="premium-lock-preview" aria-hidden="true">
           <div class="history-entry"><span class="history-date">05 avr.</span><span class="history-codes">Cabinet → 12 rue Pasteur, Lyon</span><span class="history-total">8,4 km · 4,45€</span></div>
           <div class="history-entry"><span class="history-date">04 avr.</span><span class="history-codes">Cabinet → 3 allée des Roses, Caluire</span><span class="history-total">12,1 km · 6,41€</span></div>
