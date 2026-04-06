@@ -1664,7 +1664,7 @@ async function loadHistory() {
         </div>
         <div class="premium-lock-banner">
           <span class="premium-lock-banner-label">Fonctionnalité Premium</span>
-          <span class="premium-lock-banner-btn">S'abonner</span>
+          <button class="premium-lock-banner-btn" onclick="App.showPaywall('history')">S'abonner</button>
         </div>
       </div>
     </div>`;
@@ -1729,7 +1729,7 @@ async function loadStats() {
         </div>
         <div class="premium-lock-banner">
           <span class="premium-lock-banner-label">Fonctionnalité Premium</span>
-          <span class="premium-lock-banner-btn">S'abonner</span>
+          <button class="premium-lock-banner-btn" onclick="App.showPaywall('history')">S'abonner</button>
         </div>
       </div>
     </div>`;
@@ -1783,7 +1783,7 @@ async function loadIKHistory() {
         </div>
         <div class="premium-lock-banner">
           <span class="premium-lock-banner-label">Fonctionnalité Premium</span>
-          <span class="premium-lock-banner-btn">S'abonner</span>
+          <button class="premium-lock-banner-btn" onclick="App.showPaywall('history')">S'abonner</button>
         </div>
       </div>
     </div>`;
