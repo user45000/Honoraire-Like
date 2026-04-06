@@ -23,6 +23,7 @@ const Account = (() => {
   function loadPrefsFromServer() {
     if (!currentUser?.preferences) return;
     const prefs = currentUser.preferences;
+    prefsSaving = true; // empêche le setItem patché de déclencher une sauvegarde
     let changed = false;
     for (const key of PREF_KEYS) {
       if (prefs[key] !== undefined && prefs[key] !== null) {
@@ -34,43 +35,41 @@ const Account = (() => {
         }
       }
     }
-    if (changed) App.applyPreferences(); // appliquer les préférences sans rechargement
+    prefsSaving = false;
+    if (changed) App.applyPreferences();
   }
 
-  // Sauvegarde les préférences localStorage → serveur (debounced)
+  // Sauvegarde les préférences localStorage → serveur (debounced 100ms)
   let saveTimer = null;
-  function savePrefsToServer() {
-    if (!currentUser) return;
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(async () => {
-      const prefs = {};
-      for (const key of PREF_KEYS) {
-        const val = localStorage.getItem(key);
-        if (val !== null) prefs[key] = val;
-      }
-      try {
-        const basePath = App.getBasePath();
-        await fetch(`${basePath}api/preferences`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(prefs)
-        });
-      } catch (e) { /* silencieux */ }
-    }, 1000);
-  }
-
-  // Flush immédiat avant rechargement/fermeture (sendBeacon pour fiabilité)
-  window.addEventListener('pagehide', () => {
-    if (!currentUser || !saveTimer) return;
-    clearTimeout(saveTimer);
-    saveTimer = null;
+  function collectPrefs() {
     const prefs = {};
     for (const key of PREF_KEYS) {
       const val = localStorage.getItem(key);
       if (val !== null) prefs[key] = val;
     }
+    return prefs;
+  }
+  function savePrefsToServer() {
+    if (!currentUser) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      try {
+        const basePath = App.getBasePath();
+        await fetch(`${basePath}api/preferences`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(collectPrefs())
+        });
+      } catch (e) { /* silencieux */ }
+    }, 100);
+  }
+
+  // Flush avant rechargement/fermeture via sendBeacon (POST, fiable sur pagehide)
+  window.addEventListener('pagehide', () => {
+    if (!currentUser) return;
+    clearTimeout(saveTimer);
     const basePath = App.getBasePath();
-    navigator.sendBeacon(`${basePath}api/preferences`, new Blob([JSON.stringify(prefs)], { type: 'application/json' }));
+    navigator.sendBeacon(`${basePath}api/preferences`, new Blob([JSON.stringify(collectPrefs())], { type: 'application/json' }));
   });
 
   // Écouter les changements localStorage pour sync auto
