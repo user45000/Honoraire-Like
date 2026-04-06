@@ -603,6 +603,8 @@ const App = (() => {
     renderCabinetList();
   }
 
+  let cabinetEditingIdx = -1;
+
   function renderCabinetList() {
     const container = document.getElementById('cabinets-list');
     if (!container) return;
@@ -611,27 +613,91 @@ const App = (() => {
     container.innerHTML = '';
     list.forEach((cab, i) => {
       const isActive = i === activeIdx;
+      const isEditing = isActive && cabinetEditingIdx === i;
       const item = document.createElement('div');
-      item.className = 'cabinet-item' + (isActive ? ' active' : '');
-      item.innerHTML = `
-        <div style="flex:1;min-width:0">
-          <span class="cabinet-item-label">${cab.label || 'Cabinet ' + (i + 1)}</span>
-          <span class="cabinet-item-address">${cab.address || 'Adresse non renseignée'}</span>
-        </div>
-        ${isActive
-          ? '<button class="cabinet-item-edit" aria-label="Modifier">Modifier</button>'
-          : '<span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">Sélectionner</span>'}`;
-      if (!isActive) {
-        item.addEventListener('click', (e) => { if (!e.target.closest('.cabinet-item-edit')) setActiveCabinet(i); });
-      } else {
-        item.querySelector('.cabinet-item-edit').addEventListener('click', () => {
-          const existing = item.nextElementSibling;
-          if (existing?.classList.contains('cabinet-edit-form')) { existing.remove(); return; }
-          openCabinetEditForm(i);
+      item.className = 'cabinet-item' + (isActive ? ' active' : '') + (isEditing ? ' editing' : '');
+
+      if (isEditing) {
+        item.innerHTML = `
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:6px">
+            <input type="text" class="cabinet-address-input" id="cedit-label" placeholder="Nom du cabinet" value="${cab.label || ''}" autocomplete="off">
+            <div class="cabinet-address-wrapper">
+              <input type="text" class="cabinet-address-input" id="cedit-address" placeholder="Adresse" value="${cab.address || ''}" autocomplete="honoraires-cedit-nofill">
+              <ul class="address-suggestions" id="cedit-suggestions" hidden></ul>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">
+            <button class="cabinet-form-save" id="cedit-save">✓</button>
+            ${list.length > 1 ? '<button class="cabinet-form-delete" id="cedit-delete">Supprimer</button>' : ''}
+          </div>`;
+
+        let pendingCitycode;
+        const addrInput = item.querySelector('#cedit-address');
+        const suggList = item.querySelector('#cedit-suggestions');
+        let debounce = null;
+        addrInput.addEventListener('input', () => {
+          clearTimeout(debounce);
+          const q = addrInput.value.trim();
+          if (q.length < 3) { suggList.hidden = true; return; }
+          debounce = setTimeout(() => fetchAddressSuggestions(q, suggList, addrInput, null, (label, citycode) => {
+            addrInput.value = label;
+            suggList.hidden = true;
+            pendingCitycode = citycode;
+          }), 300);
         });
+
+        item.querySelector('#cedit-save').addEventListener('click', () => {
+          const updatedList = getCabinets();
+          updatedList[i].label = item.querySelector('#cedit-label').value.trim() || `Cabinet ${i + 1}`;
+          updatedList[i].address = addrInput.value.trim();
+          if (pendingCitycode !== undefined) {
+            updatedList[i].citycode = pendingCitycode;
+            const d = getDetectedZoneGeo(pendingCitycode);
+            if (d) { updatedList[i].zone = d.zone; updatedList[i].geo = d.geo; }
+          }
+          if (getActiveCabinetIdx() === i) {
+            localStorage.setItem('hon_cabinet_address', updatedList[i].address);
+            if (pendingCitycode) localStorage.setItem('hon_cabinet_citycode', pendingCitycode);
+            if (updatedList[i].zone) { localStorage.setItem('hon_zone', updatedList[i].zone); onZoneChange(); }
+            if (updatedList[i].geo) { localStorage.setItem('hon_geo', updatedList[i].geo); onGeoChange(); }
+          }
+          saveCabinets(updatedList);
+          cabinetEditingIdx = -1;
+          renderCabinetList();
+        });
+
+        item.querySelector('#cedit-delete')?.addEventListener('click', () => {
+          const updatedList = getCabinets();
+          updatedList.splice(i, 1);
+          saveCabinets(updatedList);
+          const newActive = Math.max(0, Math.min(getActiveCabinetIdx(), updatedList.length - 1));
+          localStorage.setItem('hon_cabinet_active', String(newActive));
+          if (updatedList[newActive]) setActiveCabinet(newActive);
+          cabinetEditingIdx = -1;
+          renderCabinetList();
+        });
+
+      } else {
+        item.innerHTML = `
+          <div style="flex:1;min-width:0">
+            <span class="cabinet-item-label">${cab.label || 'Cabinet ' + (i + 1)}</span>
+            <span class="cabinet-item-address">${cab.address || 'Adresse non renseignée'}</span>
+          </div>
+          ${isActive
+            ? '<button class="cabinet-item-edit" aria-label="Modifier">Modifier</button>'
+            : '<span style="font-size:12px;color:var(--text-secondary);flex-shrink:0">Sélectionner</span>'}`;
+        if (!isActive) {
+          item.addEventListener('click', (e) => { if (!e.target.closest('.cabinet-item-edit')) setActiveCabinet(i); });
+        } else {
+          item.querySelector('.cabinet-item-edit').addEventListener('click', () => {
+            cabinetEditingIdx = i;
+            renderCabinetList();
+          });
+        }
       }
+
       container.appendChild(item);
-      if (isActive) container.appendChild(buildCabinetZoneControls(cab, i));
+      if (isActive && !isEditing) container.appendChild(buildCabinetZoneControls(cab, i));
     });
     updateCabinetAddBtn();
   }
@@ -742,78 +808,6 @@ const App = (() => {
     } else {
       msgEl?.remove();
     }
-  }
-
-  function openCabinetEditForm(idx) {
-    document.querySelectorAll('.cabinet-edit-form').forEach(f => f.remove());
-    const list = getCabinets();
-    const cab = list[idx];
-    if (!cab) return;
-    const items = document.getElementById('cabinets-list').querySelectorAll('.cabinet-item');
-    const targetItem = items[idx];
-    if (!targetItem) return;
-
-    const form = document.createElement('div');
-    form.className = 'cabinet-edit-form';
-    form.innerHTML = `
-      <input type="text" class="cabinet-address-input" id="cedit-label" placeholder="Nom du cabinet" value="${cab.label || ''}" style="margin-bottom:6px">
-      <div class="cabinet-address-wrapper" style="margin-bottom:8px">
-        <input type="text" class="cabinet-address-input" id="cedit-address" placeholder="Adresse" value="${cab.address || ''}" autocomplete="honoraires-cedit-nofill">
-        <ul class="address-suggestions" id="cedit-suggestions" hidden></ul>
-      </div>
-      <div class="cabinet-form-actions">
-        <button class="cabinet-form-save" id="cedit-save">Enregistrer</button>
-        ${list.length > 1 ? '<button class="cabinet-form-delete" id="cedit-delete">Supprimer</button>' : ''}
-      </div>`;
-    // Insérer après les contrôles zone/géo si présents
-    const zoneControls = targetItem.nextElementSibling;
-    const insertAfter = zoneControls?.classList.contains('cabinet-zone-controls') ? zoneControls : targetItem;
-    insertAfter.insertAdjacentElement('afterend', form);
-
-    const addrInput = form.querySelector('#cedit-address');
-    const suggList = form.querySelector('#cedit-suggestions');
-    let debounce = null;
-    addrInput.addEventListener('input', () => {
-      clearTimeout(debounce);
-      const q = addrInput.value.trim();
-      if (q.length < 3) { suggList.hidden = true; return; }
-      debounce = setTimeout(() => fetchAddressSuggestions(q, suggList, addrInput, null, (label, citycode) => {
-        addrInput.value = label;
-        suggList.hidden = true;
-        form._pendingCitycode = citycode;
-      }), 300);
-    });
-
-    form.querySelector('#cedit-save').addEventListener('click', () => {
-      const updatedList = getCabinets();
-      updatedList[idx].label = form.querySelector('#cedit-label').value.trim() || `Cabinet ${idx + 1}`;
-      updatedList[idx].address = addrInput.value.trim();
-      if (form._pendingCitycode !== undefined) {
-        updatedList[idx].citycode = form._pendingCitycode;
-        const d = getDetectedZoneGeo(form._pendingCitycode);
-        if (d) { updatedList[idx].zone = d.zone; updatedList[idx].geo = d.geo; }
-      }
-      if (getActiveCabinetIdx() === idx) {
-        localStorage.setItem('hon_cabinet_address', updatedList[idx].address);
-        if (form._pendingCitycode) localStorage.setItem('hon_cabinet_citycode', form._pendingCitycode);
-        if (updatedList[idx].zone) { localStorage.setItem('hon_zone', updatedList[idx].zone); onZoneChange(); }
-        if (updatedList[idx].geo) { localStorage.setItem('hon_geo', updatedList[idx].geo); onGeoChange(); }
-      }
-      saveCabinets(updatedList);
-      form.remove();
-      renderCabinetList();
-    });
-
-    form.querySelector('#cedit-delete')?.addEventListener('click', () => {
-      const updatedList = getCabinets();
-      updatedList.splice(idx, 1);
-      saveCabinets(updatedList);
-      const newActive = Math.max(0, Math.min(getActiveCabinetIdx(), updatedList.length - 1));
-      localStorage.setItem('hon_cabinet_active', String(newActive));
-      if (updatedList[newActive]) setActiveCabinet(newActive);
-      form.remove();
-      renderCabinetList();
-    });
   }
 
   // === Détection automatique zone géographique depuis l'adresse cabinet ===
