@@ -1574,6 +1574,7 @@ const App = (() => {
         return;
       }
       openFDS();
+      saveConsultToHistory();
     });
     document.getElementById('fds-close')?.addEventListener('click', closeFDS);
     document.getElementById('fds-backdrop')?.addEventListener('click', closeFDS);
