@@ -1692,10 +1692,24 @@ async function loadStats() {
   if (!section || !content) return;
 
   const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-  const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
-  if (!user || !isPremium) { section.style.display = 'none'; return; }
+  if (!user) { section.style.display = 'none'; return; }
 
   section.style.display = '';
+  const isPremium = user.subscription_status === 'active' || user.isAdmin;
+
+  if (!isPremium) {
+    content.innerHTML = `<div class="premium-lock-block">
+      <p class="premium-lock-desc">Revenus par mois, nombre de consultations, répartition par type d'acte.</p>
+      <div class="premium-lock-preview" aria-hidden="true">
+        <div class="stats-row"><span class="stats-month">Avr 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
+        <div class="stats-row"><span class="stats-month">Mar 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
+        <div class="stats-row"><span class="stats-month">Fév 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
+      </div>
+      <button class="premium-lock-btn" onclick="showPaywall('history')">Débloquer avec Premium</button>
+    </div>`;
+    return;
+  }
+
   try {
     const res = await fetch(App.getBasePath() + 'api/history/stats');
     if (!res.ok) return;
@@ -1726,10 +1740,26 @@ async function loadIKHistory() {
   if (!section || !listEl) return;
 
   const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-  const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
-  if (!user || !isPremium) { section.style.display = 'none'; return; }
+  if (!user) { section.style.display = 'none'; return; }
 
   section.style.display = '';
+  const isPremium = user.subscription_status === 'active' || user.isAdmin;
+
+  if (!isPremium) {
+    const exportBtn = document.getElementById('ik-export-btn');
+    if (exportBtn) exportBtn.style.display = 'none';
+    listEl.innerHTML = `<div class="premium-lock-block">
+      <p class="premium-lock-desc">Enregistrement automatique de chaque déplacement avec export CSV pour votre comptabilité.</p>
+      <div class="premium-lock-preview" aria-hidden="true">
+        <div class="history-entry"><span class="history-date">Aujourd'hui</span><span class="history-codes">Cabinet → Patient</span><span class="history-total">— km · —€</span></div>
+        <div class="history-entry"><span class="history-date">Hier</span><span class="history-codes">Cabinet → Patient</span><span class="history-total">— km · —€</span></div>
+      </div>
+      <button class="premium-lock-btn" onclick="showPaywall('history')">Débloquer avec Premium</button>
+    </div>`;
+    return;
+  }
+
+  // isPremium already checked above — section is shown
   try {
     const res = await fetch(App.getBasePath() + 'api/history/ik');
     if (!res.ok) return;

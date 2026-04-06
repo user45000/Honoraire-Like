@@ -678,23 +678,26 @@
       <!-- Historique des consultations -->
       <div class="section-card" id="history-section" style="display:none">
         <div class="history-header">
-          <h3>Historique des consultations</h3>
+          <h3>Historique <span class="history-header-sub">20 dernières</span></h3>
           <button class="history-clear-btn" id="history-clear" title="Effacer l'historique">✕</button>
         </div>
         <div id="history-list"><p class="history-empty">Aucune consultation enregistrée.</p></div>
-        <p class="history-trial-note" id="history-trial-note" style="display:none">20 dernières consultations — <button class="auth-link" onclick="showPaywall('history')">illimité avec Premium</button></p>
+        <p class="history-trial-note" id="history-trial-note" style="display:none">20 dernières — <button class="auth-link" onclick="showPaywall('history')">illimité avec Premium</button></p>
       </div>
 
-      <!-- Statistiques (premium) -->
+      <!-- Statistiques -->
       <div class="section-card" id="stats-section" style="display:none">
-        <h3>Statistiques</h3>
+        <div class="history-header">
+          <h3>Statistiques</h3>
+          <span class="premium-chip">Premium</span>
+        </div>
         <div id="stats-content"><p class="history-empty">Aucune donnée.</p></div>
       </div>
 
       <!-- Historique IK -->
       <div class="section-card" id="ik-history-section" style="display:none">
         <div class="history-header">
-          <h3>Historique IK</h3>
+          <h3>Indemnités kilométriques</h3>
           <a href="/api/history/ik/export.csv" class="ik-export-btn" id="ik-export-btn">Exporter CSV</a>
         </div>
         <div id="ik-history-list"><p class="history-empty">Aucune IK enregistrée.</p></div>
