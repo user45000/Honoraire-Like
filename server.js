@@ -1231,6 +1231,12 @@ app.get('/api/history/consult', (req, res) => {
   res.json({ rows: rows.map(r => ({ ...r, details: JSON.parse(r.details || '[]') })), isPremium });
 });
 
+app.delete('/api/history/consult/:id', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
+  db.prepare('DELETE FROM consult_history WHERE id = ? AND user_id = ?').run(req.params.id, req.session.userId);
+  res.json({ ok: true });
+});
+
 app.delete('/api/history/consult', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Non connecté' });
   db.prepare('DELETE FROM consult_history WHERE user_id = ?').run(req.session.userId);

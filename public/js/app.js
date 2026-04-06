@@ -1687,13 +1687,27 @@ async function loadHistory() {
     listEl.innerHTML = rows.map(r => {
       const d = new Date(r.date + 'T00:00:00').toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
       const tab = r.tab === 'ccam' ? 'CCAM' : r.tab === 'visite' ? 'Visite' : 'Cabinet';
-      return `<div class="history-entry">
+      return `<div class="history-entry" data-id="${r.id}">
         <span class="history-date">${d}</span>
         <span class="history-tab">${tab}</span>
         <span class="history-codes">${escapeHTML(r.codes || '—')}</span>
         <span class="history-total">${r.total.toFixed(2).replace('.', ',')}€</span>
+        <button class="history-del-btn" title="Supprimer">✕</button>
       </div>`;
     }).join('');
+    listEl.querySelectorAll('.history-del-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const entry = btn.closest('.history-entry');
+        const id = entry?.dataset.id;
+        if (!id) return;
+        await fetch(App.getBasePath() + 'api/history/consult/' + id, { method: 'DELETE' });
+        entry.remove();
+        if (!listEl.querySelector('.history-entry')) {
+          listEl.innerHTML = '<p class="history-empty">Aucune consultation enregistrée.</p>';
+        }
+      });
+    });
   } catch {}
 
   // Bouton effacer
