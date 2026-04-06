@@ -1649,7 +1649,23 @@ async function loadHistory() {
   if (!section || !listEl) return;
 
   const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-  if (!user) { section.style.display = 'none'; return; }
+  if (!user) {
+    section.style.display = '';
+    if (trialNote) trialNote.style.display = 'none';
+    const clearBtn = document.getElementById('history-clear');
+    if (clearBtn) clearBtn.style.display = 'none';
+    listEl.innerHTML = `<div class="premium-lock-block">
+      <p class="premium-lock-desc">Retrouvez toutes vos consultations avec les actes facturés et le montant total.</p>
+      <div class="premium-lock-preview" aria-hidden="true">
+        <div class="history-entry"><span class="history-date">05 avr.</span><span class="history-tab">Visite</span><span class="history-codes">V + MCI + MCG</span><span class="history-total">58,82€</span></div>
+        <div class="history-entry"><span class="history-date">04 avr.</span><span class="history-tab">Cabinet</span><span class="history-codes">C + MPC + MSF</span><span class="history-total">32,50€</span></div>
+        <div class="history-entry"><span class="history-date">03 avr.</span><span class="history-tab">CCAM</span><span class="history-codes">DEQP003 + ZZQP006</span><span class="history-total">44,16€</span></div>
+        <div class="history-entry"><span class="history-date">02 avr.</span><span class="history-tab">Visite</span><span class="history-codes">VL + MCI</span><span class="history-total">42,18€</span></div>
+      </div>
+      <button class="premium-lock-btn" onclick="showPaywall('history')">Accéder à mon historique</button>
+    </div>`;
+    return;
+  }
 
   section.style.display = '';
   try {
@@ -1692,20 +1708,22 @@ async function loadStats() {
   if (!section || !content) return;
 
   const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-  if (!user) { section.style.display = 'none'; return; }
+  const isPremium = user && (user.subscription_status === 'active' || user.isAdmin);
 
   section.style.display = '';
-  const isPremium = user.subscription_status === 'active' || user.isAdmin;
 
   if (!isPremium) {
     content.innerHTML = `<div class="premium-lock-block">
       <p class="premium-lock-desc">Revenus par mois, nombre de consultations, répartition par type d'acte.</p>
       <div class="premium-lock-preview" aria-hidden="true">
-        <div class="stats-row"><span class="stats-month">Avr 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
-        <div class="stats-row"><span class="stats-month">Mar 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
-        <div class="stats-row"><span class="stats-month">Fév 2026</span><span class="stats-count">— consult.</span><span class="stats-total">—€</span></div>
+        <div class="stats-grid">
+          <div class="stats-row"><span class="stats-month">Avr 2026</span><span class="stats-count">18 consult.</span><span class="stats-total">621,40€</span></div>
+          <div class="stats-row"><span class="stats-month">Mar 2026</span><span class="stats-count">94 consult.</span><span class="stats-total">3 248,60€</span></div>
+          <div class="stats-row"><span class="stats-month">Fév 2026</span><span class="stats-count">87 consult.</span><span class="stats-total">2 994,50€</span></div>
+          <div class="stats-row"><span class="stats-month">Jan 2026</span><span class="stats-count">102 consult.</span><span class="stats-total">3 512,80€</span></div>
+        </div>
       </div>
-      <button class="premium-lock-btn" onclick="showPaywall('history')">Débloquer avec Premium</button>
+      <button class="premium-lock-btn" onclick="showPaywall('history')">Voir mes statistiques</button>
     </div>`;
     return;
   }
@@ -1740,21 +1758,22 @@ async function loadIKHistory() {
   if (!section || !listEl) return;
 
   const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
-  if (!user) { section.style.display = 'none'; return; }
+  const isPremiumIK = user && (user.subscription_status === 'active' || user.isAdmin);
 
   section.style.display = '';
-  const isPremium = user.subscription_status === 'active' || user.isAdmin;
 
-  if (!isPremium) {
+  if (!isPremiumIK) {
     const exportBtn = document.getElementById('ik-export-btn');
     if (exportBtn) exportBtn.style.display = 'none';
     listEl.innerHTML = `<div class="premium-lock-block">
       <p class="premium-lock-desc">Enregistrement automatique de chaque déplacement avec export CSV pour votre comptabilité.</p>
       <div class="premium-lock-preview" aria-hidden="true">
-        <div class="history-entry"><span class="history-date">Aujourd'hui</span><span class="history-codes">Cabinet → Patient</span><span class="history-total">— km · —€</span></div>
-        <div class="history-entry"><span class="history-date">Hier</span><span class="history-codes">Cabinet → Patient</span><span class="history-total">— km · —€</span></div>
+        <div class="history-entry"><span class="history-date">05 avr.</span><span class="history-codes">Cabinet → 12 rue Pasteur, Lyon</span><span class="history-total">8,4 km · 4,45€</span></div>
+        <div class="history-entry"><span class="history-date">04 avr.</span><span class="history-codes">Cabinet → 3 allée des Roses, Caluire</span><span class="history-total">12,1 km · 6,41€</span></div>
+        <div class="history-entry"><span class="history-date">04 avr.</span><span class="history-codes">12 rue Pasteur → 3 allée des Roses</span><span class="history-total">5,2 km · 2,76€</span></div>
+        <div class="history-entry"><span class="history-date">03 avr.</span><span class="history-codes">Cabinet → 8 impasse du Moulin, Rillieux</span><span class="history-total">15,7 km · 8,32€</span></div>
       </div>
-      <button class="premium-lock-btn" onclick="showPaywall('history')">Débloquer avec Premium</button>
+      <button class="premium-lock-btn" onclick="showPaywall('history')">Activer le suivi IK</button>
     </div>`;
     return;
   }
