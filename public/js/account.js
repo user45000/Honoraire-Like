@@ -59,6 +59,20 @@ const Account = (() => {
     }, 1000);
   }
 
+  // Flush immédiat avant rechargement/fermeture (sendBeacon pour fiabilité)
+  window.addEventListener('pagehide', () => {
+    if (!currentUser || !saveTimer) return;
+    clearTimeout(saveTimer);
+    saveTimer = null;
+    const prefs = {};
+    for (const key of PREF_KEYS) {
+      const val = localStorage.getItem(key);
+      if (val !== null) prefs[key] = val;
+    }
+    const basePath = App.getBasePath();
+    navigator.sendBeacon(`${basePath}api/preferences`, new Blob([JSON.stringify(prefs)], { type: 'application/json' }));
+  });
+
   // Écouter les changements localStorage pour sync auto
   window.addEventListener('storage', (e) => {
     if (PREF_KEYS.includes(e.key)) savePrefsToServer();
