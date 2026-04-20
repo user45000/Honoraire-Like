@@ -100,6 +100,7 @@ const Account = (() => {
     attachListeners();
     handlePaymentReturn();
     initPaywall();
+    initSignupNudge();
 
     // Détection token de reset dans l'URL (?reset=TOKEN)
     const resetToken = new URLSearchParams(window.location.search).get('reset');
@@ -116,7 +117,7 @@ const Account = (() => {
   // === Paywall ===
   const PAYWALL_KEY = 'hon_visit_count';
   const PAYWALL_RESET_KEY = 'hon_visit_month';
-  const THRESHOLD_ANON = 5;
+  const THRESHOLD_ANON = 3;
   const THRESHOLD_TRIAL = 20;
   let paywallPlan = 'month';
 
@@ -130,9 +131,56 @@ const Account = (() => {
     return parseInt(localStorage.getItem(PAYWALL_KEY) || '0');
   }
 
+  function initSignupNudge() {
+    // Bouton bannière → ouvre le paywall sur le formulaire d'inscription
+    document.getElementById('signup-nudge-btn')?.addEventListener('click', () => {
+      App.showPaywall('nudge');
+    });
+    document.getElementById('signup-nudge-close')?.addEventListener('click', () => {
+      const nudge = document.getElementById('signup-nudge');
+      if (nudge) nudge.style.setProperty('display', 'none', 'important');
+    });
+  }
+
+  async function registerFromPaywall(email, password) {
+    const basePath = App.getBasePath();
+    const res = await fetch(`${basePath}api/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, acceptedTerms: true })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erreur');
+    currentUser = data.user;
+    syncSubStatus();
+    loadPrefsFromServer();
+    document.getElementById('paywall-overlay')?.classList.remove('visible');
+    if (window.showCookieBannerIfNeeded) window.showCookieBannerIfNeeded();
+    render();
+  }
+
   function initPaywall() {
     const overlay = document.getElementById('paywall-overlay');
     if (!overlay) return;
+
+    // Formulaire inscription depuis le paywall
+    document.getElementById('paywall-register-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('paywall-reg-email').value.trim();
+      const password = document.getElementById('paywall-reg-password').value;
+      const errEl = document.getElementById('paywall-reg-error');
+      const btn = document.getElementById('paywall-reg-btn');
+      errEl.textContent = '';
+      btn.textContent = 'Création…';
+      btn.disabled = true;
+      try {
+        await registerFromPaywall(email, password);
+      } catch (err) {
+        errEl.textContent = err.message;
+        btn.textContent = 'Créer mon compte gratuit';
+        btn.disabled = false;
+      }
+    });
 
     // Toujours attacher les listeners (skip, plan, login) — indépendamment du seuil
     overlay.querySelectorAll('.paywall-plan').forEach(btn => {
@@ -288,6 +336,9 @@ const Account = (() => {
     const authPanel = document.getElementById('auth-panel');
     const accountPanel = document.getElementById('account-panel');
     if (!authPanel || !accountPanel) return;
+
+    // Classe hmg-logged sur html pour contrôler la bannière signup via CSS
+    document.documentElement.classList.toggle('hmg-logged', !!currentUser);
 
     // Badge abonné sur le bouton nav
     const navCompte = document.querySelector('.nav-btn[data-tab="compte"]');

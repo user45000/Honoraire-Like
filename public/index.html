@@ -31,7 +31,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=20260406g">
+  <link rel="stylesheet" href="css/style.css?v=20260420a">
   <!-- CSS critique : paywall caché par défaut, affiché par JS si nécessaire -->
   <style>
     #paywall-overlay { position:fixed; inset:0; z-index:1000; background:#1B2D4F; display:none; }
@@ -94,6 +94,13 @@
       <button class="toggle-btn active" data-value="nonregule">Non régulé</button>
       <button class="toggle-btn" data-value="regule">Régulé PDSA</button>
     </div>
+  </div>
+
+  <!-- Bannière signup pour non-connectés -->
+  <div id="signup-nudge" class="signup-nudge">
+    <span class="signup-nudge-text">Calculs non sauvegardés</span>
+    <button id="signup-nudge-btn" class="signup-nudge-btn">Créer un compte gratuit</button>
+    <button id="signup-nudge-close" class="signup-nudge-close" aria-label="Fermer">×</button>
   </div>
 
   <main class="app-main">
@@ -818,9 +825,23 @@
   <!-- Paywall abonnement -->
   <div class="paywall-overlay" id="paywall-overlay">
     <div class="paywall-content">
+      <!-- Compte gratuit (CTA principal) -->
+      <div class="paywall-free-section">
+        <div class="paywall-free-icon">👤</div>
+        <h2 class="paywall-free-title">Compte <strong>gratuit</strong></h2>
+        <p class="paywall-free-sub">Sauvegardez vos calculs · synchronisé sur tous vos appareils</p>
+        <form id="paywall-register-form" autocomplete="on">
+          <input type="email" id="paywall-reg-email" class="paywall-free-input" placeholder="Email professionnel" required autocomplete="email">
+          <input type="password" id="paywall-reg-password" class="paywall-free-input" placeholder="Mot de passe (6 car. min.)" required autocomplete="new-password">
+          <button type="submit" class="plan-btn-free" id="paywall-reg-btn">Créer mon compte gratuit</button>
+          <div id="paywall-reg-error" class="paywall-reg-error"></div>
+        </form>
+      </div>
+
+      <div class="paywall-divider">ou passez Premium</div>
+
+      <!-- Premium (upsell) -->
       <div class="paywall-crown">⭐</div>
-      <h2 class="paywall-title">Passez <strong>Premium</strong></h2>
-      <p class="paywall-subtitle">Tout débloquer · sans engagement</p>
       <ul class="paywall-features">
         <li>Historique illimité des consultations</li>
         <li>Statistiques mensuelles (revenus, actes)</li>
@@ -849,7 +870,7 @@
       </div>
       <button class="plan-btn-primary" id="paywall-subscribe-btn">S'abonner — 0,99€/mois</button>
       <div id="paywall-sub-error" style="color:#f87171;font-size:13px;text-align:center;min-height:18px;margin-top:4px"></div>
-      <button class="paywall-skip" id="paywall-skip-btn">Continuer sans s'abonner →</button>
+      <button class="paywall-skip" id="paywall-skip-btn">Continuer sans compte →</button>
       <div class="paywall-login-section">
         <button class="paywall-login-toggle" id="paywall-login-toggle">Déjà un compte ? Se connecter</button>
         <form id="paywall-login-form" class="paywall-login-form" style="display:none" autocomplete="on">
@@ -886,7 +907,7 @@
   <script src="js/visite.js?v=20260406f" defer></script>
   <script src="js/fuse.min.js?v=20260406f" defer></script>
   <script src="js/ccam.js?v=20260406f" defer></script>
-  <script src="js/account.js?v=20260406i" defer></script>
-  <script src="js/app.js?v=20260406g" defer></script>
+  <script src="js/account.js?v=20260420a" defer></script>
+  <script src="js/app.js?v=20260420a" defer></script>
 </body>
 </html>

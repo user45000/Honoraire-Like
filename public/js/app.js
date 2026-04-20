@@ -364,6 +364,26 @@ const App = (() => {
       }
     }
     if (fdsBtn) fdsBtn.style.display = '';
+
+    // Toast nudge pour non-connectés
+    showCalcNudgeToast();
+  }
+
+  let calcNudgeTimer = null;
+  function showCalcNudgeToast() {
+    const user = (typeof Account !== 'undefined') ? Account.getUser() : null;
+    if (user) return; // connecté → pas de toast
+    clearTimeout(calcNudgeTimer);
+    document.querySelector('.calc-nudge-toast')?.remove();
+    const toast = document.createElement('div');
+    toast.className = 'calc-nudge-toast';
+    toast.innerHTML = `<span>Résultat non enregistré</span><button class="calc-nudge-toast-btn">S'inscrire</button>`;
+    toast.querySelector('.calc-nudge-toast-btn').addEventListener('click', () => {
+      toast.remove();
+      App.showPaywall('calc');
+    });
+    document.body.appendChild(toast);
+    calcNudgeTimer = setTimeout(() => toast.remove(), 5000);
   }
 
   function toggleResultDetail() {
