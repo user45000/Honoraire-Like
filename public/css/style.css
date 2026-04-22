@@ -3211,7 +3211,9 @@ body.mode-simple .view-mode-badge .badge-simple { display: block; }
   top: 0;
   z-index: 200;
 }
-html:not(.hmg-logged) .signup-nudge { display: flex; }
+@media (max-width: 600px) {
+  html:not(.hmg-logged) .signup-nudge { display: flex; }
+}
 html.hmg-logged .signup-nudge { display: none !important; }
 .signup-nudge-text { flex: 1; min-width: 0; }
 .signup-nudge-btn {
