@@ -369,7 +369,8 @@ app.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async
       const user = db.prepare('SELECT id FROM users WHERE stripe_customer_id = ?').get(sub.customer);
       if (user) {
         const status = sub.status === 'active' ? 'active' : 'expired';
-        const end = new Date(sub.current_period_end * 1000).toISOString();
+        const endTs = sub.current_period_end;
+        const end = endTs ? new Date(endTs * 1000).toISOString() : null;
         db.prepare('UPDATE users SET subscription_status = ?, subscription_end = ? WHERE id = ?')
           .run(status, end, user.id);
       }
