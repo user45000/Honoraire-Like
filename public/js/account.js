@@ -95,6 +95,8 @@ const Account = (() => {
     } catch (e) {
       currentUser = null;
     }
+    // Retirer hmg-logged si non connecté (mis par défaut sur <html> pour éviter le flash de bannière)
+    if (!currentUser) document.documentElement.classList.remove('hmg-logged');
     syncSubStatus();
     if (currentUser) loadPrefsFromServer();
     attachListeners();
