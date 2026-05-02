@@ -654,7 +654,8 @@
         "rythme",
         "QRS",
         "tracé"
-      ]
+      ],
+      "baseOnly": true
     },
     {
       "code": "JKHD001",
